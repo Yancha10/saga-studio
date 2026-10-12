@@ -714,6 +714,131 @@ textarea{min-height:56px}
 .pill.gd.need,.pill.gd.err{border-color:rgba(255,170,60,.55)}.pill.gd.need svg,.pill.gd.err svg{color:#ffaa3c}
 @keyframes gdpulse{50%{opacity:.35}}
 @media (max-width:720px){ .pill.gd i{display:none} .pill.gd{padding:0 10px} }
+/* 🔥 NSFW visible */
+.nsfwrow{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:var(--r);border:1px solid var(--line);background:var(--panel);text-align:left;transition:.25s var(--ease)}
+.nsfwrow:hover{border-color:rgba(255,77,77,.5)}
+.nsfwrow .nfl{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:17px;background:var(--panel2);filter:grayscale(1) opacity(.7);transition:.3s}
+.nsfwrow .ntx{flex:1;min-width:0}.nsfwrow b{display:block;font-size:12px;letter-spacing:.14em}.nsfwrow small{display:block;font-size:10.5px;color:var(--mut);margin-top:1px}
+.nsfwrow.on{border-color:transparent;background:linear-gradient(120deg,rgba(255,159,67,.18),rgba(255,77,77,.16) 55%,rgba(225,29,116,.18));box-shadow:inset 0 0 0 1px rgba(255,77,77,.55)}
+.nsfwrow.on .nfl{filter:none;background:linear-gradient(140deg,#ff9f43,#ff4d4d 60%,#e11d74);animation:flame 2.4s ease-in-out infinite}
+.nsfwrow.on b{color:#ff7a59}
+.nsfwrow.on .msw{background:linear-gradient(120deg,#ff9f43,#e11d74);border-color:transparent}.nsfwrow.on .msw:after{left:14px;background:#fff}
+
+/* ===================== v5: MÓVIL táctil (solo ≤720px, el escritorio no cambia) ===================== */
+@media (max-width:720px){
+  html{-webkit-text-size-adjust:100%}
+  body{-webkit-tap-highlight-color:transparent;background:var(--bg)}
+  input,textarea,select{font-size:16px!important} /* iOS no hace zoom al escribir */
+  button,a,[data-a],[data-go]{touch-action:manipulation}
+  /* cabecera de cristal */
+  header{position:sticky;top:0;z-index:40;height:calc(54px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 14px 0;background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--line)}
+  .logo .mark{width:28px;height:28px}
+  .logo .wm b{font-size:15px}
+  #hright{gap:6px}
+  #hright .pill{height:34px;padding:0 11px;font-size:10px}
+  #hright .pill[data-a="apis"]{font-size:0;gap:0;padding:0 11px}
+  #hright .pill[data-a="apis"] .dot{width:9px;height:9px}
+  #hright .iconbtn,#hright .avatar{width:34px;height:34px}
+  #hright [data-a="ayuda"]{display:none}
+  /* barra inferior flotante */
+  #mnav{left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));height:64px;padding:0 6px;border-radius:22px;border:1px solid var(--line2);background:color-mix(in srgb,var(--rail) 82%,transparent);backdrop-filter:blur(20px) saturate(1.5);-webkit-backdrop-filter:blur(20px) saturate(1.5);box-shadow:0 16px 40px -12px rgba(0,0,0,.55)}
+  #mnav .nb{height:52px;min-height:0;border-radius:16px;gap:4px;font-size:9.5px;letter-spacing:.06em;color:var(--mut);background:none!important;box-shadow:none!important;position:relative}
+  #mnav .nb svg{width:22px;height:22px}
+  #mnav .nb.on{color:var(--ink)}
+  #mnav .nb.on svg{stroke:var(--hot);transform:translateY(-1px)}
+  #mnav .nb.on:after{content:"";position:absolute;bottom:3px;left:50%;width:18px;height:3px;margin-left:-9px;border-radius:3px;background:var(--grad)}
+  main{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+  /* panel: tarjetas aireadas */
+  #side{padding:14px 14px 18px;gap:12px;background:var(--bg)}
+  #side .lbl{font-size:10px}
+  .charrow{padding:10px 12px;border-radius:18px}
+  .charrow .av{width:40px;height:40px}
+  .seg{padding:4px}.seg button{height:34px;padding:0 20px;font-size:13px}
+  .seg .knob{top:4px;bottom:4px}
+  /* las 6 tarjetas: carrusel deslizable */
+  .tiles{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin:0 -14px;padding:2px 14px 6px;scrollbar-width:none}
+  .tiles::-webkit-scrollbar{display:none}
+  .tiles .tile{flex:0 0 112px;scroll-snap-align:start;min-height:118px;padding:14px 8px 12px;border-radius:20px;gap:6px}
+  .tiles .tile .ti{width:46px;height:46px}
+  .tiles .tile .ti svg{width:20px;height:20px}
+  .tiles .tile b{font-size:9px;letter-spacing:.12em}
+  .tiles .tile span{font-size:11px}
+  .tile.wide{min-height:56px;border-radius:18px;padding:10px 14px}
+  .tile .tx{width:26px;height:26px;font-size:15px}
+  /* filas y desplegables más altos */
+  .bar,.bar2>summary,.sec>summary{height:50px}
+  .bar,.bar2,.sec{border-radius:18px}
+  .sec>summary{padding:0 14px}
+  .sec .secb{padding:4px 14px 14px}
+  .dz{padding:14px;border-radius:18px}
+  textarea{min-height:84px;border-radius:16px;padding:12px 14px}
+  input{border-radius:14px}
+  .stepper{height:44px;border-radius:14px}.stepper button{width:44px;font-size:18px}
+  /* chips en una fila deslizable */
+  .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -14px;padding:0 14px 2px}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{height:38px;padding:0 16px;font-size:13px;flex:none}
+  .opt{padding:12px 12px;border-radius:14px;font-size:13.5px}
+  .ratios{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .ratio{min-width:52px;padding:8px 6px}
+  .nsfwrow{padding:12px 14px;border-radius:18px}.nsfwrow .nfl{width:40px;height:40px;border-radius:13px;font-size:19px}
+  /* botón Generar flotante encima de la barra */
+  .sticky-gen{position:sticky!important;bottom:calc(84px + env(safe-area-inset-bottom))!important;z-index:20;margin:4px -14px 0!important;padding:14px 14px 10px!important;background:linear-gradient(180deg,transparent,var(--bg) 38%)!important}
+  .sticky-gen .note{display:none}
+  .btn.big{height:54px;border-radius:18px;font-size:12.5px}
+  .btn{min-height:42px;border-radius:14px}
+  .btn.sm{min-height:34px}
+  /* vista previa y galería */
+  .preview{height:auto;aspect-ratio:4/5;max-height:62vh;margin:0 14px;border-radius:24px;border:1px solid var(--line)}
+  .preview.slim{aspect-ratio:auto;margin:0;border:0}
+  .preview .pv{height:92%;border-radius:20px}
+  .hero0{border-radius:20px;padding:14px}
+  .ghead{position:static;padding:16px 14px 8px}
+  .ghead>.lbl{font-size:10px}
+  .sizes{display:none}
+  .gfilters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:0 14px 12px}
+  .gfilters .chip{flex:none}
+  .grid,.grid.S,.grid.M,.grid.L{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 14px 24px}
+  .grid.wide{grid-template-columns:1fr 1fr}
+  .grid .it{border-radius:18px}
+  .grid .it .nm{font-size:12px;padding:10px}
+  .recetas{gap:10px;padding:12px 14px 4px}
+  .rec{width:92px}
+  /* perfil */
+  .profhl{border-radius:24px;padding:16px}
+  .bigav{width:68px;height:68px}
+  .ff{padding:9px 12px;border-radius:14px}.ff input{height:24px}
+  .circles{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .tab{height:40px}
+  /* menús como hoja de acciones */
+  #menu.menu{left:8px!important;right:8px!important;top:auto!important;bottom:calc(8px + env(safe-area-inset-bottom));min-width:0;border-radius:22px;padding:8px;max-height:70vh;overflow:auto;animation:sheetup .3s var(--ease)}
+  #menu.menu:before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:var(--line2);margin:2px auto 8px}
+  #menu.menu button{min-height:50px;font-size:14.5px;border-radius:14px}
+  #menu .mhead{padding:6px 12px}
+  /* ventanas como hoja inferior */
+  .scrim{place-items:end stretch!important;padding:0!important}
+  .modal{width:100%!important;max-width:none!important;max-height:90vh;border-radius:26px 26px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));animation:sheetup .35s var(--ease)}
+  .modal:before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:var(--line2);margin:-8px auto 14px}
+  .modal h2{font-size:23px;padding-right:40px}
+  /* el chat de ayuda: en «Más» (no tapa nada) */
+  #fbw:not(:has(.fbpanel)){display:none}
+  #fbw{bottom:calc(84px + env(safe-area-inset-bottom));left:8px;right:8px;align-items:stretch}
+  .fbpanel{width:100%!important;max-width:none!important;border-radius:24px}
+  #selbar{bottom:calc(84px + env(safe-area-inset-bottom))}
+  #toast{bottom:calc(150px + env(safe-area-inset-bottom))}
+}
+@keyframes sheetup{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@media (max-width:720px) and (hover:none){
+  .tile:hover,.circ:hover .c,.nb:hover svg{transform:none}
+  .btn:active,.tile:active,.chip:active,.opt:active,.nb:active,.it:active,.nsfwrow:active{transform:scale(.96);transition:transform .08s}
+}
+@media (max-width:720px){
+  #side{height:auto!important;min-height:0!important;overflow:visible!important}
+  #stage{height:auto!important;min-height:0!important}
+  .tiles,.chips{scroll-padding-inline:14px}
+  .gfilters.chips,.ghead .chips{margin:0}
+  .sticky-gen{margin-top:0!important}
+}
 </style></head>
 <body>
 <header>
@@ -927,7 +1052,7 @@ for (const k of Object.keys(LIBS)) if (!S.libs[k]) S.libs[k] = [];
 if (S.libs.efectos && S.libs.efectos.some(x => x.cat === 'Luz')) S.libs.efectos = S.libs.efectos.filter(x => x.img);
 ['audios','trash','feedback','selected'].forEach(k => { if (!Array.isArray(S[k])) S[k] = []; });
 S.sel = Object.assign({ lugar: '' }, S.sel); S.vid = Object.assign(defaultState().vid, S.vid); S.img = Object.assign(defaultState().img, S.img); S.aud = Object.assign(defaultState().aud, S.aud);
-if (S.img.quality === "4k") S.img.quality = "2k"; if (!S.ui) S.ui = "normal";
+if (S.img.quality === "4k") S.img.quality = "2k"; (S.libs.vestidor || []).forEach(x => { if (x.look !== undefined) { if (x.img && (x.img === x.look || /-look\.jpg$/.test(x.img))) x.img = ""; delete x.look; } }); if (!S.ui) S.ui = "normal";
 S.chars = S.chars.map(c => Object.assign(newChar(), c));
 
 /* catálogo: se siembra una vez (y se completa si llegan fichas nuevas) */
@@ -1170,6 +1295,7 @@ const matchQ = (...xs) => !S.q || xs.join(' ').toLowerCase().includes(S.q.toLowe
 function empty(title, text, cta = '') { return `<div class="emptystate"><div class="glyph"><i></i></div><h3>${title}</h3><p>${text}</p>${cta}</div>`; }
 function soonStage(t, d) { return `<div style="min-height:100%;display:grid;place-items:center">${empty(t, d)}</div>`; }
 const secOpen = (id, title, sum, body) => `<details class="sec" data-sec="${id}" ${(S.open || {})[id] ? 'open' : ''}><summary><span class="lbl">${title}</span><span class="sum">${esc(sum)}</span><span class="chev">▾</span></summary><div class="secb">${body}</div></details>`;
+const nsfwRow = (sub) => `<button class="nsfwrow ${S.nsfw ? 'on' : ''}" data-a="nsfwToggle"><span class="nfl">🔥</span><span class="ntx"><b>NSFW</b><small>${S.nsfw ? 'Activado · ' : ''}${esc(sub)}</small></span><span class="msw"></span></button>`;
 const nsfwDot = () => `<button class="nsfwdot ${S.nsfw ? 'on' : ''}" data-a="nsfwMenu" title="${S.nsfw ? '🔥 activado' : 'Opciones'}">${S.nsfw ? '🔥' : '<i></i>'}</button>`;
 function tile(key, small = false) {
   if (key === 'prenda' && S.nsfw) return `<button class="tile nsfwoff" data-a="nsfwOffTip"><span class="ti">${ic(TILE_ICON[key])}</span><b>${TILE_LBL[key]}</b><span>no con 🔥</span></button>`;
@@ -1352,7 +1478,8 @@ R.crear = () => {
         <div class="promptwrap"><div class="hl" aria-hidden="true">${hlPrompt(S.img.prompt)}</div><textarea class="prompt" data-imgprompt spellcheck="false">${esc(S.img.prompt)}</textarea></div>
         <p class="note">Se manda tal cual. Cada bloque ⟦…⟧ es algo elegido arriba: muévelo, retócalo o bórralo. Las <b>@IMG</b> son tus referencias.</p></div>
     ` : `<button class="bar" data-a="toPro"><span class="lbl">Ajustes</span><span class="mut">${model.n} · ${S.img.quality} · ${S.img.ratio} ▸</span></button>`}
-    <div class="between"><span class="lbl">Imágenes</span><div class="row" style="gap:10px"><div class="stepper"><button data-a="cnt-">−</button><b>${S.img.count}</b><button data-a="cnt+">＋</button></div>${nsfwDot()}</div></div>
+    <div class="between"><span class="lbl">Imágenes</span><div class="row" style="gap:10px"><div class="stepper"><button data-a="cnt-">−</button><b>${S.img.count}</b><button data-a="cnt+">＋</button></div></div></div>
+    ${nsfwRow('Solo Seedream 5.0 Pro · sin vestidor')}
     <div class="sticky-gen"><button class="btn acc big" data-a="genImg">${S.nsfw ? '🔥 ' : ''}Generar · ${model.usd ? money(imgUsd(model, S.img.quality) * S.img.count) : S.img.count}</button>
     <p class="note" style="text-align:center;margin-top:8px">Copia el prompt y sus referencias, genera en ${esc(model.n)} e importa aquí el resultado.</p></div>`;
   const items = S.creaciones.filter(x => x.kind === 'img' && !x.trash && x.char === c.id);
@@ -1390,10 +1517,11 @@ R.video = () => {
       <div class="stack" style="gap:6px">${seg('vid.metodo', [['normal','Método normal'],['silueta','Silueta']], v.metodo)}<p class="note">${v.metodo === 'normal' ? 'Como Genjutsu: el vídeo manda el movimiento y la cámara; la ficha 360, el personaje.' : 'Sigue la silueta de la persona fotograma a fotograma. Más fiel al movimiento, más caro.'}</p></div>
       <div class="stack"><span class="lbl">Algo más · opcional</span><textarea data-vextra placeholder="Ej.: que lleve el pelo suelto">${esc(v.extra)}</textarea></div>
       ${secOpen('majustes', 'Ajustes', `${mm.n} · ${v.quality}`, `
-      <div class="stack"><div class="between"><span class="lbl">Motor</span>${mm.nsfw ? nsfwDot() : ''}</div><div class="opts">${MOTION_MODELS.map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === v.motor ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-vmotor="${m.id}"`}>${m.n}<span>${off ? 'no admite 🔥' : m.tarifa}</span></button>`; }).join('')}</div></div>
+      <div class="stack"><div class="between"><span class="lbl">Motor</span></div><div class="opts">${MOTION_MODELS.map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === v.motor ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-vmotor="${m.id}"`}>${m.n}<span>${off ? 'no admite 🔥' : m.tarifa}</span></button>`; }).join('')}</div></div>
       <div class="stack"><span class="lbl">Calidad</span><div class="chips">${['480p','720p','1080p'].map(q => `<button class="chip ${v.quality === q ? 'on' : ''}" data-vq="${q}">${q}</button>`).join('')}</div></div>
 `)}
       <p class="note">Sube un vídeo de 4 a 30 s con una persona. Tu personaje hará lo mismo. ${esc(mm.n)}: ${esc(mm.tarifa)} (tarifa de referencia). El vídeo final lleva tu audio original.</p>
+      ${nsfwRow(mm.nsfw ? 'Solo con motores Seedance' : 'Elige un motor Seedance para usarlo')}
       <div class="sticky-gen"><button class="btn acc big" data-a="genMotion">${S.nsfw && mm.nsfw ? '🔥 ' : ''}Recrear el vídeo</button></div>`;
   } else {
     side = `${head}${charBox}
@@ -1405,13 +1533,14 @@ R.video = () => {
         <div class="stack"><span class="lbl">Cámara</span><div class="chips">${CAMERAS.map(([k, t, d]) => `<button class="chip ${v.cam === k ? 'on' : ''}" data-vcam="${k}" title="${esc(d)}">${t}</button>`).join('')}</div></div>
         <div class="stack"><span class="lbl">Estilo</span><div class="chips">${VSTYLES.map(([k, t]) => `<button class="chip ${v.style === k ? 'on' : ''}" data-vstyle="${k}">${t}</button>`).join('')}</div>${tile('look').replace('class="tile', 'class="tile wide')}</div>`)}
       ${secOpen('vajustes', 'Ajustes', `${vm.n} · ${v.quality} · ${v.dur}s · ${v.ratio === 'auto' ? 'como la imagen' : v.ratio}`, `
-      <div class="stack"><div class="between"><span class="lbl">Modelo</span><span class="row" style="gap:10px"><a class="lnk" data-a="vModelInfo">¿Cuál elijo?</a>${vm.nsfw ? nsfwDot() : ''}</span></div><div class="opts">${VID_MODELS.map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === v.model ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-vidmodel="${m.id}"`}>${m.n}<span>${off ? 'no admite 🔥' : m.p}</span></button>`; }).join('')}</div></div>
+      <div class="stack"><div class="between"><span class="lbl">Modelo</span><span class="row" style="gap:10px"><a class="lnk" data-a="vModelInfo">¿Cuál elijo?</a></span></div><div class="opts">${VID_MODELS.map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === v.model ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-vidmodel="${m.id}"`}>${m.n}<span>${off ? 'no admite 🔥' : m.p}</span></button>`; }).join('')}</div></div>
       <div class="between"><div class="stack"><span class="lbl">Calidad</span><div class="chips">${['480p','720p','1080p'].map(q => `<button class="chip ${v.quality === q ? 'on' : ''}" data-vq="${q}">${q}</button>`).join('')}</div></div>
         <div class="stack"><span class="lbl">Duración</span><div class="stepper"><button data-a="dur-">−</button><b>${v.dur}s</b><button data-a="dur+">＋</button></div></div></div>
       <div class="stack"><span class="lbl">Formato</span><div class="chips">${['auto','9:16','3:4','1:1','16:9'].map(r => `<button class="chip ${v.ratio === r ? 'on' : ''}" data-vratio="${r}">${r === 'auto' ? 'Como la imagen' : r}</button>`).join('')}</div></div>
       <label class="row note"><input type="checkbox" ${v.audio ? 'checked' : ''} data-vaudio style="width:auto"> Generar audio (Seedance inventa voz y ambiente)</label>
       <p class="note">${esc(vm.n)}: ${esc(vm.info)}${vm.tarifa ? ' · ' + esc(vm.tarifa) : ''}</p>`)}
       ${secOpen('vprompt', 'Prompt montado', 'se actualiza solo', `<textarea class="prompt" readonly style="min-height:240px">${esc(buildVidPrompt())}</textarea><button class="btn sm" data-copy="${esc(buildVidPrompt())}">Copiar prompt</button>`)}
+      ${nsfwRow(vm.nsfw ? 'Solo con Seedance 2.0 y 2.5' : 'Elige Seedance para usarlo')}
       <div class="sticky-gen"><button class="btn acc big" data-a="genVid">${S.nsfw && vm.nsfw ? '🔥 ' : ''}Generar vídeo</button></div>`;
   }
   const items = S.creaciones.filter(x => x.kind === 'vid' && !x.trash);
@@ -1529,7 +1658,7 @@ function renderLib(lib) {
     ${p ? `<div class="detimg" style="aspect-ratio:${L.shape}" data-a="libImg" title="Subir su imagen">${p.img ? `<img src="${src(p.img)}">` : phArt(p.name, p.id, L.shape)}<span class="btn sm edit">${p.img ? '✎ Cambiar imagen' : '＋ Subir imagen'}</span></div>
       <input data-libf="name" value="${esc(p.name)}" placeholder="Nombre">
       ${L.cats.length ? `<select data-libf="cat">${L.cats.map(c => `<option ${p.cat === c ? 'selected' : ''}>${c}</option>`).join('')}</select>` : ''}
-      ${p.look ? `<div class="stack"><span class="lbl">${esc(shortName(char()))} con la prenda</span><div class="detimg" style="aspect-ratio:3/4"><img src="${src(p.look)}"></div></div>` : ''}
+      
       ${p.notion ? `<div class="stack"><span class="lbl">Desde tu Notion</span>${p.descripcion ? `<p class="note" style="color:var(--ink)">${esc(p.descripcion)}</p>` : ''}
         ${(p.colores || []).length ? `<div class="chips">${p.colores.map(c => `<span class="tag">${esc(c)}</span>`).join('')}</div>` : ''}
         ${(p.uso || []).length ? `<div class="note">Uso: ${esc(p.uso.join(' · '))}</div>` : ''}
@@ -1832,7 +1961,7 @@ async function gdSync(opts = {}) {
         if (localChanged && lastSync) take = await ask('Tu Drive tiene cambios de otro dispositivo y aquí también has cambiado cosas.\n\n¿Me quedo con lo del Drive? (Si dices que no, se guarda lo de este dispositivo encima.)');
         else if (localChanged && !lastSync && S.creaciones.length) take = await ask('Ya tienes datos de Saga Studio en tu Drive.\n\n¿Los cargo aquí? (Si dices que no, se guarda lo de este dispositivo encima del Drive.)');
         if (take) { const remote = await gdJson(`${GD.API}/files/${rf.id}?alt=media`); const keep = {}; DEVICE_KEYS.forEach(k => keep[k] = S[k]);
-          S = Object.assign(defaultState(), remote, keep); seedCatalog(); S.drive.syncAt = rt; S.drive.hash = hash(JSON.stringify(syncedState())); localStorage.setItem(KEY, JSON.stringify(S)); render(); toast('Cargado desde tu Drive'); }
+          S = Object.assign(defaultState(), remote, keep); seedCatalog(); (S.libs.vestidor || []).forEach(x => { if (x.look !== undefined) { if (x.img && (x.img === x.look || /-look\.jpg$/.test(x.img))) x.img = ''; delete x.look; } }); S.drive.syncAt = rt; S.drive.hash = hash(JSON.stringify(syncedState())); localStorage.setItem(KEY, JSON.stringify(S)); render(); toast('Cargado desde tu Drive'); }
         else await gdPushState(true);
       } else if (localChanged) await gdPushState(true);
     } else await gdPushState(true);
@@ -1936,6 +2065,7 @@ const A = {
   toPro() { S.imgMode = 'pro'; save(); render(); },
   rebuildPrompt() { S.img.prompt = buildImgPrompt(); save(); render(); },
   nsfwMenu(e) { const r = rectOf(e); menu(r.right - 230, r.bottom + 6, [{ t: '🔥 NSFW', sub: S.nsfw ? 'Activado · toca para quitarlo' : 'Solo Seedream 5.0 Pro (imagen) y Seedance (vídeo)', sw: 1, on: S.nsfw, fn: toggleNsfw }]); },
+  nsfwToggle() { toggleNsfw(); },
   nsfwOffTip() { toast('Con 🔥 el vestidor no se usa: quítalo para elegir prenda'); },
   nsfwModelTip() { toast('Ese modelo no admite 🔥. Quita 🔥 para usarlo'); },
   'cnt-'() { S.img.count = Math.max(1, S.img.count - 1); save(); render(); }, 'cnt+'() { S.img.count = Math.min(4, S.img.count + 1); save(); render(); },
@@ -2053,8 +2183,8 @@ async function importPack(L, quiet) {
     const it = old || { id: uid(), notion: true };
     Object.assign(it, { notion: true, notionId: o.id, name: o.name, tags: ['Notion', ...(o.etiquetas || [])], cat: MAP_CAT[(o.etiquetas || [])[0]] || 'De Vestir', colores: o.colores || [], uso: o.uso || [],
       descripcion: o.descripcion || '', ideal: o.ideal || [], evitar: o.evitar || [], desc: o.prompt || o.notas || o.descripcion || '' });
-    if (o.tpl) it.img = await media(o.tpl); if (o.look) it.look = await media(o.look);
-    if (!it.img && it.look) { it.img = it.look; }
+    if (o.tpl) it.img = await media(o.tpl); else if (it.img && /-look\.jpg$/.test(it.img)) it.img = '';
+    delete it.look;
     if (old) upd++; else { S.libs.vestidor.unshift(it); n++; }
     const pe = $('#nprog'); if (pe) { pe.textContent = `${k + 1} de ${L.length} · ${o.name}`; $('#nbar').style.width = ((k + 1) / L.length * 100) + '%'; }
   }
@@ -2114,7 +2244,6 @@ A.importNotionFolder = async () => {
     Object.assign(it, { notion: true, tags: ['Notion', ...etiq], cat: MAP_CAT[etiq[0]] || 'De Vestir', colores: splitList(o.props['Color']), uso: splitList(o.props['Uso']),
       descripcion: secText(o.secs['Descripción']), desc: [(secText(o.secs['Descripción']).match(/^[^.]*\.?/) || [''])[0], secText(o.secs['Notas del prompt'])].filter(Boolean).join(' '), ideal: both[0] || [], evitar: both[1] || [] });
     if (tpl) { it.img = await putMedia(await shrinkImage(tpl)); imgs++; }
-    if (look) { it.look = await putMedia(await shrinkImage(look)); imgs++; }
     if (have.has(name.toLowerCase())) upd++; else { S.libs.vestidor.unshift(it); n++; }
     const pe = $('#nprog'); if (pe) { pe.textContent = `${k + 1} de ${total} · ${name}`; $('#nbar').style.width = ((k + 1) / total * 100) + '%'; }
   }
