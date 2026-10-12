@@ -974,6 +974,24 @@ header .meter span,header .pill{white-space:nowrap}
   .cre .ghead .r>button[data-a="selMode"]{display:none}
 }
 @media (max-width:720px){.cre .fold-it.on,.cre .fold-it.on span{color:var(--ink)!important}}
+/* v6.3 móvil: los menús salen encima de la barra, que nunca desaparece */
+@media (max-width:720px){
+  #menu.menu{bottom:calc(66px + var(--safeB) + 8px)!important;max-height:calc(100vh - 66px - var(--safeB) - var(--hdr) - var(--safeT) - 24px)!important;max-height:calc(100dvh - 66px - var(--safeB) - var(--hdr) - var(--safeT) - 24px)!important;z-index:61;box-shadow:0 -10px 40px rgba(0,0,0,.55),0 0 0 1px var(--line2)}
+  #mnav{z-index:62}
+  body:has(#menu) #mnav .nb[data-a="mobileMore"]{color:var(--ink)}
+  body:has(#menu) #mnav .nb[data-a="mobileMore"] svg{stroke:var(--hot)}
+}
+@media (max-width:720px){
+  #menu.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:10px}
+  #menu.mgrid:before{grid-column:1/-1}
+  #menu.mgrid hr{display:none}
+  #menu.mgrid button{flex-direction:column;justify-content:center;min-height:82px!important;height:auto;padding:10px 4px;border-radius:16px;background:var(--panel2);font-size:12px!important;text-align:center}
+  #menu.mgrid button .row{flex-direction:column;gap:8px}
+  #menu.mgrid button svg{width:22px;height:22px}
+  #menu.mgrid button .soon{font-size:7.5px;letter-spacing:.14em;margin-top:2px}
+  #menu.mgrid button:active{background:var(--gradSoft)}
+}
+@media (max-width:720px){#menu.mgrid button .row{align-items:center;justify-content:center;width:100%}#menu.mgrid button .row>span{text-align:center}}
 </style></head>
 <body>
 <header>
@@ -1231,10 +1249,10 @@ function menu(x, y, items) {
   m.onclick = e => { const b = e.target.closest('[data-mi]'); if (!b || b.disabled) return; closeMenu(); items[+b.dataset.mi].fn(); };
   document.body.appendChild(m);
   const r = m.getBoundingClientRect(); if (r.bottom > innerHeight - 8) m.style.top = Math.max(8, innerHeight - r.height - 8) + 'px'; if (r.right > innerWidth - 8) m.style.left = (innerWidth - r.width - 8) + 'px';
-  setTimeout(() => document.addEventListener('mousedown', closeMenuOut), 0);
+  setTimeout(() => document.addEventListener('pointerdown', closeMenuOut), 0);
 }
 function closeMenuOut(e) { if (!e.target.closest('#menu')) { closeMenu(); } }
-function closeMenu() { $('#menu')?.remove(); document.removeEventListener('mousedown', closeMenuOut); }
+function closeMenu() { if ($('#menu')) window.__menuClosedAt = Date.now(); else window.__lastMenu = ''; $('#menu')?.remove(); document.removeEventListener('pointerdown', closeMenuOut); }
 async function copy(t) { try { await navigator.clipboard.writeText(t); toast('Copiado'); } catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); toast('Copiado'); } catch (x) { toast('No se pudo copiar'); } ta.remove(); } }
 function download(name, data, type = 'application/json') { const a = document.createElement('a'); a.href = URL.createObjectURL(data instanceof Blob ? data : new Blob([data], { type })); a.download = name; a.click(); }
 /* ============ prompts ============ */
@@ -2201,7 +2219,7 @@ const A = {
     { t:'Restaurar copia', sub:'En este u otro dispositivo', icon:'note', fn: importBackup },
   ]); },
   moreMenu(e) { const r = rectOf(e); menu(r.right + 8, r.top - 120, [{ head: 'Bibliotecas' }, ...MORE_ORDER.map(k => k === '-' ? '-' : ({ t: LIBS[k].t, icon: LIBS[k].icon, badge: String(S.libs[k].length), on: S.section === 'lib:' + k, fn: () => go('lib:' + k) })), { t:'Poses', icon:'pose', off:1 }]); },
-  mobileMore(e) { const r = rectOf(e); menu(r.left - 170, r.top - 520, [
+  mobileMore(e) { if (Date.now() - (window.__menuClosedAt || 0) < 400 && window.__lastMenu === 'more') return; const r = rectOf(e); setTimeout(() => { window.__lastMenu = 'more'; $('#menu')?.classList.add('mgrid'); }, 0); menu(r.left - 170, r.top - 520, [
     { t:'Fototeca', icon:'photos', fn: () => go('biblio') }, { t:'Filmoteca', icon:'film', fn: () => go('videoteca') }, '-',
     ...MORE_ORDER.map(k => k === '-' ? '-' : ({ t: LIBS[k].t, icon: LIBS[k].icon, fn: () => go('lib:' + k) })), '-',
     { t:'Audio', icon:'mic', fn: () => go('audio') }, { t:'Efectos', icon:'spark', off:1 }, { t:'Comunidad', icon:'people', off:1 },
