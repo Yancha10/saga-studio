@@ -953,6 +953,12 @@ textarea{min-height:56px}
 .mrow2>*,.mrow3>*{flex-shrink:0}
 @media (max-width:1440px){.guia{display:none}}
 header .meter span,header .pill{white-space:nowrap}
+/* v6.1 móvil: Generar fijo encima de la barra (no se mueve al hacer scroll) */
+@media (max-width:720px){
+  body.mv0 .sticky-gen{position:fixed!important;left:0;right:0;bottom:calc(66px + var(--safeB))!important;margin:0!important;padding:12px 14px 10px!important;z-index:35;background:linear-gradient(180deg,transparent,var(--bg) 40%)!important}
+  body.mv0 #side{padding-bottom:96px}
+  body.mv0 #toast{bottom:calc(150px + var(--safeB))!important}
+}
 </style></head>
 <body>
 <header>
@@ -2514,6 +2520,6 @@ window.addEventListener('resize', () => $$('.seg').forEach(placeKnob));
   if (gdOn()) { gdSet(gdOk() ? 'sync' : 'need'); gdSync(); }
 })();
 })();</script>
-<script>if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js");</script>
+<script>if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>{r.update();document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")r.update()})});let rl=0;navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!rl&&navigator.serviceWorker.controller){rl=1;location.reload()}})}</script>
 </body>
 </html>
