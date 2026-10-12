@@ -992,6 +992,12 @@ header .meter span,header .pill{white-space:nowrap}
   #menu.mgrid button:active{background:var(--gradSoft)}
 }
 @media (max-width:720px){#menu.mgrid button .row{align-items:center;justify-content:center;width:100%}#menu.mgrid button .row>span{text-align:center}}
+/* v6.4 móvil: con poco contenido iOS subía la barra. La página mide siempre al menos toda la pantalla. */
+@media (max-width:720px){
+  html{min-height:100vh;min-height:100lvh}
+  body{min-height:100vh;min-height:100lvh}
+  main{min-height:calc(100vh + 1px);min-height:calc(100lvh + 1px);box-sizing:border-box}
+}
 </style></head>
 <body>
 <header>
