@@ -855,7 +855,7 @@ textarea{min-height:56px}
 }
 /* app instalada en el iPhone: si iOS tarda en dar la medida de la isla, dejamos hueco igualmente */
 @media (max-width:720px) and (display-mode:standalone){
-  :root{--safeT:max(env(safe-area-inset-top,0px),44px);--safeB:max(env(safe-area-inset-bottom,0px),18px)}
+  :root{--safeT:max(env(safe-area-inset-top,0px),44px);--safeB:22px}
 }
 /* v6 móvil: dos vistas por sección y panel compacto (escritorio intacto) */
 #mtabs{display:none}
@@ -959,14 +959,21 @@ header .meter span,header .pill{white-space:nowrap}
   body.mv0 #side{padding-bottom:96px}
   body.mv0 #toast{bottom:calc(150px + var(--safeB))!important}
 }
+/* v6.2 móvil: la barra siempre llega al borde (rellena cualquier hueco de iOS) y Creaciones ordenado */
 @media (max-width:720px){
-  #mnav{bottom:calc(-1 * var(--gapB, 0px))!important}
-  body.mv0 .sticky-gen{bottom:calc(66px + var(--safeB) - var(--gapB, 0px))!important}
-  #fbw,#selbar{bottom:calc(76px + var(--safeB) - var(--gapB, 0px))!important}
-  #menu.menu{bottom:calc(8px + var(--safeB) - var(--gapB, 0px))}
-  .modal{padding-bottom:calc(22px + var(--safeB))}
-  .scrim{bottom:calc(-1 * var(--gapB, 0px))!important}
+  #mnav{overflow:visible}
+  #mnav:after{content:"";position:absolute;left:-1px;right:-1px;top:calc(100% - 1px);height:140px;background:inherit;backdrop-filter:inherit;-webkit-backdrop-filter:inherit;pointer-events:none}
+  #mnav .nb{font-size:9.5px!important}
+  .cre{display:block!important}
+  .cre .folders{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;padding:10px 14px!important;border:0!important;width:auto!important;height:auto!important;position:static!important}
+  .cre .folders::-webkit-scrollbar{display:none}
+  .cre .folders>.lbl,.cre .folders>div,.cre .folders #storage{display:none!important}
+  .cre .fold-it{flex:none;width:auto!important;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);gap:8px;font-size:13px}
+  .cre .fold-it.on{background:var(--gradSoft);border-color:var(--hotLine)}
+  .cre .fold-it .n{font-size:11px;opacity:.6}
+  .cre .ghead .r>button[data-a="selMode"]{display:none}
 }
+@media (max-width:720px){.cre .fold-it.on,.cre .fold-it.on span{color:var(--ink)!important}}
 </style></head>
 <body>
 <header>
@@ -1833,7 +1840,7 @@ function mtabsFor() {
   if (sec === 'video') return [['Crear', 0], ['Mis vídeos', S.creaciones.filter(x => x.kind === 'vid' && !x.trash).length], 0];
   if (sec === 'audio') return [['Crear', 0], ['Mis audios', S.audios.length], 0];
   if (sec === 'perfil') return [['Datos', 0], ['Personaje', 0], 1];
-  if (sec === 'creaciones') return [['Carpetas', 0], ['Creaciones', S.creaciones.filter(x => !x.trash).length], 1];
+  if (sec === 'creaciones') return [[S.picked.cre ? 'Detalle' : 'Resumen', 0], ['Creaciones', S.creaciones.filter(x => !x.trash).length], 1];
   if (sec === 'biblio') return [['Añadir', 0], ['Fototeca', S.fototeca ? S.fototeca.length : 0], 1];
   if (sec === 'videoteca') return [['Añadir', 0], ['Filmoteca', S.filmoteca.length], 1];
   if (sec.startsWith('lib:')) { const k = sec.slice(4); return [['Añadir', 0], [LIBS[k] ? LIBS[k].t : 'Biblioteca', (S.libs[k] || []).length], 1]; }
@@ -2440,7 +2447,7 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-receta]'))) { return applyReceta(RECETAS.find(r => r.id === el.dataset.receta)); }
   if ((el = d('[data-animate]'))) { const p = S.creaciones.find(x => x.id === el.dataset.animate); S.vid.que = 'crear'; S.vid.startRef = p.media; save(); return render(); }
   if ((el = d('[data-favcre]'))) { e.stopPropagation(); const x = S.creaciones.find(y => y.id === el.dataset.favcre); x.fav = !x.fav; save(); return render(); }
-  if ((el = d('[data-cre]'))) { const id = el.dataset.cre; if (S.selMode) { S.selected = S.selected.includes(id) ? S.selected.filter(x => x !== id) : [...S.selected, id]; return render(); } if (S.section !== 'creaciones') return lightbox(id); if (S.picked.cre === id) return lightbox(id); S.picked.cre = id; save(); return render(); }
+  if ((el = d('[data-cre]'))) { const id = el.dataset.cre; if (S.selMode) { S.selected = S.selected.includes(id) ? S.selected.filter(x => x !== id) : [...S.selected, id]; return render(); } if (S.section !== 'creaciones') return lightbox(id); if (S.picked.cre === id && innerWidth > 720) return lightbox(id); S.picked.cre = id; if (innerWidth <= 720) { S.mv = S.mv || {}; S.mv.creaciones = 0; try { scrollTo(0, 0); } catch (x) {} } save(); return render(); }
   if ((el = d('[data-folder]'))) { S.creFolder = el.dataset.folder; S.picked.cre = ''; save(); return render(); }
   if ((el = d('[data-favref]'))) { e.stopPropagation(); const [k, id] = el.dataset.favref.split('|'); const x = S[k].find(y => y.id === id); x.fav = !x.fav; save(); return render(); }
   if ((el = d('[data-recreate2]'))) { e.stopPropagation(); const [k, id] = el.dataset.recreate2.split('|'); S.picked[k] = id; return k === 'fototeca' ? A.useCopy() : A.useMotion(); }
@@ -2527,19 +2534,6 @@ window.addEventListener('resize', () => $$('.seg').forEach(placeKnob));
   autoVestidor();
   if (gdOn()) { gdSet(gdOk() ? 'sync' : 'need'); gdSync(); }
 })();
-/* iPhone con la app instalada: a veces iOS deja un hueco bajo los elementos fijos. Lo medimos y lo compensamos. */
-function fixBottomGap() {
-  try {
-    const st = navigator.standalone || matchMedia('(display-mode: standalone)').matches;
-    if (!st || innerWidth > 720 || innerWidth > innerHeight) { document.documentElement.style.setProperty('--gapB', '0px'); return; }
-    const pr = document.createElement('div'); pr.style.cssText = 'position:fixed;left:0;bottom:0;width:1px;height:1px;pointer-events:none;visibility:hidden';
-    document.body.appendChild(pr); const b = pr.getBoundingClientRect().bottom; pr.remove();
-    const gap = Math.round(screen.height - b); document.documentElement.style.setProperty('--gapB', (gap > 0 && gap < 160 ? gap : 0) + 'px');
-  } catch (e) {}
-}
-['load', 'resize', 'orientationchange', 'pageshow'].forEach(ev => addEventListener(ev, () => setTimeout(fixBottomGap, 60)));
-document.addEventListener('visibilitychange', () => setTimeout(fixBottomGap, 60));
-fixBottomGap();
 })();</script>
 <script>if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>{r.update();document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")r.update()})});let rl=0;navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!rl&&navigator.serviceWorker.controller){rl=1;location.reload()}})}</script>
 </body>
