@@ -959,6 +959,14 @@ header .meter span,header .pill{white-space:nowrap}
   body.mv0 #side{padding-bottom:96px}
   body.mv0 #toast{bottom:calc(150px + var(--safeB))!important}
 }
+@media (max-width:720px){
+  #mnav{bottom:calc(-1 * var(--gapB, 0px))!important}
+  body.mv0 .sticky-gen{bottom:calc(66px + var(--safeB) - var(--gapB, 0px))!important}
+  #fbw,#selbar{bottom:calc(76px + var(--safeB) - var(--gapB, 0px))!important}
+  #menu.menu{bottom:calc(8px + var(--safeB) - var(--gapB, 0px))}
+  .modal{padding-bottom:calc(22px + var(--safeB))}
+  .scrim{bottom:calc(-1 * var(--gapB, 0px))!important}
+}
 </style></head>
 <body>
 <header>
@@ -2519,6 +2527,19 @@ window.addEventListener('resize', () => $$('.seg').forEach(placeKnob));
   autoVestidor();
   if (gdOn()) { gdSet(gdOk() ? 'sync' : 'need'); gdSync(); }
 })();
+/* iPhone con la app instalada: a veces iOS deja un hueco bajo los elementos fijos. Lo medimos y lo compensamos. */
+function fixBottomGap() {
+  try {
+    const st = navigator.standalone || matchMedia('(display-mode: standalone)').matches;
+    if (!st || innerWidth > 720 || innerWidth > innerHeight) { document.documentElement.style.setProperty('--gapB', '0px'); return; }
+    const pr = document.createElement('div'); pr.style.cssText = 'position:fixed;left:0;bottom:0;width:1px;height:1px;pointer-events:none;visibility:hidden';
+    document.body.appendChild(pr); const b = pr.getBoundingClientRect().bottom; pr.remove();
+    const gap = Math.round(screen.height - b); document.documentElement.style.setProperty('--gapB', (gap > 0 && gap < 160 ? gap : 0) + 'px');
+  } catch (e) {}
+}
+['load', 'resize', 'orientationchange', 'pageshow'].forEach(ev => addEventListener(ev, () => setTimeout(fixBottomGap, 60)));
+document.addEventListener('visibilitychange', () => setTimeout(fixBottomGap, 60));
+fixBottomGap();
 })();</script>
 <script>if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>{r.update();document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")r.update()})});let rl=0;navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!rl&&navigator.serviceWorker.controller){rl=1;location.reload()}})}</script>
 </body>
