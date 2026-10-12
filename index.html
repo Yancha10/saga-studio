@@ -707,6 +707,13 @@ textarea{min-height:56px}
 @media (max-width:720px){ .sticky-gen{position:static;margin-top:4px;padding:0;background:none} .sticky-gen .note{padding-right:56px} }
 .ff textarea{background:none;border:0;padding:0;min-height:38px;font-size:12.5px;resize:vertical;box-shadow:none!important}
 @media (max-width:720px){ #side{padding-bottom:20px} }
+/* Google Drive */
+.pill.gd svg{flex:none}.pill.gd i{font-style:normal}
+.pill.gd.ok{border-color:rgba(61,220,151,.45)}.pill.gd.ok svg{stroke:#3ddc97;color:#3ddc97}
+.pill.gd.sync svg{color:var(--hot);animation:gdpulse 1.2s ease-in-out infinite}
+.pill.gd.need,.pill.gd.err{border-color:rgba(255,170,60,.55)}.pill.gd.need svg,.pill.gd.err svg{color:#ffaa3c}
+@keyframes gdpulse{50%{opacity:.35}}
+@media (max-width:720px){ .pill.gd i{display:none} .pill.gd{padding:0 10px} }
 </style></head>
 <body>
 <header>
@@ -936,7 +943,7 @@ function seedCatalog() {
 seedCatalog();
 
 let saveT;
-const save = () => { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast('No se pudo guardar: el almacenamiento está lleno'); } }, 150); };
+const save = () => { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast('No se pudo guardar: el almacenamiento está lleno'); } if (typeof gdDirty === 'function') gdDirty(); }, 150); };
 const char = () => S.chars.find(c => c.id === S.active) || S.chars[0];
 const libItem = (lib, id) => (S.libs[lib] || []).find(x => x.id === id);
 const shortName = c => (c.name || '').split(' ')[0];
@@ -1143,6 +1150,7 @@ function renderHeader() {
   if (done && !S.guiaOk) { S.guiaOk = true; save(); }
   const guia = S.guiaOk ? '' : `<div class="guia"><small>Primeros pasos</small>${G.map((g, i) => `<button class="gstep ${g[0] ? 'ok' : ''} ${G.findIndex(x => !x[0]) === i ? 'now' : ''}" data-guia="${i}" title="${esc(g[2])}"><i>${g[0] ? '✓' : i + 1}</i>${g[1]}</button>`).join('')}<button class="gx" data-a="guiaOff" title="Ocultar">×</button></div>`;
   $('#hright').innerHTML = `${guia}
+    <button class="pill gd ${GD.status}" id="gdpill" data-a="drive" title="${esc(gdTitle())}"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.2 4.5 4.5 0 0 0 7 18Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><i>${gdLabel()}</i></button>
     <button class="pill" data-a="apis"><span class="dot ${live ? 'on' : ''}"></span>MIS APIS</button>
     <button class="meter" data-a="gasto" title="Registro de gasto"><span>Total <b>${total}</b> generaciones</span><span>Gasto <b>${money(spent)}</b></span></button>
     <button class="iconbtn" data-a="ayuda" title="Ayuda">${ic('help', 'width="15" height="15"')}</button>
@@ -1742,6 +1750,137 @@ function bitacoraModal() {
     ${S.feedback.length ? `<div class="stack" style="gap:8px">${S.feedback.map(f => `<div class="card"><div class="between"><b>${esc(f.tipo)}</b><span class="note">${new Date(f.t).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span></div>${f.texto ? `<p style="margin:6px 0">${esc(f.texto)}</p>` : ''}${f.audio ? `<audio controls src="${f.audio}" style="width:100%"></audio>` : ''}${(f.archivos || []).map(a => `<a class="note" download="${esc(a.nombre)}" href="${a.data}">📎 ${esc(a.nombre)}</a>`).join(' ')}<small class="note">${esc(f.ctx)}</small><div style="text-align:right"><a class="lnk" data-fbdel="${f.id}">Borrar</a></div></div>`).join('')}</div>
       <div class="row" style="margin-top:12px"><button class="btn wide" data-a="fbExportMd">Exportar .md</button><button class="btn wide" data-a="fbExportJson">Exportar .json</button></div>` : '<p class="note">Aún no has apuntado nada.</p>'}`);
 }
+/* ============ Google Drive: tus datos y archivos en tu Drive, iguales en todos tus dispositivos ============
+   Permiso «drive.file»: la app solo ve lo que ella misma crea (carpeta «Saga Studio»), nada más de tu Drive. */
+const GD = {
+  CLIENT: '635912304372-i9j4576iaq2s53b2lvfmmhfkh1vhuj9n.apps.googleusercontent.com',
+  SCOPE: 'https://www.googleapis.com/auth/drive.file',
+  API: 'https://www.googleapis.com/drive/v3', UP: 'https://www.googleapis.com/upload/drive/v3',
+  TK: 'saga-drive.token', META: 'saga-drive.meta',
+  token: '', exp: 0, folder: '', media: '', stateId: '', remote: {}, // mediaId -> driveFileId
+  status: 'off', msg: '', busy: false, client: null, wantGesture: false, lastHash: '', pushT: 0,
+};
+const DEVICE_KEYS = ['section', 'selMode', 'selected', '_libLimit', 'theme', 'ui', 'size', 'open', 'drive'];
+const gdOn = () => !!(S.drive && S.drive.on);
+const gdOk = () => GD.token && Date.now() < GD.exp - 60000;
+function gdSet(status, msg = '') { GD.status = status; GD.msg = msg; const p = $('#gdpill'); if (p) { p.className = 'pill gd ' + status; p.title = gdTitle(); p.querySelector('i').textContent = gdLabel(); } }
+const gdLabel = () => ({ off: 'Drive', need: 'Reconectar', sync: 'Guardando…', ok: 'En Drive', err: 'Drive ⚠' })[GD.status] || 'Drive';
+const gdTitle = () => GD.msg || ({ off: 'Guardar en tu Google Drive', need: 'Toca para reconectar con tu Drive', sync: 'Sincronizando con tu Drive', ok: 'Todo guardado en tu Drive', err: 'No se pudo sincronizar' })[GD.status];
+try { const t = JSON.parse(localStorage.getItem(GD.TK) || 'null'); if (t && t.exp > Date.now()) { GD.token = t.token; GD.exp = t.exp; } const m = JSON.parse(localStorage.getItem(GD.META) || 'null'); if (m) Object.assign(GD, m); } catch (e) {}
+const gdMetaSave = () => { try { localStorage.setItem(GD.META, JSON.stringify({ folder: GD.folder, media: GD.media, stateId: GD.stateId, remote: GD.remote })); } catch (e) {} };
+
+function gdLoadLib() {
+  return new Promise((res, rej) => { if (window.google && google.accounts && google.accounts.oauth2) return res();
+    const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true; s.onload = () => res(); s.onerror = () => rej(new Error('No se pudo cargar el acceso de Google (¿sin conexión?)')); document.head.appendChild(s); });
+}
+/* pide el permiso: la primera vez sale la ventana de Google; luego es casi instantáneo */
+async function gdAuth(interactive) {
+  await gdLoadLib();
+  return new Promise((res, rej) => {
+    GD.client = google.accounts.oauth2.initTokenClient({ client_id: GD.CLIENT, scope: GD.SCOPE, prompt: interactive === 'consent' ? 'consent' : '',
+      callback: r => { if (r.error) return rej(new Error(r.error_description || r.error)); GD.token = r.access_token; GD.exp = Date.now() + (+r.expires_in || 3600) * 1000; try { localStorage.setItem(GD.TK, JSON.stringify({ token: GD.token, exp: GD.exp })); } catch (e) {} res(); },
+      error_callback: e => rej(new Error(e && e.type === 'popup_closed' ? 'Has cerrado la ventana de Google' : (e && e.message) || 'Google no respondió')) });
+    GD.client.requestAccessToken();
+  });
+}
+async function gdFetch(url, opt = {}, retry = true) {
+  if (!gdOk()) throw Object.assign(new Error('need'), { need: true });
+  const r = await fetch(url, Object.assign({}, opt, { headers: Object.assign({ Authorization: 'Bearer ' + GD.token }, opt.headers || {}) }));
+  if (r.status === 401) { GD.token = ''; GD.exp = 0; throw Object.assign(new Error('need'), { need: true }); }
+  if (!r.ok) { const t = await r.text().catch(() => ''); throw new Error(`Drive ${r.status}: ${t.slice(0, 160)}`); }
+  return r;
+}
+const gdJson = async (url, opt) => (await gdFetch(url, opt)).json();
+const gq = s => encodeURIComponent(s);
+async function gdFind(name, parent, folder) {
+  const cond = [`name='${name.replace(/'/g, "\\'")}'`, 'trashed=false', parent ? `'${parent}' in parents` : '', folder ? "mimeType='application/vnd.google-apps.folder'" : ''].filter(Boolean).join(' and ');
+  const j = await gdJson(`${GD.API}/files?q=${gq(cond)}&fields=files(id,modifiedTime)&spaces=drive&pageSize=10`);
+  return j.files[0] || null;
+}
+async function gdFolder(name, parent) {
+  const f = await gdFind(name, parent, true); if (f) return f.id;
+  const j = await gdJson(`${GD.API}/files?fields=id`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, mimeType: 'application/vnd.google-apps.folder', parents: parent ? [parent] : undefined }) });
+  return j.id;
+}
+/* subida reanudable (vale igual para una foto que para un vídeo grande) */
+async function gdUpload(meta, blob, fileId) {
+  const r = await gdFetch(`${GD.UP}/files${fileId ? '/' + fileId : ''}?uploadType=resumable&fields=id,modifiedTime`, { method: fileId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json; charset=UTF-8', 'X-Upload-Content-Type': blob.type || 'application/octet-stream' }, body: JSON.stringify(fileId ? {} : meta) });
+  const loc = r.headers.get('Location'); if (!loc) throw new Error('Drive no dio dirección de subida');
+  const u = await fetch(loc, { method: 'PUT', headers: { Authorization: 'Bearer ' + GD.token }, body: blob });
+  if (!u.ok) throw new Error('Drive ' + u.status + ' al subir');
+  return u.json();
+}
+function syncedState() { const o = {}; for (const k in S) if (!DEVICE_KEYS.includes(k)) o[k] = S[k]; return o; }
+const extOf = t => ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'video/mp4': 'mp4', 'video/quicktime': 'mov', 'video/webm': 'webm', 'audio/mpeg': 'mp3', 'audio/mp4': 'm4a', 'audio/webm': 'webm', 'audio/wav': 'wav' })[t] || 'bin';
+const idbKeys = () => !db ? Promise.resolve([]) : new Promise(res => { const r = db.transaction('m').objectStore('m').getAllKeys(); r.onsuccess = () => res(r.result || []); r.onerror = () => res([]); });
+const idbGet = k => new Promise(res => { const r = db.transaction('m').objectStore('m').get(k); r.onsuccess = () => res(r.result); r.onerror = () => res(null); });
+const idbPut = (k, b) => new Promise((res, rej) => { const t = db.transaction('m', 'readwrite'); t.objectStore('m').put(b, k); t.oncomplete = res; t.onerror = () => rej(t.error); });
+
+/* ---------- sincronizar: datos (el más reciente gana; si los dos cambiaron, te pregunto) + archivos que falten a cada lado ---------- */
+async function gdSync(opts = {}) {
+  if (!gdOn() || GD.busy) return; if (!gdOk()) { gdSet('need'); GD.wantGesture = true; return; }
+  GD.busy = true; gdSet('sync');
+  try {
+    if (!GD.folder) { GD.folder = await gdFolder('Saga Studio'); GD.media = await gdFolder('archivos', GD.folder); gdMetaSave(); }
+    // 1) datos
+    const rf = await gdFind('saga-studio-datos.json', GD.folder);
+    const local = syncedState(); const lh = hash(JSON.stringify(local));
+    const lastSync = S.drive.syncAt || 0; const localChanged = lh !== S.drive.hash;
+    if (rf) { GD.stateId = rf.id; const rt = Date.parse(rf.modifiedTime);
+      if (rt > lastSync + 1000) { // alguien (otro dispositivo) guardó después de mi última sincronización
+        let take = true;
+        if (localChanged && lastSync) take = await ask('Tu Drive tiene cambios de otro dispositivo y aquí también has cambiado cosas.\n\n¿Me quedo con lo del Drive? (Si dices que no, se guarda lo de este dispositivo encima.)');
+        else if (localChanged && !lastSync && S.creaciones.length) take = await ask('Ya tienes datos de Saga Studio en tu Drive.\n\n¿Los cargo aquí? (Si dices que no, se guarda lo de este dispositivo encima del Drive.)');
+        if (take) { const remote = await gdJson(`${GD.API}/files/${rf.id}?alt=media`); const keep = {}; DEVICE_KEYS.forEach(k => keep[k] = S[k]);
+          S = Object.assign(defaultState(), remote, keep); seedCatalog(); S.drive.syncAt = rt; S.drive.hash = hash(JSON.stringify(syncedState())); localStorage.setItem(KEY, JSON.stringify(S)); render(); toast('Cargado desde tu Drive'); }
+        else await gdPushState(true);
+      } else if (localChanged) await gdPushState(true);
+    } else await gdPushState(true);
+    // 2) archivos: subir los que no estén, bajar los que falten aquí
+    const list = []; let page = '';
+    do { const j = await gdJson(`${GD.API}/files?q=${gq(`'${GD.media}' in parents and trashed=false`)}&fields=nextPageToken,files(id,appProperties)&pageSize=1000${page ? '&pageToken=' + page : ''}`); list.push(...j.files); page = j.nextPageToken; } while (page);
+    GD.remote = {}; list.forEach(f => { const k = f.appProperties && f.appProperties.sagaId; if (k) GD.remote[k] = f.id; }); gdMetaSave();
+    const keys = await idbKeys(); const up = keys.filter(k => !GD.remote[k]);
+    const used = new Set(JSON.stringify(S).match(/m:[a-z0-9]+/g) || []); const down = [...used].filter(k => !keys.includes(k) && GD.remote[k]);
+    let n = 0; const tot = up.length + down.length;
+    for (const k of up) { const b = await idbGet(k); if (!b) continue; gdSet('sync', `Subiendo ${++n} de ${tot}…`); const f = await gdUpload({ name: k.replace(':', '_') + '.' + extOf(b.type), parents: [GD.media], appProperties: { sagaId: k } }, b); GD.remote[k] = f.id; gdMetaSave(); }
+    for (const k of down) { gdSet('sync', `Bajando ${++n} de ${tot}…`); const b = await (await gdFetch(`${GD.API}/files/${GD.remote[k]}?alt=media`)).blob(); if (db) await idbPut(k, b); urls[k] = URL.createObjectURL(b); }
+    if (down.length) render();
+    S.drive.last = Date.now(); localStorage.setItem(KEY, JSON.stringify(S));
+    gdSet('ok', 'Todo guardado en tu Drive · ' + new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }));
+    if (opts.toast) toast(tot ? `Drive al día · ${up.length} subidos, ${down.length} bajados` : 'Drive al día');
+  } catch (e) { if (e.need) { gdSet('need'); GD.wantGesture = true; } else { console.warn(e); gdSet('err', e.message); if (opts.toast) toast('Drive: ' + e.message); } }
+  finally { GD.busy = false; }
+}
+async function gdPushState(force) {
+  const local = syncedState(); const h = hash(JSON.stringify(local)); if (!force && h === S.drive.hash) return;
+  const blob = new Blob([JSON.stringify(local)], { type: 'application/json' });
+  const f = GD.stateId ? await gdUpload(null, blob, GD.stateId) : await gdUpload({ name: 'saga-studio-datos.json', parents: [GD.folder], mimeType: 'application/json' }, blob);
+  GD.stateId = f.id; gdMetaSave(); S.drive.hash = h; S.drive.syncAt = Date.parse(f.modifiedTime) || Date.now(); localStorage.setItem(KEY, JSON.stringify(S));
+}
+/* tras cada cambio: guarda en Drive a los pocos segundos (solo si de verdad cambió algo) */
+function gdDirty() { if (!gdOn()) return; clearTimeout(GD.pushT); GD.pushT = setTimeout(async () => {
+  if (GD.busy || !GD.folder) return; if (!gdOk()) { gdSet('need'); GD.wantGesture = true; return; }
+  try { const ks = await idbKeys(); const pend = ks.filter(k => !GD.remote[k]); if (pend.length) return gdSync(); gdSet('sync'); await gdPushState(false); gdSet('ok', 'Todo guardado en tu Drive · ' + new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })); }
+  catch (e) { if (e.need) { gdSet('need'); GD.wantGesture = true; } else gdSet('err', e.message); } }, 4000); }
+/* conectar / desconectar */
+async function gdConnect() {
+  try { gdSet('sync', 'Conectando con Google…'); await gdAuth('consent'); S.drive = Object.assign({ on: true }, S.drive || {}, { on: true }); save(); await gdSync({ toast: true }); renderHeader(); }
+  catch (e) { gdSet(gdOn() ? 'err' : 'off', e.message); toast(e.message); }
+}
+function gdDisconnect() { S.drive = { on: false }; GD.token = ''; GD.exp = 0; GD.folder = GD.media = GD.stateId = ''; GD.remote = {}; try { localStorage.removeItem(GD.TK); localStorage.removeItem(GD.META); } catch (e) {} save(); renderHeader(); toast('Drive desconectado en este dispositivo (tus archivos siguen en tu Drive)'); }
+function gdMenu(e) {
+  const r = rectOf(e);
+  if (!gdOn()) return menu(r.left, r.bottom + 8, [{ head: 'Google Drive' }, { t: 'Conectar mi Google Drive', sub: 'Tus datos, fotos y vídeos iguales en el Mac y el móvil', icon: 'folder', fn: gdConnect }]);
+  menu(r.left, r.bottom + 8, [{ head: 'Google Drive · ' + gdLabel() }, { t: 'Sincronizar ahora', sub: GD.msg || '', icon: 'folder', fn: async () => { if (!gdOk()) { try { await gdAuth(); } catch (x) { return toast(x.message); } } gdSync({ toast: true }); } },
+    { t: 'Abrir la carpeta en Drive', icon: 'photos', fn: () => GD.folder ? window.open('https://drive.google.com/drive/folders/' + GD.folder, '_blank') : toast('Aún no hay carpeta') }, '-', { t: 'Desconectar en este dispositivo', icon: 'trash', fn: gdDisconnect }]);
+}
+/* si el permiso caducó, el primer toque en la app lo renueva (los navegadores exigen un toque para abrir la ventanita de Google) */
+document.addEventListener('pointerdown', e => {
+  if (!GD.wantGesture || !gdOn() || e.target.closest('#gdpill')) return; GD.wantGesture = false;
+  gdAuth().then(() => gdSync()).catch(x => { gdSet('need', x.message); });
+}, true);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && gdOn() && gdOk()) gdSync(); });
 /* ============ acciones ============ */
 const setPath = (path, v) => { const k = path.split('.'); let o = S; while (k.length > 1) o = o[k.shift()]; o[k[0]] = v; };
 const rectOf = e => (e.target.closest('button,[data-a]') || e.target).getBoundingClientRect();
@@ -1763,7 +1902,7 @@ function toggleNsfw() {
   S.img.prompt = ''; save(); render(); toast((S.nsfw ? '🔥 activado' : '🔥 desactivado') + sw);
 }
 const A = {
-  closeModal, apis: apisModal, gasto: gastoModal, ayuda: ayudaModal, papelera: () => papeleraModal(),
+  closeModal, drive: e => gdMenu(e), apis: apisModal, gasto: gastoModal, ayuda: ayudaModal, papelera: () => papeleraModal(),
   theme() { S.theme = S.theme === 'dark' ? 'light' : 'dark'; save(); render(); },
   guiaOff() { S.guiaOk = true; save(); render(); },
   account(e) { const r = rectOf(e); menu(r.right - 240, r.bottom + 8, [
@@ -2106,6 +2245,7 @@ window.addEventListener('resize', () => $$('.seg').forEach(placeKnob));
   render(); paintFb(); save();
   if (!S.bienvenidaVista) setTimeout(bienvenidaModal, 400);
   autoVestidor();
+  if (gdOn()) { gdSet(gdOk() ? 'sync' : 'need'); gdSync(); }
 })();
 })();</script>
 <script>if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js");</script>
