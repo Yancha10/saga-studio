@@ -591,6 +591,122 @@ input:focus,textarea:focus,select:focus{border-color:var(--hotLine);box-shadow:0
 }
 .tab.on{background:var(--gradSoft)!important;color:var(--ink)!important;border-color:var(--hotLine)!important}.tab.on svg{stroke:var(--hot)}
 .story-ring,.pjav .ring{background:var(--grad)}
+
+/* ===================== v4: ágil y limpio ===================== */
+:root{--r:14px;--r-sm:10px}
+#side{gap:12px;padding:18px 18px 32px}
+.stack{gap:8px}
+.note{font-size:11px;line-height:1.45}
+/* cabecera: más aire, menos peso */
+header{backdrop-filter:saturate(1.2) blur(10px);background:color-mix(in srgb,var(--bg) 88%,transparent)}
+/* tarjetas de selección compactas */
+.tiles{gap:6px}
+.tile{padding:8px 4px 7px;gap:3px;border-style:solid;border-color:var(--line);background:var(--panel);border-radius:var(--r)}
+.tile .ti{width:34px;height:34px}
+.tile .ti svg{width:16px;height:16px}
+.tile b{font-size:8.5px;letter-spacing:.14em}
+.tile span{font-size:10px}
+.tile.wide{flex-direction:row;padding:8px 12px;gap:10px;justify-content:flex-start}
+.tile.wide b{margin-right:auto}
+/* filas, barras y desplegables */
+.bar,.bar2,.charrow{border-radius:var(--r)}
+.bar2>summary,.bar{height:36px}
+.dz{padding:10px;border-radius:var(--r)}
+.dz .ic{width:38px;height:38px}
+textarea{min-height:56px}
+/* secciones plegables (Vídeo) */
+.sec{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);transition:border-color .25s}
+.sec[open]{border-color:var(--line2)}
+.sec>summary{list-style:none;display:flex;align-items:center;gap:10px;height:38px;padding:0 12px;cursor:pointer}
+.sec>summary::-webkit-details-marker{display:none}
+.sec>summary .sum{margin-left:auto;font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62%}
+.sec>summary .chev{font-size:10px;color:var(--mut);transition:transform .3s var(--ease)}
+.sec[open]>summary .chev{transform:rotate(180deg);color:var(--hot)}
+.sec .secb{padding:4px 12px 12px;display:flex;flex-direction:column;gap:12px;animation:pop .25s var(--ease)}
+/* modelos: lista más densa */
+.opts{display:flex;flex-direction:column;gap:2px}
+.opt{padding:7px 10px;align-items:center;gap:10px}
+.opt em{display:block;font-style:normal;font-size:10px;color:var(--mut);margin-top:1px}
+/* vista previa: proporcionada, nunca un hueco enorme */
+.preview{height:clamp(220px,36vh,380px);min-height:0}
+.preview.slim{height:auto;min-height:0;padding:18px 24px;background:none;place-items:stretch}
+.preview.slim .crosshair{display:none}
+.hero0{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--line);background:var(--gradSoft);max-width:640px}
+.hero0 .hav{width:52px;height:52px;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;background:var(--panel2);box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--hot);font-family:var(--serif);font-size:20px}
+.hero0 .hav img{width:100%;height:100%;object-fit:cover}.hero0 .hav svg{stroke:var(--hot);fill:none;stroke-width:1.5}
+.hero0 b{font-size:14px}.hero0 p{color:var(--mut);font-size:12px;margin:2px 0 8px}
+/* recetas más compactas */
+.recetas{padding:12px 24px 2px;gap:6px}
+.rec{width:84px;padding:6px 4px}
+.rec .ri{width:52px;height:52px}
+/* galería */
+.ghead{padding:14px 24px 8px}
+.gfilters{padding:0 24px 12px}
+.grid{gap:8px;padding:0 24px 40px}
+.grid .it{border-radius:12px}
+/* estados vacíos: discretos */
+.emptystate{padding:28px 24px 36px;gap:6px}
+.emptystate .glyph{width:46px;height:46px;border-radius:15px;margin-bottom:8px}
+.emptystate .glyph:before{inset:-7px;border-radius:20px}
+.emptystate .glyph>i{width:16px;height:16px;border-radius:5px}
+.emptystate h3{font-size:20px}
+.emptystate p{font-size:12.5px}
+/* perfil */
+.profhl{padding:14px;gap:12px}
+.bigav{width:62px;height:62px}
+.stats>div{padding:8px}
+.stats b{font-size:16px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;position:relative}
+.ff{display:flex;flex-direction:column;gap:2px;padding:6px 9px;border-radius:var(--r-sm);background:var(--panel2);border:1px solid var(--line);transition:border-color .2s}
+.ff.w{grid-column:1/-1}
+.ff:focus-within{border-color:var(--hotLine)}
+.ff span{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.ff input{background:none;border:0;padding:0;height:20px;font-size:12.5px;box-shadow:none!important}
+.pj{padding:22px 30px 40px;gap:16px}
+.pj>div:first-child{display:none}
+.circles{gap:12px}
+.circ{width:60px;font-size:10.5px}
+.circ .c{width:50px;height:50px}
+.circ.on .c{border:0;background:var(--grad);box-shadow:none}
+.tabs{padding-bottom:12px;gap:6px}
+.tab{height:36px;padding:0 13px;border-radius:11px}
+.h1{font-size:26px}
+.sheet{height:clamp(340px,52vh,520px);padding:10px;gap:10px;border-color:var(--line)}
+.sheet>.slot{height:100%}
+.sheet .col{gap:10px;min-height:0}
+.sheet .col .slot{flex:1;min-height:0}
+.slot .ph{min-height:0}
+/* listas de complementos y bibliotecas */
+.compgroup{border-radius:var(--r)}
+/* móvil */
+@media (max-width:720px){
+  #side{padding:14px 14px 110px;gap:10px}
+  .preview{height:clamp(200px,42vh,320px)}
+  .preview.slim{padding:14px}
+  .recetas{padding:10px 14px 0}
+  .ghead{padding:12px 14px 6px}.gfilters{padding:0 14px 10px}
+  .grid{padding:0 14px 30px;gap:6px}
+  .grid.M{--cw:104px}.grid.S{--cw:84px}.grid.L{--cw:150px}
+  .grid.wide.M{--cw:150px}.grid.wide.S{--cw:110px}
+  .pj{padding:16px 14px 30px}
+  .sheet{height:auto;grid-template-columns:1fr 1fr}
+  .sheet>.slot{grid-column:1/-1;aspect-ratio:4/3;height:auto}
+  .sheet .col{display:contents}
+  .sheet .col .slot{aspect-ratio:1/1}
+  .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.tab{flex:none}
+}
+.hero0{max-width:none}
+.rec .ri.ini{font-family:var(--serif);font-size:18px;letter-spacing:.04em;background:var(--gradSoft);color:var(--ink)}
+.sec>summary .lbl{white-space:nowrap}
+.sec>summary .sum{max-width:58%}
+.grid.M{--cw:150px}.grid.L{--cw:210px}
+.it.lib{background:linear-gradient(160deg,var(--panel2),var(--panel))}
+.it.lib .pha svg{opacity:.55;transform:scale(.7);transition:opacity .3s,transform .4s var(--ease)}
+.it.lib:hover .pha svg{opacity:.9;transform:scale(.76)}
+.it.lib .nm,.it .nm{backdrop-filter:blur(6px)}
+@media (max-width:720px){ .sticky-gen{position:static;margin-top:4px;padding:0;background:none} .sticky-gen .note{padding-right:56px} }
+.ff textarea{background:none;border:0;padding:0;min-height:38px;font-size:12.5px;resize:vertical;box-shadow:none!important}
+@media (max-width:720px){ #side{padding-bottom:20px} }
 </style></head>
 <body>
 <header>
@@ -1006,7 +1122,7 @@ function renderNav() {
 }
 function go(id) {
   if (id.startsWith('lib:')) S.lastLib = id.slice(4);
-  S.section = id; S.selMode = false; S.selected = []; save(); try { history.replaceState(null, '', '#' + id.replace(':', '-')); } catch (e) {} render();
+  S._libLimit = 60; S.section = id; S.selMode = false; S.selected = []; save(); try { history.replaceState(null, '', '#' + id.replace(':', '-')); } catch (e) {} render();
   $('#stage').scrollTop = 0; $('#side').scrollTop = 0;
 }
 
@@ -1045,6 +1161,7 @@ function galleryHead(title, filters, key, extra = '') {
 const matchQ = (...xs) => !S.q || xs.join(' ').toLowerCase().includes(S.q.toLowerCase());
 function empty(title, text, cta = '') { return `<div class="emptystate"><div class="glyph"><i></i></div><h3>${title}</h3><p>${text}</p>${cta}</div>`; }
 function soonStage(t, d) { return `<div style="min-height:100%;display:grid;place-items:center">${empty(t, d)}</div>`; }
+const secOpen = (id, title, sum, body) => `<details class="sec" data-sec="${id}" ${(S.open || {})[id] ? 'open' : ''}><summary><span class="lbl">${title}</span><span class="sum">${esc(sum)}</span><span class="chev">▾</span></summary><div class="secb">${body}</div></details>`;
 const nsfwDot = () => `<button class="nsfwdot ${S.nsfw ? 'on' : ''}" data-a="nsfwMenu" title="${S.nsfw ? '🔥 activado' : 'Opciones'}">${S.nsfw ? '🔥' : '<i></i>'}</button>`;
 function tile(key, small = false) {
   if (key === 'prenda' && S.nsfw) return `<button class="tile nsfwoff" data-a="nsfwOffTip"><span class="ti">${ic(TILE_ICON[key])}</span><b>${TILE_LBL[key]}</b><span>no con 🔥</span></button>`;
@@ -1071,13 +1188,10 @@ R.perfil = () => {
     </div>
     <div class="stats"><div><b>${S.creaciones.filter(x => x.char === c.id && !x.trash && x.kind === 'img').length}</b><span class="lbl">Imágenes</span></div><div><b>${S.creaciones.filter(x => x.char === c.id && x.kind === 'vid' && !x.trash).length}</b><span class="lbl">Vídeos</span></div></div>
     <div class="between"><span class="row"><button class="toggle ${c.public ? 'on' : ''}" data-a="togglePublic"></button> Ficha aprobada</span><span class="soon">${c.public ? 'CANON' : 'BORRADOR'}</span></div>
-    <div class="stack" style="gap:4px"><span class="lbl">Instagram</span><input class="inline" data-f="ig" placeholder="+ Añadir su Instagram" value="${esc(c.ig)}"></div>
-    <div class="stack" style="gap:4px"><span class="lbl">Bio</span><textarea class="inline" data-f="bio" placeholder="+ Añadir" rows="2" style="min-height:40px">${esc(c.bio)}</textarea></div>
-    <dl class="dl">
-      ${[['Nombre','name'],['Usuario','handle'],['Edad','age'],['Altura','height'],['Origen','origin'],['Idiomas','langs'],['Nacida','born']].map(([l, k]) => `<dt>${l}</dt><dd><input data-f="${k}" value="${esc(c[k])}" placeholder="+ Añadir"></dd>`).join('')}
-    </dl>
-    <div class="dl" style="grid-template-columns:76px 1fr">
-      ${[['Peinado','hairstyle'],['Pelo','hair'],['Ojos','eyes']].map(([l, k]) => `<span class="lbl" style="font-size:9.5px">${l}</span><input class="inline" data-f="${k}" value="${esc(c[k])}" placeholder="elegir">`).join('')}
+    <div class="fgrid"><label class="ff w"><span>Instagram</span><input data-f="ig" placeholder="+ Añadir su Instagram" value="${esc(c.ig)}"></label>
+    <label class="ff w"><span>Bio</span><textarea data-f="bio" placeholder="+ Añadir" rows="2">${esc(c.bio)}</textarea></label></div>
+    <div class="fgrid">
+      ${[['Nombre','name'],['Usuario','handle'],['Edad','age'],['Altura','height'],['Origen','origin'],['Nacida','born'],['Idiomas','langs',1],['Ojos','eyes'],['Pelo','hair'],['Peinado','hairstyle',1]].map(([l, k, w]) => `<label class="ff ${w ? 'w' : ''}"><span>${l}</span><input data-f="${k}" value="${esc(c[k])}" placeholder="+ Añadir"></label>`).join('')}
     </div>
     <div class="chips">${c.chips.map((t, i) => `<span class="tag">${esc(t)}<span class="x" data-delchip="${i}">✕</span></span>`).join('')}<button class="tag" data-a="addChip">＋</button></div>
   </div>
@@ -1235,9 +1349,9 @@ R.crear = () => {
     <p class="note" style="text-align:center;margin-top:8px">Copia el prompt y sus referencias, genera en ${esc(model.n)} e importa aquí el resultado.</p></div>`;
   const items = S.creaciones.filter(x => x.kind === 'img' && !x.trash && x.char === c.id);
   const last = items[0];
-  const rec = `<div class="recetas"><button class="rec ${!S.receta ? 'on' : ''}" data-receta=""><span class="ri">✦</span><b>Tu creación</b><small>combina lo que añadas</small></button>${RECETAS.map(r => `<button class="rec ${S.receta === r.id ? 'on' : ''}" data-receta="${r.id}"><span class="ri">${phArt(r.name, r.id, '1/1')}</span><b>${esc(r.name)}</b><small>receta</small></button>`).join('')}</div>`;
+  const rec = `<div class="recetas"><button class="rec ${!S.receta ? 'on' : ''}" data-receta=""><span class="ri">✦</span><b>Tu creación</b><small>combina lo que añadas</small></button>${RECETAS.map(r => `<button class="rec ${S.receta === r.id ? 'on' : ''}" data-receta="${r.id}"><span class="ri ini">${esc(r.name.split(/\s+/).filter(w => w.length > 2).slice(0, 2).map(w => w[0].toUpperCase()).join(''))}</span><b>${esc(r.name)}</b><small>receta</small></button>`).join('')}</div>`;
   const stage = `
-    <div class="preview"><div class="crosshair"></div>${last ? `<div class="pv"><img src="${src(last.media)}"></div>` : src(c.sheet.main) ? `<div class="pv"><img src="${src(c.sheet.main)}"></div>` : `<div class="empty">Sube la ficha principal de ${esc(c.name)} en Perfil</div>`}</div>
+    <div class="preview ${last || src(c.sheet.main) ? '' : 'slim'}"><div class="crosshair"></div>${last ? `<div class="pv"><img src="${src(last.media)}"></div>` : src(c.sheet.main) ? `<div class="pv"><img src="${src(c.sheet.main)}"></div>` : `<div class="hero0"><span class="hav">${avatarOf(c)}</span><div><b>${esc(c.name)}</b><p>Sube su ficha principal y aquí verás cada creación nada más importarla.</p><button class="btn sm" data-go="perfil">Ir a su ficha 360 →</button></div></div>`}</div>
     ${rec}
     ${galleryHead(`Crear imagen · Mis creaciones · ${items.length}`, [['Todos', null], ['Favoritas', items.filter(x => x.fav).length]], 'crear')}
     ${creGrid(items.filter(x => (S.filter.crear !== 'Favoritas' || x.fav) && matchQ(x.prompt, x.model)), 'Aún no hay imágenes', 'Prepara el prompt a la izquierda, genera fuera y arrastra aquí el resultado.')}`;
@@ -1256,7 +1370,7 @@ function creGrid(items, et, ed) {
 R.video = () => {
   const c = char(); const v = S.vid; const motion = v.que === 'recrear';
   const vm = VID_MODELS.find(m => m.id === v.model) || VID_MODELS[0];
-  const box = (k, t, d, accept) => `<button class="tile ${v[k] ? 'set' : ''}" style="min-height:110px" data-vbox="${k}" data-accept="${accept}">${v[k] ? (accept.startsWith('video') ? `<video src="${src(v[k])}" muted style="width:100%;height:64px;object-fit:cover;border-radius:8px"></video>` : `<span class="ti" style="border-radius:8px;width:60px;height:60px"><img src="${src(v[k])}"></span>`) : '<span style="font-size:18px">＋</span>'}<b>${t}</b><span>${v[k] ? 'cambiar' : d}</span>${v[k] ? `<span class="tx" data-unvbox="${k}">×</span>` : ''}</button>`;
+  const box = (k, t, d, accept) => `<button class="tile ${v[k] ? 'set' : ''}" style="min-height:84px" data-vbox="${k}" data-accept="${accept}">${v[k] ? (accept.startsWith('video') ? `<video src="${src(v[k])}" muted style="width:100%;height:64px;object-fit:cover;border-radius:8px"></video>` : `<span class="ti" style="border-radius:8px;width:60px;height:60px"><img src="${src(v[k])}"></span>`) : '<span style="font-size:18px">＋</span>'}<b>${t}</b><span>${v[k] ? 'cambiar' : d}</span>${v[k] ? `<span class="tx" data-unvbox="${k}">×</span>` : ''}</button>`;
   const head = ddRow('vidQue', motion ? 'spark' : 'video', motion ? 'Motion control' : 'Crear vídeo', motion ? 'Un vídeo de una persona → tu personaje haciendo lo mismo' : 'De una imagen o de texto, con tu personaje');
   const charBox = `<div class="charrow" style="${v.useSheet ? 'border-color:var(--ink)' : ''}"><span class="av">${avatarOf(c)}</span><div style="min-width:0"><b>${esc(c.name)}</b><div class="mut" style="font-size:11px">Su ficha 360 va como referencia</div></div><button class="toggle ${v.useSheet ? 'on' : ''}" style="margin-left:auto" data-a="vidSheet"></button><button class="addc" style="margin-left:6px" data-a="charMenu">⇄</button></div>`;
   let side;
@@ -1267,8 +1381,10 @@ R.video = () => {
       <div class="tiles" style="grid-template-columns:repeat(2,minmax(0,1fr))">${box('motionRef', 'Vídeo a recrear', 'de 4 a 30 s', 'video/*')}${box('imgRef', 'Imagen de referencia', 'opcional', 'image/*')}</div>
       <div class="stack" style="gap:6px">${seg('vid.metodo', [['normal','Método normal'],['silueta','Silueta']], v.metodo)}<p class="note">${v.metodo === 'normal' ? 'Como Genjutsu: el vídeo manda el movimiento y la cámara; la ficha 360, el personaje.' : 'Sigue la silueta de la persona fotograma a fotograma. Más fiel al movimiento, más caro.'}</p></div>
       <div class="stack"><span class="lbl">Algo más · opcional</span><textarea data-vextra placeholder="Ej.: que lleve el pelo suelto">${esc(v.extra)}</textarea></div>
+      ${secOpen('majustes', 'Ajustes', `${mm.n} · ${v.quality}`, `
       <div class="stack"><div class="between"><span class="lbl">Motor</span>${mm.nsfw ? nsfwDot() : ''}</div><div class="opts">${MOTION_MODELS.map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === v.motor ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-vmotor="${m.id}"`}>${m.n}<span>${off ? 'no admite 🔥' : m.tarifa}</span></button>`; }).join('')}</div></div>
       <div class="stack"><span class="lbl">Calidad</span><div class="chips">${['480p','720p','1080p'].map(q => `<button class="chip ${v.quality === q ? 'on' : ''}" data-vq="${q}">${q}</button>`).join('')}</div></div>
+`)}
       <p class="note">Sube un vídeo de 4 a 30 s con una persona. Tu personaje hará lo mismo. ${esc(mm.n)}: ${esc(mm.tarifa)} (tarifa de referencia). El vídeo final lleva tu audio original.</p>
       <div class="sticky-gen"><button class="btn acc big" data-a="genMotion">${S.nsfw && mm.nsfw ? '🔥 ' : ''}Recrear el vídeo</button></div>`;
   } else {
@@ -1277,15 +1393,17 @@ R.video = () => {
       <div class="tiles" style="grid-template-columns:repeat(2,minmax(0,1fr))">${box('startRef', 'Imagen inicial', 'opcional', 'image/*')}${box('endRef', 'Imagen final', 'opcional', 'image/*')}</div>
       ${v.startRef ? '<p class="note">Con imagen inicial, el vídeo sale de esa imagen.</p>' : ''}
       <div class="stack"><span class="lbl">Acción</span><textarea data-vaccion placeholder="Qué pasa, plano a plano. Ej.: se gira hacia la ventana, sonríe y da un sorbo al café">${esc(v.accion)}</textarea></div>
-      <div class="stack"><span class="lbl">Cámara</span><div class="chips">${CAMERAS.map(([k, t, d]) => `<button class="chip ${v.cam === k ? 'on' : ''}" data-vcam="${k}" title="${esc(d)}">${t}</button>`).join('')}</div></div>
-      <div class="stack"><span class="lbl">Estilo</span><div class="chips">${VSTYLES.map(([k, t]) => `<button class="chip ${v.style === k ? 'on' : ''}" data-vstyle="${k}">${t}</button>`).join('')}</div>${tile('look').replace('class="tile', 'class="tile wide')}</div>
+      ${secOpen('vcam', 'Cámara y estilo', [(CAMERAS.find(x => x[0] === v.cam) || [, 'Cámara'])[1], (VSTYLES.find(x => x[0] === v.style) || [, ''])[1], selItem('look') ? selItem('look').name : ''].filter(Boolean).join(' · '), `
+        <div class="stack"><span class="lbl">Cámara</span><div class="chips">${CAMERAS.map(([k, t, d]) => `<button class="chip ${v.cam === k ? 'on' : ''}" data-vcam="${k}" title="${esc(d)}">${t}</button>`).join('')}</div></div>
+        <div class="stack"><span class="lbl">Estilo</span><div class="chips">${VSTYLES.map(([k, t]) => `<button class="chip ${v.style === k ? 'on' : ''}" data-vstyle="${k}">${t}</button>`).join('')}</div>${tile('look').replace('class="tile', 'class="tile wide')}</div>`)}
+      ${secOpen('vajustes', 'Ajustes', `${vm.n} · ${v.quality} · ${v.dur}s · ${v.ratio === 'auto' ? 'como la imagen' : v.ratio}`, `
       <div class="stack"><div class="between"><span class="lbl">Modelo</span><span class="row" style="gap:10px"><a class="lnk" data-a="vModelInfo">¿Cuál elijo?</a>${vm.nsfw ? nsfwDot() : ''}</span></div><div class="opts">${VID_MODELS.map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === v.model ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-vidmodel="${m.id}"`}>${m.n}<span>${off ? 'no admite 🔥' : m.p}</span></button>`; }).join('')}</div></div>
       <div class="between"><div class="stack"><span class="lbl">Calidad</span><div class="chips">${['480p','720p','1080p'].map(q => `<button class="chip ${v.quality === q ? 'on' : ''}" data-vq="${q}">${q}</button>`).join('')}</div></div>
         <div class="stack"><span class="lbl">Duración</span><div class="stepper"><button data-a="dur-">−</button><b>${v.dur}s</b><button data-a="dur+">＋</button></div></div></div>
       <div class="stack"><span class="lbl">Formato</span><div class="chips">${['auto','9:16','3:4','1:1','16:9'].map(r => `<button class="chip ${v.ratio === r ? 'on' : ''}" data-vratio="${r}">${r === 'auto' ? 'Como la imagen' : r}</button>`).join('')}</div></div>
       <label class="row note"><input type="checkbox" ${v.audio ? 'checked' : ''} data-vaudio style="width:auto"> Generar audio (Seedance inventa voz y ambiente)</label>
-      <details class="fold"><summary class="lbl">Prompt montado</summary><div><textarea class="prompt" readonly style="min-height:240px">${esc(buildVidPrompt())}</textarea></div></details>
-      <p class="note">${esc(vm.n)}: ${esc(vm.info)}${vm.tarifa ? ' · ' + esc(vm.tarifa) : ''}</p>
+      <p class="note">${esc(vm.n)}: ${esc(vm.info)}${vm.tarifa ? ' · ' + esc(vm.tarifa) : ''}</p>`)}
+      ${secOpen('vprompt', 'Prompt montado', 'se actualiza solo', `<textarea class="prompt" readonly style="min-height:240px">${esc(buildVidPrompt())}</textarea><button class="btn sm" data-copy="${esc(buildVidPrompt())}">Copiar prompt</button>`)}
       <div class="sticky-gen"><button class="btn acc big" data-a="genVid">${S.nsfw && vm.nsfw ? '🔥 ' : ''}Generar vídeo</button></div>`;
   }
   const items = S.creaciones.filter(x => x.kind === 'vid' && !x.trash);
@@ -1293,7 +1411,7 @@ R.video = () => {
   const last = items[0]; const film = S.filmoteca.slice(0, 12);
   const vf = S.filter.video || 'Vídeos';
   const stage = `
-    <div class="preview black">${last ? `<div class="pv" style="aspect-ratio:9/16"><video src="${src(last.media)}" controls loop></video></div>` : '<div class="empty">Todavía no hay vídeos generados</div>'}</div>
+    <div class="preview black ${last ? '' : 'slim'}">${last ? `<div class="pv" style="aspect-ratio:9/16"><video src="${src(last.media)}" controls loop></video></div>` : `<div class="hero0"><span class="hav">${ic('video', 'width="22" height="22"')}</span><div><b>Tu último vídeo saldrá aquí</b><p>Anima una imagen tuya o recrea uno de la Filmoteca.</p></div></div>`}</div>
     ${galleryHead(`Vídeo · ${items.length}`, [['Vídeos', items.length], ['Imágenes', imgs.length]], 'video')}
     ${vf === 'Imágenes' ? (imgs.length ? `<div class="grid ${S.size}">${imgs.map(x => `<div class="it" data-animate="${x.id}"><img src="${src(x.media)}"><div class="ov"><span></span><span class="btn">🎬 Animar</span></div></div>`).join('')}</div>` : empty('Sin imágenes todavía', 'Las imágenes de Crear imagen salen aquí para animarlas.'))
       : items.length ? creGrid(items) : `
@@ -1425,11 +1543,11 @@ function renderLib(lib) {
       <button class="btn wide" data-a="importLibJson">⇩ Importar JSON</button></div>`;
   const nNot = list.filter(x => x.notion).length; const filters = [['Todos', null], ...(nNot ? [['Mi Notion', nNot]] : []), ...L.cats.map(c => [c, list.filter(x => x.cat === c || (x.tags || []).includes(c)).length]), ['Con imagen', withImg], ['Sin imagen', list.length - withImg]];
   const stage = `${galleryHead(`${L.t} · ${list.length}`, filters, lib)}
-    ${items.length ? `<div class="grid ${S.size} ${L.shape === '16/9' ? 'wide' : ''}">${items.slice(0, S._libLimit || 240).map((x, i) => `<div class="it lib ${S.picked[lib] === x.id ? 'on' : ''}" style="aspect-ratio:${L.shape};animation-delay:${Math.min(i, 24) * 18}ms" data-pick="lib:${lib}|${x.id}">
+    ${items.length ? `<div class="grid ${S.size} ${L.shape === '16/9' ? 'wide' : ''}">${items.slice(0, S._libLimit || 60).map((x, i) => `<div class="it lib ${S.picked[lib] === x.id ? 'on' : ''}" style="aspect-ratio:${L.shape};animation-delay:${Math.min(i, 24) * 18}ms" data-pick="lib:${lib}|${x.id}">
       ${x.img ? `<img loading="lazy" src="${src(x.img)}">` : phArt(x.name, x.id, L.shape)}
       ${S.sel[selKey] === x.id ? '<span class="badge">EN USO</span>' : ''}
       <div class="nm"><b>${esc(x.name)}</b>${x.cat ? `<small>${esc((x.tags && x.tags.length ? x.tags : [x.cat]).join(' · '))}</small>` : ''}</div></div>`).join('')}</div>
-      ${items.length > (S._libLimit || 240) ? `<div style="text-align:center;padding:0 0 80px"><button class="btn" data-a="libMore">Ver más (${items.length - (S._libLimit || 240)})</button></div>` : ''}`
+      ${items.length > (S._libLimit || 60) ? `<div style="text-align:center;padding:0 0 80px"><button class="btn" data-a="libMore">Ver más (${items.length - (S._libLimit || 60)})</button></div>` : ''}`
       : empty(`Nada por aquí`, `Prueba con otro filtro o crea ${un} ${L.one} nuev${L.g === 'f' ? 'a' : 'o'}.`, `<button class="btn acc" data-a="addLib">＋ Añadir</button>`)}`;
   return { side, stage };
 }
@@ -1446,6 +1564,7 @@ function render() {
   renderHeader(); renderNav();
   const out = S.section.startsWith('lib:') ? renderLib(S.section.slice(4)) : (R[S.section] || R.perfil)();
   $('#side').innerHTML = out.side; $('#stage').innerHTML = out.stage;
+  const more = $('[data-a="libMore"]'); if (more && 'IntersectionObserver' in window) { const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { io.disconnect(); A.libMore(); } }, { rootMargin: '600px' }); io.observe(more); }
   $$('.seg').forEach(placeKnob);
   renderSelBar();
   const st = $('#storage');
@@ -1723,7 +1842,7 @@ const A = {
   libToImg() { const [lib] = curLib(); const k = Object.keys(TILE_LIB).find(x => TILE_LIB[x] === lib); S.sel[k] = S.picked[lib]; S.img.prompt = ''; save(); go('crear'); },
   libToVid() { const [lib] = curLib(); const k = Object.keys(TILE_LIB).find(x => TILE_LIB[x] === lib); S.sel[k] = S.picked[lib]; S.vid.que = 'crear'; save(); go('video'); },
   async delLib() { const [lib, p] = curLib(); if (!p || !(await ask(`¿Borrar «${p.name}»?\n\nVa a la papelera 30 días.`))) return; toTrash('ficha', { lib, item: p }, p.name, p.img); S.libs[lib] = S.libs[lib].filter(x => x.id !== p.id); S.picked[lib] = ''; save(); render(); },
-  libMore() { S._libLimit = (S._libLimit || 240) + 240; render(); },
+  libMore() { S._libLimit = (S._libLimit || 60) + 60; render(); },
   feedback() { closeModal(); F.open = true; paintFb(); },
   fbToggle() { if (F.gracias) { F.gracias = ''; paintFb(); return; } F.open = !F.open; if (!F.open) fbStop(); paintFb(); },
   fbMic, fbRec,
@@ -1875,7 +1994,7 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-a]'))) { if (A[el.dataset.a]) { e.preventDefault(); return A[el.dataset.a](e); } }
   if ((el = d('[data-copy]'))) return copy(el.dataset.copy);
   if ((el = d('[data-size]'))) { S.size = el.dataset.size; save(); return render(); }
-  if ((el = d('[data-filter]'))) { const [k, v] = el.dataset.filter.split('|'); S.filter[k] = v; S._libLimit = 240; save(); return render(); }
+  if ((el = d('[data-filter]'))) { const [k, v] = el.dataset.filter.split('|'); S.filter[k] = v; S._libLimit = 60; save(); return render(); }
   if ((el = d('[data-seg] button'))) { setPath(el.parentElement.dataset.seg, el.dataset.v); S.img.prompt = ''; save(); return render(); }
   if ((el = d('[data-ptab]'))) { S.perfilTab = el.dataset.ptab; save(); return render(); }
   if ((el = d('[data-char]'))) { S.active = el.dataset.char; S.img.prompt = ''; save(); return render(); }
@@ -1974,6 +2093,7 @@ document.addEventListener('drop', async e => {
   if (S.section === 'audio') return importAudioModal('');
   if (['crear','video','creaciones'].includes(S.section)) return importResultModal(S.section === 'video' ? 'vid' : 'img');
 });
+document.addEventListener('toggle', e => { const d = e.target; if (d.matches && d.matches('details[data-sec]')) { S.open = S.open || {}; S.open[d.dataset.sec] = d.open; save(); } }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeMenu(); if (F.open) { F.open = false; fbStop(); paintFb(); } } });
 window.addEventListener('resize', () => $$('.seg').forEach(placeKnob));
 
