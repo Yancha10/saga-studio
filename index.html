@@ -857,6 +857,102 @@ textarea{min-height:56px}
 @media (max-width:720px) and (display-mode:standalone){
   :root{--safeT:max(env(safe-area-inset-top,0px),44px);--safeB:max(env(safe-area-inset-bottom,0px),18px)}
 }
+/* v6 móvil: dos vistas por sección y panel compacto (escritorio intacto) */
+#mtabs{display:none}
+.mrow2,.mrow3{display:contents}
+@media (max-width:720px){
+  :root{--mt:52px}
+  body.hasmt main{padding-top:calc(var(--hdr) + var(--safeT) + var(--mt))}
+  body.hasmt #mtabs{display:block;position:fixed;z-index:39;left:0;right:0;top:calc(var(--hdr) + var(--safeT));padding:8px 14px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+  .mtseg{position:relative;display:grid;grid-template-columns:1fr 1fr;height:36px;padding:4px;border-radius:12px;background:var(--panel2);border:1px solid var(--line)}
+  .mtseg button{position:relative;z-index:1;font-size:13px;font-weight:600;color:var(--mut);border-radius:9px;transition:color .25s}
+  .mtseg button i{font-style:normal;font-size:11px;opacity:.7;margin-left:3px}
+  .mtseg button.on{color:#fff}
+  .mtknob{position:absolute;top:4px;bottom:4px;width:calc(50% - 4px);border-radius:9px;background:var(--grad);transition:left .35s var(--ease);box-shadow:0 4px 14px -6px var(--hotGlow)}
+  body.mv0 #stage{display:none}
+  body.mv1 #side{display:none}
+  body.mv1 #stage{padding-top:4px}
+  /* panel de Imagen compacto: cabe en una pantalla */
+  #side{gap:10px;padding-top:12px}
+  .charrow{padding:8px 10px}.charrow .av{width:34px;height:34px}
+  .seg button{height:30px;padding:0 18px;font-size:12.5px}
+  .tiles .tile{flex:0 0 96px;min-height:96px;padding:10px 6px 9px;gap:4px;border-radius:18px}
+  .tiles .tile .ti{width:38px;height:38px}
+  .tiles .tile b{font-size:8.5px}.tiles .tile span{font-size:10px}
+  .mrow2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mrow2 .bar2{min-width:0}
+  .mrow2 .bar2>summary,.mrow2 .tile.wide{height:48px;min-height:48px}
+  .mrow2 .bar2>summary .row i,.mrow2 .bar2>summary .row .cdot{display:none}
+  .mrow2 .bar2>summary .lbl{font-size:9px}
+  .mrow2 .bar2[open]{grid-column:1/-1;order:2}
+  .mrow2 .tile.wide{padding:6px 10px;gap:8px}
+  .mrow2 .tile.wide .ti{width:32px;height:32px}
+  .mrow2 .tile.wide span:not(.ti):not(.tx){max-width:70px}
+  .dz{padding:10px 12px;gap:10px}
+  .dz .ic{width:36px;height:36px}
+  .dz p{display:none}
+  .dz b{font-size:13.5px}
+  textarea[data-imgidea]{min-height:58px!important}
+  .mrow3{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:stretch}
+  .mrow3 .bar{height:48px}
+  .mrow3 .bar .mut{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mrow3 .mcnt>.lbl{display:none}
+  .mrow3 .stepper{height:48px}.mrow3 .stepper button{width:38px}
+  .mrow3 .nsfwrow{grid-column:1/-1;padding:8px 12px}
+  .mrow3 .nsfwrow .nfl{width:32px;height:32px;font-size:16px;border-radius:10px}
+  .mrow3 .nsfwrow small{display:none}
+  .sticky-gen{padding-top:10px!important}
+  .btn.big{height:52px}
+  /* vídeo compacto */
+  [data-vbox]{min-height:64px!important;padding:8px!important;flex-direction:row!important;gap:8px!important}
+  [data-vbox] span:not(.ti):not(.tx){display:none}
+  #side>.nsfwrow{padding:8px 12px}#side>.nsfwrow small{display:none}#side>.nsfwrow .nfl{width:32px;height:32px;font-size:16px}
+  .sec>summary{height:46px}
+  #side>.stack>textarea[data-vaccion]{min-height:64px}
+  /* Pro en móvil: lista de modelos deslizable en lugar de 13 filas */
+  .opts{flex-direction:row;overflow-x:auto;scrollbar-width:none;gap:8px;margin:0 -14px;padding:0 14px 2px;scroll-snap-type:x mandatory}
+  .opts::-webkit-scrollbar{display:none}
+  .opts .opt{flex:0 0 168px;flex-direction:column;align-items:flex-start;gap:4px;scroll-snap-align:start;border:1px solid var(--line);background:var(--panel)}
+  .sec .opts{margin:0 -14px}
+  /* galería y personaje sin cabeceras redundantes */
+  body.mv1 .preview.slim{padding:10px 14px 4px}
+  body.mv1 .ghead>.lbl{display:none}
+  body.mv1 .ghead{padding-top:8px}
+}
+@media (max-width:720px){
+  .mrow2 .bar2>summary{white-space:nowrap;gap:6px;padding:0 12px}
+  .mrow2 .bar2>summary .lbl{letter-spacing:.1em}
+  .mrow2 .bar2>summary .row{flex:none}
+  .dz>div{min-width:0}.dz a{display:inline-block;font-size:12px;margin-top:2px}
+  .dz b{display:block}
+}
+@media (max-width:720px){
+  [data-vbox]>span:first-child{display:inline!important;font-size:16px}
+  .tiles:has([data-vbox]){overflow:visible}.tiles:has([data-vbox]) .tile{flex:1 1 0}
+  .pj{gap:12px;padding-top:12px}
+  .pj .h1{font-size:22px}
+  .pj>.row{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;margin:0 -14px;padding:0 14px}
+  .pj>.row::-webkit-scrollbar{display:none}
+  .pj>.row .btn{flex:none;min-height:38px;height:38px;font-size:9.5px;padding:0 14px}
+  .circ{width:56px}.circ .c{width:48px;height:48px}
+  .slot .cap{padding:8px 10px}.slot .cap span{display:none}
+  .slot .cap .btn{min-height:30px;height:30px;padding:0 10px;font-size:9px}
+  .tabs{padding-bottom:10px}
+  .tab{height:38px;font-size:9.5px}
+}
+@media (max-width:720px){
+  .profhl{gap:10px;padding:14px}
+  .phead{gap:12px}.bigav{width:58px;height:58px}.pname{font-size:22px}
+  .stats{display:flex;gap:8px}.stats>div{flex:1;display:flex;align-items:baseline;justify-content:center;gap:6px;padding:6px}
+  .stats b{display:inline;font-size:15px}.stats .lbl{font-size:8.5px}
+  .fgrid{gap:6px}
+  .ff{padding:6px 11px;gap:0;border-radius:12px}
+  .ff span{font-size:8px}
+  .ff input{height:24px}.ff textarea{min-height:24px!important;padding:0!important;border-radius:0}
+}
+.mrow2>*,.mrow3>*{flex-shrink:0}
+@media (max-width:1440px){.guia{display:none}}
+header .meter span,header .pill{white-space:nowrap}
 </style></head>
 <body>
 <header>
@@ -869,6 +965,7 @@ textarea{min-height:56px}
   <section id="stage"></section>
 </main>
 <nav id="mnav"></nav>
+<div id="mtabs"></div>
 
 <div id="toast"></div>
 <script>(function () { function show(msg) { try { var b = document.getElementById('errbar'); if (!b) { b = document.createElement('div'); b.id = 'errbar'; b.style.cssText = 'position:fixed;left:12px;right:12px;top:52px;z-index:999;background:#b3261e;color:#fff;padding:10px 14px;border-radius:12px;font:12px -apple-system,sans-serif;white-space:pre-wrap'; b.onclick = function () { b.remove(); }; document.body.appendChild(b); } b.textContent = 'Saga Studio ha encontrado un error: ' + msg + '\nHaz una captura y pásamela. (Toca para cerrar)'; } catch (x) {} }
@@ -1475,9 +1572,9 @@ R.crear = () => {
     <div style="display:flex;justify-content:center">${seg('imgMode', [['facil','Fácil'],['pro','Pro']], S.imgMode)}</div>
     ${charRow()}
     <div class="tiles">${['prenda','peinado','expresion','efecto','look','cartoon'].map(k => tile(k)).join('')}</div>
-    <details class="bar2"><summary><span class="lbl">Complementos</span><span class="row" style="gap:4px">${compsActive(c).slice(0, 5).map(x => `<i class="cdot">${x.img ? `<img src="${src(x.img)}">` : esc(x.name[0])}</i>`).join('')}<span class="mut">${compsActive(c).length} de ${compsAll.length} ▾</span></span></summary>
+    <div class="mrow2"><details class="bar2"><summary><span class="lbl">Complementos</span><span class="row" style="gap:4px">${compsActive(c).slice(0, 5).map(x => `<i class="cdot">${x.img ? `<img src="${src(x.img)}">` : esc(x.name[0])}</i>`).join('')}<span class="mut">${compsActive(c).length} de ${compsAll.length} ▾</span></span></summary>
       <div class="chips" style="padding:10px 0 4px">${compsAll.map(x => { const on = compsActive(c).includes(x); return `<button class="chip ${on ? 'on' : ''}" data-compt="${x.id}|${x.group}">${esc(x.name)} <i>${x.group === 'siempre' ? 'siempre' : 'escena'}</i></button>`; }).join('') || '<span class="note">Sin complementos. Añádelos en Perfil.</span>'}</div></details>
-    ${tile('lugar').replace('class="tile', 'class="tile wide')}
+    ${tile('lugar').replace('class="tile', 'class="tile wide')}</div>
     <div class="dz" data-a="copyRef" data-drop="copyRef"><span class="ic">${S.copyRef ? `<img src="${src(S.copyRef)}">` : ic('down', 'width="18" height="18"')}</span>
       <div><b>${S.copyRef ? 'Imagen a recrear' : 'Copia cualquier imagen'}</b><p>${S.copyRef ? 'Suelta otra imagen encima para cambiarla.' : 'Arrástrala aquí o haz clic para subirla.'}</p>
       ${S.copyRef ? '<a data-a="clearCopy">Quitar</a>' : '<a data-go="biblio">Recrea de la Fototeca →</a>'}</div></div>
@@ -1495,9 +1592,10 @@ R.crear = () => {
       <div class="stack"><div class="between"><span class="lbl">Prompt</span><a class="lnk" data-a="rebuildPrompt">↺ rehacer</a></div>
         <div class="promptwrap"><div class="hl" aria-hidden="true">${hlPrompt(S.img.prompt)}</div><textarea class="prompt" data-imgprompt spellcheck="false">${esc(S.img.prompt)}</textarea></div>
         <p class="note">Se manda tal cual. Cada bloque ⟦…⟧ es algo elegido arriba: muévelo, retócalo o bórralo. Las <b>@IMG</b> son tus referencias.</p></div>
-    ` : `<button class="bar" data-a="toPro"><span class="lbl">Ajustes</span><span class="mut">${model.n} · ${S.img.quality} · ${S.img.ratio} ▸</span></button>`}
-    <div class="between"><span class="lbl">Imágenes</span><div class="row" style="gap:10px"><div class="stepper"><button data-a="cnt-">−</button><b>${S.img.count}</b><button data-a="cnt+">＋</button></div></div></div>
-    ${nsfwRow('Solo Seedream 5.0 Pro · sin vestidor')}
+    ` : ''}
+    <div class="mrow3">${pro ? '' : `<button class="bar" data-a="toPro"><span class="lbl">Ajustes</span><span class="mut">${model.n} · ${S.img.quality} · ${S.img.ratio} ▸</span></button>`}
+    <div class="between mcnt"><span class="lbl">Imágenes</span><div class="row" style="gap:10px"><div class="stepper"><button data-a="cnt-">−</button><b>${S.img.count}</b><button data-a="cnt+">＋</button></div></div></div>
+    ${nsfwRow('Solo Seedream 5.0 Pro · sin vestidor')}</div>
     <div class="sticky-gen"><button class="btn acc big" data-a="genImg">${S.nsfw ? '🔥 ' : ''}Generar · ${model.usd ? money(imgUsd(model, S.img.quality) * S.img.count) : S.img.count}</button>
     <p class="note" style="text-align:center;margin-top:8px">Copia el prompt y sus referencias, genera en ${esc(model.n)} e importa aquí el resultado.</p></div>`;
   const items = S.creaciones.filter(x => x.kind === 'img' && !x.trash && x.char === c.id);
@@ -1714,11 +1812,31 @@ R.comunidad = soon('Comunidad', 'En Aria Studio es un directorio de creadores pa
 R.mensajes = soon('Mensajes', 'Bandeja de mensajes entre creadores. Llegará junto a la Comunidad.');
 
 /* ============ RENDER ============ */
+/* móvil: cada sección en dos vistas (panel / galería) en vez de una página infinita */
+function mtabsFor() {
+  const sec = S.section, c = char();
+  if (sec === 'crear') return [['Crear', 0], ['Mis creaciones', S.creaciones.filter(x => x.kind === 'img' && !x.trash && x.char === c.id).length], 0];
+  if (sec === 'video') return [['Crear', 0], ['Mis vídeos', S.creaciones.filter(x => x.kind === 'vid' && !x.trash).length], 0];
+  if (sec === 'audio') return [['Crear', 0], ['Mis audios', S.audios.length], 0];
+  if (sec === 'perfil') return [['Datos', 0], ['Personaje', 0], 1];
+  if (sec === 'creaciones') return [['Carpetas', 0], ['Creaciones', S.creaciones.filter(x => !x.trash).length], 1];
+  if (sec === 'biblio') return [['Añadir', 0], ['Fototeca', S.fototeca ? S.fototeca.length : 0], 1];
+  if (sec === 'videoteca') return [['Añadir', 0], ['Filmoteca', S.filmoteca.length], 1];
+  if (sec.startsWith('lib:')) { const k = sec.slice(4); return [['Añadir', 0], [LIBS[k] ? LIBS[k].t : 'Biblioteca', (S.libs[k] || []).length], 1]; }
+  return null;
+}
+function renderMTabs() {
+  const t = mtabsFor(); const el = $('#mtabs'); S.mv = S.mv || {};
+  if (!t) { document.body.classList.remove('mv0', 'mv1', 'hasmt'); if (el) el.innerHTML = ''; return; }
+  const v = S.mv[S.section] ?? t[2];
+  document.body.classList.toggle('mv0', v === 0); document.body.classList.toggle('mv1', v === 1); document.body.classList.add('hasmt');
+  if (el) el.innerHTML = `<div class="mtseg">${[0, 1].map(i => `<button class="${v === i ? 'on' : ''}" data-mv="${i}">${esc(t[i][0])}${t[i][1] ? ` <i>${t[i][1]}</i>` : ''}</button>`).join('')}<span class="mtknob" style="left:${v ? '50%' : '4px'}"></span></div>`;
+}
 function render() {
   document.documentElement.dataset.theme = S.theme; document.documentElement.dataset.ui = S.ui || 'normal';
   renderHeader(); renderNav();
   const out = S.section.startsWith('lib:') ? renderLib(S.section.slice(4)) : (R[S.section] || R.perfil)();
-  $('#side').innerHTML = out.side; $('#stage').innerHTML = out.stage;
+  $('#side').innerHTML = out.side; $('#stage').innerHTML = out.stage; renderMTabs();
   const more = $('[data-a="libMore"]'); if (more && 'IntersectionObserver' in window) { const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { io.disconnect(); A.libMore(); } }, { rootMargin: '600px' }); io.observe(more); }
   $$('.seg').forEach(placeKnob);
   renderSelBar();
@@ -1753,7 +1871,7 @@ function importResultModal(kind = 'img', prompt = '', refs = []) {
       if (!files.length) return toast('Añade al menos un archivo');
       const cost = +sc.querySelector('#impc').value || 0; const m = sc.querySelector('#impm').value;
       for (const [i, f] of files.entries()) S.creaciones.unshift({ id: uid(), kind: f.type.startsWith('video') ? 'vid' : 'img', media: await putMedia(f), prompt, model: m, cost: i === 0 ? cost : 0, date: today(), t: now(), fav: false, folder: '', char: S.active, trash: false, nsfw: !!S.nsfw || undefined });
-      save(); closeModal(); render(); toast('Guardado en Creaciones');
+      S.mv = S.mv || {}; S.mv[S.section] = 1; save(); closeModal(); render(); toast('Guardado en Creaciones');
     };
   });
 }
@@ -2292,6 +2410,7 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-untile]'))) { e.stopPropagation(); S.sel[el.dataset.untile] = ''; if (el.dataset.untile === 'prenda') S.sel.color = ''; S.receta = ''; S.img.prompt = ''; save(); return render(); }
   if ((el = d('[data-tile]'))) return pickerModal(el.dataset.tile);
   if ((el = d('[data-choose]'))) { const [k, id] = el.dataset.choose.split('|'); S.sel[k] = id; S.receta = ''; S.img.prompt = ''; save(); closeModal(); return render(); }
+  if ((el = d('[data-mv]'))) { S.mv = S.mv || {}; S.mv[S.section] = +el.dataset.mv; save(); renderMTabs(); try { window.scrollTo(0, 0); } catch (x) {} return; }
   if ((el = d('[data-imgmodel]'))) { S.img.model = el.dataset.imgmodel; S.img.prompt = ''; save(); if (el.dataset.close) closeModal(); return render(); }
   if ((el = d('[data-imgq]'))) { S.img.quality = el.dataset.imgq; save(); return render(); }
   if ((el = d('[data-ratio]'))) { S.img.ratio = el.dataset.ratio; S.img.prompt = ''; save(); return render(); }
