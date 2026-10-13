@@ -1340,7 +1340,7 @@ function writeState() { // true si quedó guardado en este dispositivo
 }
 const save = () => { clearTimeout(saveT); saveT = setTimeout(() => { saveT = 0; writeState(); if (typeof gdDirty === 'function') gdDirty(); }, 150); };
 const flushSave = () => { if (saveT) { clearTimeout(saveT); saveT = 0; writeState(); if (typeof gdDirty === 'function') gdDirty(); } };
-window.__sagaFlush = flushSave;
+window.__sagaFlush = flushSave; window.__sagaBar = (...a) => bar(...a);
 addEventListener('pagehide', flushSave); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
 const char = () => S.chars.find(c => c.id === S.active) || S.chars[0];
 const libItem = (lib, id) => (S.libs[lib] || []).find(x => x.id === id);
@@ -2879,6 +2879,14 @@ window.addEventListener('resize', () => $$('.seg').forEach(placeKnob));
   if (gdOn()) { gdSet(gdOk() ? 'sync' : 'need'); gdSync({ full: true }); }
 })();
 })();</script>
-<script>if("serviceWorker" in navigator&&location.protocol==="https:"){navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>{r.update();document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")r.update()})});let rl=0;navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!rl&&navigator.serviceWorker.controller){rl=1;location.reload()}})}</script>
+<script>if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(r => { r.update(); document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") r.update(); }); }).catch(() => {});
+  /* una versión nueva se aplica sola, pero nunca a mitad de algo: con una ventana abierta, escribiendo o con una tarea en marcha, espera */
+  const had = !!navigator.serviceWorker.controller; let pend = 0, rl = 0, tick = 0;
+  const busy = () => !!(document.querySelector("#scrim,#menu,#fbw.abierto") || window.__sagaBusy || (document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)));
+  const go = () => { if (rl || !pend || busy()) return; rl = 1; clearInterval(tick); try { window.__sagaFlush && window.__sagaFlush(); } catch (e) {} location.reload(); };
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if (!had || pend) return; pend = 1; go();
+    if (!rl) { tick = setInterval(go, 2000); try { window.__sagaBar && window.__sagaBar("update", "Hay una versión nueva de Saga Studio: se pondrá sola cuando termines lo que estás haciendo.", [["Actualizar ahora", () => { try { window.__sagaFlush && window.__sagaFlush(); } catch (e) {} location.reload(); }]]); } catch (e) {} } });
+}</script>
 </body>
 </html>
