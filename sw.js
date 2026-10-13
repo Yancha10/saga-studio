@@ -1,5 +1,5 @@
 // Saga Studio · siempre la última versión si hay conexión; sin conexión (o si la red tarda demasiado), la copia guardada.
-const C = 'saga-v8';
+const C = 'saga-v10';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 const SLOW = 3500; // ms que se espera a la red antes de abrir con la copia guardada
 self.addEventListener('install', e => { e.waitUntil(caches.open(C).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting())); });
