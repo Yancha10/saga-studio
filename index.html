@@ -998,6 +998,21 @@ header .meter span,header .pill{white-space:nowrap}
   body{min-height:100vh;min-height:100lvh}
   main{min-height:calc(100vh + 1px);min-height:calc(100lvh + 1px);box-sizing:border-box}
 }
+/* v7: selección con borde de color en toda la app */
+.it.on,.it.sel{border-color:transparent!important;box-shadow:0 10px 30px -14px var(--hotGlow)!important;transform:translateY(-2px)}
+.it.on:after,.it.sel:after,.ref.on:after,.circ.on .c:after{content:"";position:absolute;inset:0;border-radius:inherit;padding:2.5px;background:var(--grad);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;z-index:4}
+.it.sel .selck{background:var(--grad)!important;color:#fff!important;border:0}
+.tile.set{box-shadow:inset 0 0 0 1.5px var(--hot)}
+.comp.on,.rec.on{border-color:var(--hotLine)}
+#scrim .it.on,.modal .it.on{outline:none}
+/* avatar de la cuenta */
+.avatar{overflow:hidden;padding:0}.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.avatar:has(img){box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--hot)}
+/* visor de biblioteca */
+.lvimg{height:min(62vh,560px);max-width:100%;border-radius:18px;overflow:hidden;background:var(--panel2);margin:0 auto}
+.lvimg img{width:100%;height:100%;object-fit:cover}
+#lvi h2{margin-top:14px}
+.lvimg .pha{height:100%}.lvimg .pha svg{transform:scale(.6);opacity:.6}
 </style></head>
 <body>
 <header>
@@ -1441,7 +1456,7 @@ function renderHeader() {
     <button class="meter" data-a="gasto" title="Registro de gasto"><span>Total <b>${total}</b> generaciones</span><span>Gasto <b>${money(spent)}</b></span></button>
     <button class="iconbtn" data-a="ayuda" title="Ayuda">${ic('help', 'width="15" height="15"')}</button>
     <button class="iconbtn" data-a="theme" title="Tema">${ic(S.theme === 'dark' ? 'sun' : 'moon', 'width="15" height="15"')}</button>
-    <button class="avatar" data-a="account" title="Tu cuenta">D</button>`;
+    <button class="avatar" data-a="account" title="Tu cuenta">${src(S.meAvatar) ? `<img src="${src(S.meAvatar)}" alt="">` : 'D'}</button>`;
 }
 
 /* ---------- piezas compartidas ---------- */
@@ -1757,7 +1772,7 @@ R.creaciones = () => {
     <div class="meta">${p.model ? `<b>${esc(p.model)}</b>` : ''}${p.cost ? `<span>${money(p.cost)}</span>` : ''}${p.folder ? `<span>▱ ${esc((S.folders.find(x => x.id === p.folder) || {}).name || '')}</span>` : ''}</div>
     <div class="row"><button class="btn acc wide" data-a="openBig">⤢ Abrir en grande</button><a class="btn" title="Descargar" href="${src(p.media)}" download="saga-${p.id}">${ic('down', 'width="15" height="15"')}</a></div>
     <div class="row"><button class="btn wide" data-a="toFolder">Mover a carpeta</button><button class="btn" data-a="trashCre" title="A la papelera">${ic('trash', 'width="15" height="15"')}</button></div>
-    ${p.kind === 'img' ? '<button class="btn wide" data-a="creToVideo">🎬 Animar en Vídeo</button><button class="btn wide" data-a="creAsRef">↺ Recrear (usar como imagen a copiar)</button>' : ''}
+    ${p.kind === 'img' ? '<button class="btn wide" data-a="creToVideo">🎬 Animar en Vídeo</button><button class="btn wide" data-a="creAsRef">↺ Recrear (usar como imagen a copiar)</button>' : '<div class="row"><button class="btn wide" data-a="creToMotion">✦ Motion control</button><button class="btn wide" data-a="creToRefs">＋ Como referencia</button></div>'}
     ${p.prompt ? `<div class="promptbox">${esc(p.prompt)}</div><button class="btn wide" data-copy="${esc(p.prompt)}">Copiar prompt</button>` : ''}`
     : `<div class="stack"><span class="lbl">Galería</span><p class="note">${all.filter(x => !x.trash).length} creaciones (${all.filter(x => x.kind === 'img' && !x.trash).length} imágenes · ${all.filter(x => x.kind === 'vid' && !x.trash).length} vídeos), de más nueva a más antigua. Filtra arriba y haz clic en una para abrirla con su ficha; con ‹ › pasas a la siguiente.</p><button class="btn acc" data-a="importResult">⇩ Importar resultado</button><button class="btn" data-a="selMode">☑ Seleccionar varias</button></div>`;
   const fol = [['all','Todas', all.filter(x => !x.trash).length], ['fav','Favoritas', all.filter(x => x.fav && !x.trash).length]];
@@ -2061,6 +2076,19 @@ function bitacoraModal() {
     ${S.feedback.length ? `<div class="stack" style="gap:8px">${S.feedback.map(f => `<div class="card"><div class="between"><b>${esc(f.tipo)}</b><span class="note">${new Date(f.t).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span></div>${f.texto ? `<p style="margin:6px 0">${esc(f.texto)}</p>` : ''}${f.audio ? `<audio controls src="${f.audio}" style="width:100%"></audio>` : ''}${(f.archivos || []).map(a => `<a class="note" download="${esc(a.nombre)}" href="${a.data}">📎 ${esc(a.nombre)}</a>`).join(' ')}<small class="note">${esc(f.ctx)}</small><div style="text-align:right"><a class="lnk" data-fbdel="${f.id}">Borrar</a></div></div>`).join('')}</div>
       <div class="row" style="margin-top:12px"><button class="btn wide" data-a="fbExportMd">Exportar .md</button><button class="btn wide" data-a="fbExportJson">Exportar .json</button></div>` : '<p class="note">Aún no has apuntado nada.</p>'}`);
 }
+
+/* visor grande de una ficha de biblioteca (como Aria: tocar = verla en grande) */
+function libViewer(lib, id) {
+  const L = S.libs[lib] || []; let i = Math.max(0, L.findIndex(x => x.id === id)); const sh = (LIBS[lib].shape || '3/4');
+  const draw = sc => { const p = L[i]; S.picked[lib] = p.id;
+    sc.querySelector('#lvm').innerHTML = `<div class="lvimg" style="aspect-ratio:${sh}">${src(p.img) ? `<img src="${src(p.img)}">` : phArt(p.name, p.id, sh)}</div>`;
+    sc.querySelector('#lvi').innerHTML = `<h2>${esc(p.name)}</h2><p class="note">${esc([...new Set([p.cat, ...(p.tags || []).slice(0, 3)].filter(Boolean))].join(' · '))}</p>${p.desc ? `<div class="promptbox" style="margin-top:10px">${esc(p.desc)}</div>` : ''}
+      <div class="row" style="margin-top:12px;flex-wrap:wrap"><button class="btn acc" data-lvuse="crear">✨ Usar en Imagen</button><button class="btn" data-lvuse="video">🎬 Usar en Vídeo</button>${p.desc ? `<button class="btn" data-copy="${esc(p.desc)}">Copiar prompt</button>` : ''}</div>`; };
+  modal(`<div class="lb"><button class="lbn" id="lvp">‹</button><div id="lvm" class="lbm"></div><button class="lbn" id="lvn">›</button></div><div id="lvi"></div>`, sc => {
+    draw(sc); sc.querySelector('#lvp').onclick = () => { i = (i - 1 + L.length) % L.length; draw(sc); }; sc.querySelector('#lvn').onclick = () => { i = (i + 1) % L.length; draw(sc); };
+    sc.addEventListener('click', e => { const b = e.target.closest('[data-lvuse]'); if (!b) return; const p = L[i]; const key = Object.keys(TILE_LIB).find(k => TILE_LIB[k] === lib); if (key) { S.sel[key] = p.id; S.img.prompt = ''; } save(); closeModal(); go(b.dataset.lvuse); toast(`${p.name} · elegido`); });
+  }, 'wide');
+}
 /* ============ Google Drive: tus datos y archivos en tu Drive, iguales en todos tus dispositivos ============
    Permiso «drive.file»: la app solo ve lo que ella misma crea (carpeta «Saga Studio»), nada más de tu Drive. */
 const GD = {
@@ -2217,7 +2245,7 @@ const A = {
   theme() { S.theme = S.theme === 'dark' ? 'light' : 'dark'; save(); render(); },
   guiaOff() { S.guiaOk = true; save(); render(); },
   account(e) { const r = rectOf(e); menu(r.right - 240, r.bottom + 8, [
-    { head: 'Dani · Saga Studio' },
+    { head: 'Dani · Saga Studio' }, { t: src(S.meAvatar) ? 'Cambiar mi foto de perfil' : 'Poner mi foto de perfil', icon: 'user', fn: async () => { const [f] = await pickFiles(); if (!f) return; S.meAvatar = await putMedia(f); save(); render(); toast('Foto de perfil actualizada'); } },
     { t:'Mis APIs', icon:'key', fn: apisModal }, { t:'Registro de gasto', icon:'ledger', fn: gastoModal },
     { t:'Bitácora', sub:`${S.feedback.length} notas`, icon:'book', fn: bitacoraModal }, { t:'Papelera', sub:`${S.trash.length}`, icon:'trash', fn: () => papeleraModal() },
     '-', { head: 'Tamaño' }, ...[['peq','Pequeño'],['normal','Normal'],['grande','Grande']].map(([k, t]) => ({ t, on: (S.ui || 'normal') === k, fn: () => { S.ui = k; save(); render(); } })),
@@ -2266,6 +2294,8 @@ const A = {
   async newFolder() { const o = await textModal('Nueva carpeta', [['n','Nombre','Ej.: Carrusel Lofoten']]); if (!o || !o.n) return; const id = uid(); S.folders.push({ id, name: o.n }); save(); render(); return id; },
   trashCre() { const p = curCre(); if (!p) return; p.trash = true; toTrash('creacion', p, p.model || 'Creación', p.kind === 'img' ? p.media : ''); S.picked.cre = ''; save(); render(); toast('Movida a la papelera'); },
   creToVideo() { const p = curCre(); if (!p) return; S.vid.que = 'crear'; S.vid.startRef = p.media; save(); go('video'); },
+  creToMotion() { const p = curCre(); if (!p) return; S.vid.que = 'recrear'; S.vid.motionRef = p.media; save(); go('video'); toast('Listo para Motion control'); },
+  creToRefs() { const p = curCre(); if (!p) return; if (!S.refs.includes(p.media)) S.refs.push(p.media); S.imgMode = 'pro'; save(); toast('Añadida a las referencias de Imagen'); },
   creAsRef() { const p = curCre(); if (!p) return; S.copyRef = p.media; S.img.prompt = ''; save(); go('crear'); },
   selMode() { S.selMode = !S.selMode; S.selected = []; render(); },
   selFolder(e) { const r = rectOf(e); menu(r.left, r.top - 200, [...S.folders.map(f => ({ t: f.name, icon:'folder', fn: () => setFolder(S.selected, f.id) })), '-', { t:'＋ Nueva carpeta', fn: async () => { const id = await A.newFolder(); if (id) setFolder(S.selected, id); } }]); },
@@ -2477,7 +2507,7 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-favref]'))) { e.stopPropagation(); const [k, id] = el.dataset.favref.split('|'); const x = S[k].find(y => y.id === id); x.fav = !x.fav; save(); return render(); }
   if ((el = d('[data-recreate2]'))) { e.stopPropagation(); const [k, id] = el.dataset.recreate2.split('|'); S.picked[k] = id; return k === 'fototeca' ? A.useCopy() : A.useMotion(); }
   if ((el = d('[data-recreate]'))) { S.picked.filmoteca = el.dataset.recreate; return A.useMotion(); }
-  if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); S.picked[kk] = id; if (innerWidth <= 720 && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
+  if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); if (S.picked[kk] === id && !el.dataset.gol && LIBS[kk]) return libViewer(kk, id); S.picked[kk] = id; if (innerWidth <= 720 && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
   if ((el = d('[data-color]'))) { S.sel.color = S.sel.color === el.dataset.color ? '' : el.dataset.color; S.img.prompt = ''; save(); return render(); }
   if ((el = d('[data-apikey]'))) { const id = el.dataset.apikey; if (S.apis[id]?.key) delete S.apis[id]; else { const o = await textModal('Conectar ' + id, [['k','Clave de API','pega aquí tu clave']]); if (!o || !o.k) return apisModal(); S.apis[id] = { key: o.k }; } save(); renderHeader(); return apisModal(); }
   if ((el = d('[data-amode]'))) { S.aud.modo = el.dataset.amode; save(); return render(); }
