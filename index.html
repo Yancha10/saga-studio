@@ -1162,7 +1162,7 @@ async function loadAllMedia() {
   if (!db) return;
   await new Promise(res => { const c = db.transaction('m').objectStore('m').openCursor(); c.onsuccess = () => { const cur = c.result; if (cur) { if (String(cur.key).startsWith('m:')) urls[cur.key] = URL.createObjectURL(cur.value); cur.continue(); } else res(); }; c.onerror = () => res(); });
 }
-const src = ref => !ref || typeof ref !== 'string' ? '' : ref.startsWith('m:') ? (urls[ref] || '') : /^\s*(javascript|vbscript|data:text\/html)/i.test(ref) ? '' : ref; // nunca un enlace que ejecute código
+const src = ref => !ref || typeof ref !== 'string' ? '' : ref.startsWith('m:') ? (urls[ref] || '') : /^\s*(javascript|vbscript|data:text\/html)/i.test(ref) ? '' : ref.replace(/["'<>`]/g, encodeURIComponent); // nunca un enlace que ejecute código ni que rompa el HTML
 /* solo entra lo que de verdad es una foto o un vídeo (o audio) y se puede abrir */
 const EXT_KIND = { jpg: 'image', jpeg: 'image', png: 'image', webp: 'image', gif: 'image', heic: 'image', heif: 'image', avif: 'image', mp4: 'video', mov: 'video', m4v: 'video', webm: 'video', mp3: 'audio', m4a: 'audio', wav: 'audio', aac: 'audio', ogg: 'audio' };
 const kindOf = f => (f.type || '').split('/')[0] || EXT_KIND[(String(f.name || '').split('.').pop() || '').toLowerCase()] || '';
@@ -2687,6 +2687,7 @@ function recoveryModal() {
 }
 const dataToBlob = d => { const [h, b] = d.split(','); const mime = (h.match(/data:([^;]+)/) || [])[1] || 'image/jpeg'; const bin = atob(b); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type: mime }); };
 async function importPack(L, quiet) {
+  L = (Array.isArray(L) ? L : []).filter(o => isObj(o) && typeof o.name === 'string' && o.name.trim()); if (!L.length) return toast('El paquete no tiene prendas válidas');
   const have = new Map(S.libs.vestidor.filter(x => x.notion).map(x => [x.notionId || x.name.toLowerCase(), x]));
   if (!quiet) modal(`<h2>Importando tu vestidor</h2><p class="note" id="nprog">0 de ${L.length}</p><div class="progress" style="margin-top:12px"><i id="nbar" style="width:0%"></i></div>`);
   const media = v => !v ? '' : v.startsWith('data:') ? putMedia(dataToBlob(v)) : v;
@@ -2719,10 +2720,14 @@ A.importVestidorPack = async () => {
   const L = Array.isArray(pack) ? pack : pack.items || []; if (!L.length) return toast('El paquete está vacío');
   await importPack(L);
 };
-/* el vestidor publicado junto a la web (vestidor/index.json) se carga solo la primera vez */
+/* el vestidor publicado junto a la web (vestidor/index.json): la primera vez entra entero; si después se publica una versión nueva,
+   solo se añaden las prendas nuevas (las que ya tienes, con tus cambios, no se tocan) */
 async function autoVestidor() {
-  if (!/^https?:/.test(location.protocol) || S.vestidorWeb) return;
-  try { const r = await fetch('vestidor/index.json', { cache: 'no-cache' }); if (!r.ok) return; const p = await r.json(); const L = p.items || []; if (!L.length) return; await importPack(L, true); S.vestidorWeb = true; save(); } catch (e) {}
+  if (!/^https?:/.test(location.protocol) || RECOVERY) return;
+  try { const r = await fetch('vestidor/index.json', { cache: 'no-cache' }); if (!r.ok) return; const txt = await r.text(); const h = hash(txt); if (S.vestidorWeb && S.vestidorWebH === h) return;
+    const p = JSON.parse(txt); let L = Array.isArray(p.items) ? p.items : []; if (!L.length) return;
+    if (S.vestidorWeb) { const have = new Set(S.libs.vestidor.filter(x => x.notion).flatMap(x => [x.notionId, String(x.name || '').toLowerCase()])); L = L.filter(o => isObj(o) && !have.has(o.id) && !have.has(String(o.name || '').toLowerCase())); }
+    if (L.length) await importPack(L, true); S.vestidorWeb = true; S.vestidorWebH = h; save(); } catch (e) { console.warn('vestidor', e); }
 }
 /* ---------- importar el vestidor desde una exportación de Notion (Markdown & CSV, con archivos) ---------- */
 function pickFolder() { return new Promise(res => { const i = document.createElement('input'); i.type = 'file'; i.webkitdirectory = true; i.multiple = true; i.onchange = () => res([...i.files]); i.click(); }); }
