@@ -327,7 +327,7 @@ main.solo{grid-template-columns:88px 348px 1fr}
 
 /* ---------- Mobile ---------- */
 #mnav{display:none}
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   body{overflow:auto}
   main{display:block;height:auto;padding-bottom:70px}
   #nav{display:none}
@@ -344,7 +344,7 @@ main.solo{grid-template-columns:88px 348px 1fr}
 }
 #side>*{flex-shrink:0}
 .pill{white-space:nowrap}
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   header{padding:0 14px}
   .logo{letter-spacing:.2em;font-size:13px}.logo span{display:none}
   #mnav .nb.on:before{display:none}
@@ -485,7 +485,7 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--ink)}
 .fbaud{display:flex;align-items:center;gap:6px}.fbaud audio{flex:1;height:32px}
 .fbok{align-items:center;text-align:center}.fbokc{width:44px;height:44px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:20px}
 .fbok small{color:var(--mut)}
-@media (max-width:720px){#fbw{bottom:78px;right:14px}#selbar{bottom:72px;flex-wrap:wrap;width:calc(100% - 24px)}.gastot{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#fbw{bottom:78px;right:14px}#selbar{bottom:72px;flex-wrap:wrap;width:calc(100% - 24px)}.gastot{grid-template-columns:repeat(2,1fr)}}
 a.btn{color:inherit;text-decoration:none}
 
 /* ===================== v3: color & marca ===================== */
@@ -552,18 +552,18 @@ input:focus,textarea:focus,select:focus{border-color:var(--hotLine);box-shadow:0
 @keyframes flame{0%,100%{box-shadow:0 0 0 3px rgba(255,77,77,.18),0 6px 18px -6px rgba(255,77,77,.6)}50%{box-shadow:0 0 0 5px rgba(255,77,77,.10),0 8px 22px -6px rgba(255,120,60,.75)}}
 @media (prefers-reduced-motion:reduce){.nsfwdot.on{animation:none}}
 /* tablet / ventana estrecha: se mantiene el escritorio, más compacto */
-@media (min-width:721px) and (max-width:1180px){
+@media (min-width:721px) and (max-width:1180px) and (min-height:501px){
   main{grid-template-columns:70px 300px 1fr}
   .nb{width:60px;font-size:8.5px;letter-spacing:.08em}
   #side{padding:14px 12px}
   .guia{display:none}
 }
-@media (min-width:721px) and (max-width:900px){ main{grid-template-columns:66px 270px 1fr} .meter{display:none} .tile b{font-size:8.5px;letter-spacing:.08em} }
+@media (min-width:721px) and (max-width:900px) and (min-height:501px){ main{grid-template-columns:66px 270px 1fr} .meter{display:none} .tile b{font-size:8.5px;letter-spacing:.08em} }
 /* tamaño de la interfaz (Tu cuenta → Tamaño) */
 :root[data-ui="peq"] body{zoom:.9}
 :root[data-ui="grande"] body{zoom:1.1}
 /* móvil: respetar notch y barra de inicio */
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   header{padding-top:env(safe-area-inset-top);height:calc(46px + env(safe-area-inset-top))}
   .logo .mark{display:block}
   #mnav{height:calc(62px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom)}
@@ -577,14 +577,14 @@ input:focus,textarea:focus,select:focus{border-color:var(--hotLine);box-shadow:0
 .rec.on .ri{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--hot)}
 #fab{background:var(--grad)!important;color:#fff!important;border:0!important;box-shadow:0 10px 30px -8px rgba(236,72,153,.6)!important}
 #fab svg{stroke:#fff}
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   #side{padding-bottom:110px}
   #fbw{bottom:calc(76px + env(safe-area-inset-bottom));right:12px}
   #fbw #fab{width:46px;height:46px}
   #fbw #fab:before,#fbw #fab:after{display:none}
   .sticky-gen{bottom:calc(66px + env(safe-area-inset-bottom))}
 }
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   .ghead{flex-wrap:wrap;gap:10px}
   .ghead>.lbl{flex:1 1 100%;letter-spacing:.16em}
   .ghead .r{flex:1 1 100%}.ghead .search{flex:1;min-width:0}
@@ -679,7 +679,7 @@ textarea{min-height:56px}
 /* listas de complementos y bibliotecas */
 .compgroup{border-radius:var(--r)}
 /* móvil */
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   #side{padding:14px 14px 110px;gap:10px}
   .preview{height:clamp(200px,42vh,320px)}
   .preview.slim{padding:14px}
@@ -704,16 +704,16 @@ textarea{min-height:56px}
 .it.lib .pha svg{opacity:.55;transform:scale(.7);transition:opacity .3s,transform .4s var(--ease)}
 .it.lib:hover .pha svg{opacity:.9;transform:scale(.76)}
 .it.lib .nm,.it .nm{backdrop-filter:blur(6px)}
-@media (max-width:720px){ .sticky-gen{position:static;margin-top:4px;padding:0;background:none} .sticky-gen .note{padding-right:56px} }
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){ .sticky-gen{position:static;margin-top:4px;padding:0;background:none} .sticky-gen .note{padding-right:56px} }
 .ff textarea{background:none;border:0;padding:0;min-height:38px;font-size:12.5px;resize:vertical;box-shadow:none!important}
-@media (max-width:720px){ #side{padding-bottom:20px} }
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){ #side{padding-bottom:20px} }
 /* Google Drive */
 .pill.gd svg{flex:none}.pill.gd i{font-style:normal}
 .pill.gd.ok{border-color:rgba(61,220,151,.45)}.pill.gd.ok svg{stroke:#3ddc97;color:#3ddc97}
 .pill.gd.sync svg{color:var(--hot);animation:gdpulse 1.2s ease-in-out infinite}
 .pill.gd.need,.pill.gd.err{border-color:rgba(255,170,60,.55)}.pill.gd.need svg,.pill.gd.err svg{color:#ffaa3c}
 @keyframes gdpulse{50%{opacity:.35}}
-@media (max-width:720px){ .pill.gd i{display:none} .pill.gd{padding:0 10px} }
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){ .pill.gd i{display:none} .pill.gd{padding:0 10px} }
 /* 🔥 NSFW visible */
 .nsfwrow{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:var(--r);border:1px solid var(--line);background:var(--panel);text-align:left;transition:.25s var(--ease)}
 .nsfwrow:hover{border-color:rgba(255,77,77,.5)}
@@ -725,7 +725,7 @@ textarea{min-height:56px}
 .nsfwrow.on .msw{background:linear-gradient(120deg,#ff9f43,#e11d74);border-color:transparent}.nsfwrow.on .msw:after{left:14px;background:#fff}
 
 /* ===================== v5: MÓVIL táctil (solo ≤720px, el escritorio no cambia) ===================== */
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   html{-webkit-text-size-adjust:100%}
   body{-webkit-tap-highlight-color:transparent;background:var(--bg)}
   input,textarea,select{font-size:16px!important} /* iOS no hace zoom al escribir */
@@ -828,11 +828,11 @@ textarea{min-height:56px}
   #toast{bottom:calc(150px + env(safe-area-inset-bottom))}
 }
 @keyframes sheetup{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-@media (max-width:720px) and (hover:none){
+@media (max-width:720px) and (hover:none),(max-height:500px) and (orientation:landscape) and (pointer:coarse) and (hover:none){
   .tile:hover,.circ:hover .c,.nb:hover svg{transform:none}
   .btn:active,.tile:active,.chip:active,.opt:active,.nb:active,.it:active,.nsfwrow:active{transform:scale(.96);transition:transform .08s}
 }
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   #side{height:auto!important;min-height:0!important;overflow:visible!important}
   #stage{height:auto!important;min-height:0!important}
   .tiles,.chips{scroll-padding-inline:14px}
@@ -840,7 +840,7 @@ textarea{min-height:56px}
   .sticky-gen{margin-top:0!important}
 }
 /* v5.1 móvil: barra abajo del todo + cabecera fija que respeta la isla/notch */
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   :root{--safeT:env(safe-area-inset-top,0px);--safeB:env(safe-area-inset-bottom,0px);--hdr:54px}
   html,body{height:auto;min-height:100%;overflow-x:hidden}
   body{overflow-y:visible}
@@ -860,7 +860,7 @@ textarea{min-height:56px}
 /* v6 móvil: dos vistas por sección y panel compacto (escritorio intacto) */
 #mtabs{display:none}
 .mrow2,.mrow3{display:contents}
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   :root{--mt:52px}
   body.hasmt main{padding-top:calc(var(--hdr) + var(--safeT) + var(--mt))}
   body.hasmt #mtabs{display:block;position:fixed;z-index:39;left:0;right:0;top:calc(var(--hdr) + var(--safeT));padding:8px 14px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
@@ -919,14 +919,14 @@ textarea{min-height:56px}
   body.mv1 .ghead>.lbl{display:none}
   body.mv1 .ghead{padding-top:8px}
 }
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   .mrow2 .bar2>summary{white-space:nowrap;gap:6px;padding:0 12px}
   .mrow2 .bar2>summary .lbl{letter-spacing:.1em}
   .mrow2 .bar2>summary .row{flex:none}
   .dz>div{min-width:0}.dz a{display:inline-block;font-size:12px;margin-top:2px}
   .dz b{display:block}
 }
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   [data-vbox]>span:first-child{display:inline!important;font-size:16px}
   .tiles:has([data-vbox]){overflow:visible}.tiles:has([data-vbox]) .tile{flex:1 1 0}
   .pj{gap:12px;padding-top:12px}
@@ -940,7 +940,7 @@ textarea{min-height:56px}
   .tabs{padding-bottom:10px}
   .tab{height:38px;font-size:9.5px}
 }
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   .profhl{gap:10px;padding:14px}
   .phead{gap:12px}.bigav{width:58px;height:58px}.pname{font-size:22px}
   .stats{display:flex;gap:8px}.stats>div{flex:1;display:flex;align-items:baseline;justify-content:center;gap:6px;padding:6px}
@@ -954,13 +954,13 @@ textarea{min-height:56px}
 @media (max-width:1440px){.guia{display:none}}
 header .meter span,header .pill{white-space:nowrap}
 /* v6.1 móvil: Generar fijo encima de la barra (no se mueve al hacer scroll) */
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   body.mv0 .sticky-gen{position:fixed!important;left:0;right:0;bottom:calc(66px + var(--safeB))!important;margin:0!important;padding:12px 14px 10px!important;z-index:35;background:linear-gradient(180deg,transparent,var(--bg) 40%)!important}
   body.mv0 #side{padding-bottom:96px}
   body.mv0 #toast{bottom:calc(150px + var(--safeB))!important}
 }
 /* v6.2 móvil: la barra siempre llega al borde (rellena cualquier hueco de iOS) y Creaciones ordenado */
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   #mnav{overflow:visible}
   #mnav:after{content:"";position:absolute;left:-1px;right:-1px;top:calc(100% - 1px);height:140px;background:inherit;backdrop-filter:inherit;-webkit-backdrop-filter:inherit;pointer-events:none}
   #mnav .nb{font-size:9.5px!important}
@@ -973,15 +973,15 @@ header .meter span,header .pill{white-space:nowrap}
   .cre .fold-it .n{font-size:11px;opacity:.6}
   .cre .ghead .r>button[data-a="selMode"]{display:none}
 }
-@media (max-width:720px){.cre .fold-it.on,.cre .fold-it.on span{color:var(--ink)!important}}
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){.cre .fold-it.on,.cre .fold-it.on span{color:var(--ink)!important}}
 /* v6.3 móvil: los menús salen encima de la barra, que nunca desaparece */
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   #menu.menu{bottom:calc(66px + var(--safeB) + 8px)!important;max-height:calc(100vh - 66px - var(--safeB) - var(--hdr) - var(--safeT) - 24px)!important;max-height:calc(100dvh - 66px - var(--safeB) - var(--hdr) - var(--safeT) - 24px)!important;z-index:61;box-shadow:0 -10px 40px rgba(0,0,0,.55),0 0 0 1px var(--line2)}
   #mnav{z-index:62}
   body:has(#menu) #mnav .nb[data-a="mobileMore"]{color:var(--ink)}
   body:has(#menu) #mnav .nb[data-a="mobileMore"] svg{stroke:var(--hot)}
 }
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   #menu.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:10px}
   #menu.mgrid:before{grid-column:1/-1}
   #menu.mgrid hr{display:none}
@@ -991,9 +991,9 @@ header .meter span,header .pill{white-space:nowrap}
   #menu.mgrid button .soon{font-size:7.5px;letter-spacing:.14em;margin-top:2px}
   #menu.mgrid button:active{background:var(--gradSoft)}
 }
-@media (max-width:720px){#menu.mgrid button .row{align-items:center;justify-content:center;width:100%}#menu.mgrid button .row>span{text-align:center}}
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#menu.mgrid button .row{align-items:center;justify-content:center;width:100%}#menu.mgrid button .row>span{text-align:center}}
 /* v6.4 móvil: con poco contenido iOS subía la barra. La página mide siempre al menos toda la pantalla. */
-@media (max-width:720px){
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
   html{min-height:100vh;min-height:100lvh}
   body{min-height:100vh;min-height:100lvh}
   main{min-height:calc(100vh + 1px);min-height:calc(100lvh + 1px);box-sizing:border-box}
@@ -1013,9 +1013,9 @@ header .meter span,header .pill{white-space:nowrap}
 .lvimg img{width:100%;height:100%;object-fit:cover}
 #lvi h2{margin-top:14px}
 .lvimg .pha{height:100%}.lvimg .pha svg{transform:scale(.6);opacity:.6}
-@media (max-width:720px){ .modal.wide .lb{gap:6px}.modal.wide .lbn{width:34px;height:34px}.lvimg{height:auto;max-height:52vh;width:100%} #lvi h2{font-size:21px;margin-top:10px} #lvi .row .btn{flex:1 1 45%} }
-@media (max-width:720px){.tiles:not(:has(.tile:nth-child(4))) .tile{flex:1 1 0;min-width:0}}
-@media (max-width:720px){.mrow2>.tile:last-child:nth-child(3){grid-column:1/-1}}
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){ .modal.wide .lb{gap:6px}.modal.wide .lbn{width:34px;height:34px}.lvimg{height:auto;max-height:52vh;width:100%} #lvi h2{font-size:21px;margin-top:10px} #lvi .row .btn{flex:1 1 45%} }
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){.tiles:not(:has(.tile:nth-child(4))) .tile{flex:1 1 0;min-width:0}}
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){.mrow2>.tile:last-child:nth-child(3){grid-column:1/-1}}
 /* bienvenida */
 .modal.welm{padding:0;overflow:hidden;width:min(480px,100%)}
 .wel .welhero{position:relative;padding:34px 26px 22px;background:radial-gradient(120% 90% at 0% 0%,rgba(255,138,91,.28),transparent 60%),radial-gradient(100% 80% at 100% 0%,rgba(139,92,246,.30),transparent 60%),var(--panel);border-bottom:1px solid var(--line)}
@@ -1038,13 +1038,34 @@ header .meter span,header .pill{white-space:nowrap}
 .welbtns .btn{white-space:nowrap;padding:0 18px}
 .devemo{transform:none!important;width:44px!important;height:44px!important;border-radius:14px!important;border:0!important;background:var(--grad)!important;color:#fff!important;display:grid!important;place-items:center!important;font-size:18px!important;margin-bottom:12px;box-shadow:0 10px 24px -10px var(--hotGlow)}
 .devemo>*{transform:none!important}
+/* móvil en horizontal: misma app que en vertical, pero con las barras más bajas para que quede sitio al contenido */
+@media (max-height:500px) and (orientation:landscape) and (pointer:coarse){
+  :root{--hdr:44px!important}
+  header{padding-left:max(14px,env(safe-area-inset-left))!important;padding-right:max(14px,env(safe-area-inset-right))!important}
+  main,#mtabs{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+  #mnav{height:calc(50px + var(--safeB,0px))!important;padding-top:3px!important;padding-left:max(8px,env(safe-area-inset-left))!important;padding-right:max(8px,env(safe-area-inset-right))!important}
+  #mnav .nb{height:44px!important;flex-direction:row;gap:7px;font-size:9.5px}
+  main{padding-bottom:calc(64px + var(--safeB,0px))!important}
+  .sticky-gen,body.mv0 .sticky-gen{position:static!important;margin:8px 0 0!important;padding:0!important;background:none!important}
+  .grid,.grid.S,.grid.M,.grid.L{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  #fbw{bottom:calc(60px + var(--safeB,0px))!important;right:max(12px,env(safe-area-inset-right))!important;left:auto!important}
+  .modal{max-height:94vh;max-height:94dvh}
+}
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){
+  #scrim{padding-bottom:var(--kb,0px)!important;transition:padding-bottom .2s}
+  .modal{max-height:calc(var(--vvh,100vh) - 24px)!important}
+}
+/* accesibilidad: anillo de foco solo con teclado, y menos movimiento si lo pides en el sistema */
+:focus-visible{outline:2px solid var(--hot,#ec4899);outline-offset:2px}
+input:focus-visible,textarea:focus-visible,select:focus-visible,.modal:focus-visible,.modal:focus{outline:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 /* avisos fijos (datos en riesgo) */
 #bars{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 52px);width:min(640px,calc(100% - 24px));z-index:98;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 #bars .bar{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 14px;border-radius:14px;background:var(--panel);border:1px solid var(--hotLine);box-shadow:0 12px 40px rgba(0,0,0,.35);font-size:12.5px;line-height:1.4;color:var(--ink)}
 #bars .bar>span{flex:1;min-width:0}
 #bars .bar .btn{flex:none;white-space:nowrap}
 #bars .bar .iconbtn{flex:none;width:30px;height:30px}
-@media (max-width:720px){#bars{top:calc(env(safe-area-inset-top,0px) + 62px)}#bars .bar{flex-wrap:wrap}}
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#bars{top:calc(env(safe-area-inset-top,0px) + 62px)}#bars .bar{flex-wrap:wrap}}
 </style></head>
 <body>
 <header>
@@ -1059,7 +1080,7 @@ header .meter span,header .pill{white-space:nowrap}
 <nav id="mnav"></nav>
 <div id="mtabs"></div>
 
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 <script>(function () { function show(msg) { try { var b = document.getElementById('errbar'); if (!b) { b = document.createElement('div'); b.id = 'errbar'; b.style.cssText = 'position:fixed;left:12px;right:12px;top:52px;z-index:999;background:#b3261e;color:#fff;padding:10px 14px;border-radius:12px;font:12px -apple-system,sans-serif;white-space:pre-wrap'; b.onclick = function () { b.remove(); }; document.body.appendChild(b); } b.textContent = 'Saga Studio ha encontrado un error: ' + msg + '\nHaz una captura y pásamela. (Toca para cerrar)'; } catch (x) {} }
   window.addEventListener('error', function (e) { show((e.message || e) + (e.lineno ? ' (línea ' + e.lineno + ')' : '')); });
   window.addEventListener('unhandledrejection', function (e) { var r = e.reason; if (r && r.user) return; show((r && (r.message || r)) || 'error'); }); })();
@@ -1282,6 +1303,7 @@ const defaultState = () => {
   };
 };
 /* ---------- validar y poner al día un estado: lo usan el arranque, «Restaurar copia» y lo que llega del Drive ---------- */
+const MOBQ = '(max-width:720px), (max-height:500px) and (orientation:landscape) and (pointer:coarse)'; const isMob = () => matchMedia(MOBQ).matches; // móvil: también el móvil en horizontal
 const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
 const TRASH_DAYS = 30;
 function stateProblem(raw) { // '' si se puede usar; si no, por qué
@@ -1368,9 +1390,10 @@ function modal(html, onMount, cls = '', onClose) {
   modalBack = document.activeElement;
   const sc = document.createElement('div'); sc.className = 'scrim'; sc.id = 'scrim'; sc._onClose = onClose;
   sc.innerHTML = `<div class="modal ${cls}" role="dialog" aria-modal="true" tabindex="-1"><button class="iconbtn x" data-a="closeModal" title="Cerrar" aria-label="Cerrar">✕</button>${html}</div>`;
-  const md = sc.firstElementChild, h = md.querySelector('h2'); if (h) { h.id = 'mdl-h'; md.setAttribute('aria-labelledby', 'mdl-h'); }
+  const md = sc.firstElementChild;
   sc.addEventListener('mousedown', e => { if (e.target === sc) closeModal(); });
-  document.body.appendChild(sc); onMount && onMount(sc);
+  document.body.appendChild(sc); onMount && onMount(sc); a11y();
+  const h = md.querySelector('h2'); if (h) md.setAttribute('aria-label', h.textContent.trim().slice(0, 80));
   if (!md.contains(document.activeElement)) md.focus({ preventScroll: true });
   return sc;
 }
@@ -1392,9 +1415,12 @@ function menu(x, y, items) {
   document.body.appendChild(m);
   const r = m.getBoundingClientRect(); if (r.bottom > innerHeight - 8) m.style.top = Math.max(8, innerHeight - r.height - 8) + 'px'; if (r.right > innerWidth - 8) m.style.left = (innerWidth - r.width - 8) + 'px';
   setTimeout(() => document.addEventListener('pointerdown', closeMenuOut), 0);
+  m.setAttribute('role', 'menu'); menuBack = document.activeElement; const b0 = m.querySelector('button:not([disabled])'); if (b0 && menuBack && menuBack !== document.body) b0.focus({ preventScroll: true });
 }
+let menuBack = null;
 function closeMenuOut(e) { if (!e.target.closest('#menu')) { closeMenu(); } }
-function closeMenu() { if ($('#menu')) window.__menuClosedAt = Date.now(); else window.__lastMenu = ''; $('#menu')?.remove(); document.removeEventListener('pointerdown', closeMenuOut); }
+function closeMenu() { const had = $('#menu'); if (had) window.__menuClosedAt = Date.now(); else window.__lastMenu = ''; had?.remove(); document.removeEventListener('pointerdown', closeMenuOut);
+  if (had && had.contains(document.activeElement) === false && menuBack && menuBack.isConnected && document.activeElement === document.body) try { menuBack.focus({ preventScroll: true }); } catch (e) {} menuBack = null; }
 async function copy(t) { try { await navigator.clipboard.writeText(t); toast('Copiado'); } catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); toast('Copiado'); } catch (x) { toast('No se pudo copiar'); } ta.remove(); } }
 function download(name, data, type = 'application/json') { const a = document.createElement('a'); const u = URL.createObjectURL(data instanceof Blob ? data : new Blob([data], { type })); a.href = u; a.download = name; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 120000); }
 /* ============ prompts ============ */
@@ -2022,6 +2048,8 @@ function renderMTabs() {
   if (el) el.innerHTML = `<div class="mtseg">${[0, 1].map(i => `<button class="${v === i ? 'on' : ''}" data-mv="${i}">${esc(t[i][0])}${t[i][1] ? ` <i>${t[i][1]}</i>` : ''}</button>`).join('')}<span class="mtknob" style="left:${v ? '50%' : '4px'}"></span></div>`;
 }
 function render() {
+  // quien usa el teclado no pierde su sitio cuando la pantalla se vuelve a pintar
+  const fa = document.activeElement; let fk = ''; if (fa && fa !== document.body && fa.closest && fa.closest('#side,#stage,#nav,#mnav,#hright,#mtabs')) { const at = [...fa.attributes].find(a => a.name.startsWith('data-')); if (at) fk = `[${at.name}="${CSS.escape(at.value)}"]`; }
   document.documentElement.dataset.theme = S.theme; document.documentElement.dataset.ui = S.ui || 'normal';
   renderHeader(); renderNav();
   const out = S.section.startsWith('lib:') ? renderLib(S.section.slice(4)) : (R[S.section] || R.perfil)();
@@ -2032,6 +2060,8 @@ function render() {
   const st = $('#storage');
   if (st && navigator.storage?.estimate) navigator.storage.estimate().then(e => { const u = e.usage || 0, q = e.quota || 1; st.innerHTML = `<i><b style="width:${Math.max(2, u / q * 100)}%"></b></i>${(u / 1e6).toFixed(0)} MB de ${(q / 1e9).toFixed(1)} GB`; });
   const ta = $('[data-imgprompt]'); if (ta) syncHl(ta);
+  a11y();
+  if (fk && !document.activeElement.closest('#scrim') && document.activeElement !== fa) { const n = $(fk); if (n) try { n.focus({ preventScroll: true }); } catch (e) {} }
 }
 function syncHl(ta) { const hl = ta.parentElement.querySelector('.hl'); if (!hl) return; hl.innerHTML = hlPrompt(ta.value); hl.scrollTop = ta.scrollTop; }
 function renderSelBar() {
@@ -2702,7 +2732,7 @@ async function importPack(L, quiet) {
     if (old) upd++; else { S.libs.vestidor.unshift(it); n++; }
     const pe = $('#nprog'); if (pe) { pe.textContent = `${k + 1} de ${L.length} · ${o.name}`; $('#nbar').style.width = ((k + 1) / L.length * 100) + '%'; }
   }
-  S.filter.vestidor = 'Mi Notion'; save(); if (!quiet) closeModal(); render(); toast(`${n} prendas nuevas, ${upd} actualizadas`);
+  if (!quiet || !S.vestidorWeb) S.filter.vestidor = 'Mi Notion'; save(); if (!quiet) closeModal(); render(); if (!quiet || S.vestidorWeb) toast(`${n} prendas nuevas, ${upd} actualizadas`); // la primera carga, en silencio: no tapa la bienvenida
 }
 Object.assign(A, {
   async gcNow() { if (!(await ask('¿Liberar espacio ahora?\n\nBorro de este dispositivo las fotos, vídeos y audios que ya no usa nada: ni tus datos, ni la papelera, ni los puntos de recuperación.'))) return;
@@ -2822,12 +2852,12 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-receta]'))) { return applyReceta(RECETAS.find(r => r.id === el.dataset.receta)); }
   if ((el = d('[data-animate]'))) { const p = S.creaciones.find(x => x.id === el.dataset.animate); S.vid.que = 'crear'; S.vid.startRef = p.media; save(); return render(); }
   if ((el = d('[data-favcre]'))) { e.stopPropagation(); const x = S.creaciones.find(y => y.id === el.dataset.favcre); x.fav = !x.fav; save(); return render(); }
-  if ((el = d('[data-cre]'))) { const id = el.dataset.cre; if (S.selMode) { S.selected = S.selected.includes(id) ? S.selected.filter(x => x !== id) : [...S.selected, id]; return render(); } if (S.section !== 'creaciones') return lightbox(id); if (S.picked.cre === id && innerWidth > 720) return lightbox(id); S.picked.cre = id; if (innerWidth <= 720) { S.mv = S.mv || {}; S.mv.creaciones = 0; try { scrollTo(0, 0); } catch (x) {} } save(); return render(); }
+  if ((el = d('[data-cre]'))) { const id = el.dataset.cre; if (S.selMode) { S.selected = S.selected.includes(id) ? S.selected.filter(x => x !== id) : [...S.selected, id]; return render(); } if (S.section !== 'creaciones') return lightbox(id); if (S.picked.cre === id && !isMob()) return lightbox(id); S.picked.cre = id; if (isMob()) { S.mv = S.mv || {}; S.mv.creaciones = 0; try { scrollTo(0, 0); } catch (x) {} } save(); return render(); }
   if ((el = d('[data-folder]'))) { S.creFolder = el.dataset.folder; S.picked.cre = ''; save(); return render(); }
   if ((el = d('[data-favref]'))) { e.stopPropagation(); const [k, id] = el.dataset.favref.split('|'); const x = S[k].find(y => y.id === id); x.fav = !x.fav; save(); return render(); }
   if ((el = d('[data-recreate2]'))) { e.stopPropagation(); const [k, id] = el.dataset.recreate2.split('|'); S.picked[k] = id; return k === 'fototeca' ? A.useCopy() : A.useMotion(); }
   if ((el = d('[data-recreate]'))) { S.picked.filmoteca = el.dataset.recreate; return A.useMotion(); }
-  if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); if ((S.picked[kk] === id || innerWidth <= 720) && !el.dataset.gol && LIBS[kk]) { S.picked[kk] = id; save(); return libViewer(kk, id); } S.picked[kk] = id; if (innerWidth <= 720 && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
+  if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); if ((S.picked[kk] === id || isMob()) && !el.dataset.gol && LIBS[kk]) { S.picked[kk] = id; save(); return libViewer(kk, id); } S.picked[kk] = id; if (isMob() && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
   if ((el = d('[data-color]'))) { S.sel.color = S.sel.color === el.dataset.color ? '' : el.dataset.color; S.img.prompt = ''; save(); return render(); }
   if ((el = d('[data-apikey]'))) { const id = el.dataset.apikey; if (S.apis[id]?.key) delete S.apis[id]; else { const o = await textModal('Conectar ' + id, [['k','Clave de API','pega aquí tu clave']]); if (!o || !o.k) return apisModal(); S.apis[id] = { key: o.k }; } save(); renderHeader(); return apisModal(); }
   if ((el = d('[data-amode]'))) { S.aud.modo = el.dataset.amode; save(); return render(); }
@@ -2896,7 +2926,28 @@ document.addEventListener('drop', async e => {
 });
 document.addEventListener('toggle', e => { const d = e.target; if (d.matches && d.matches('details[data-sec]')) { S.open = S.open || {}; S.open[d.dataset.sec] = d.open; save(); } }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeMenu(); if (F.open) { F.open = false; fbStop(); paintFb(); } } });
+/* ---------- accesibilidad: todo lo que se toca también se alcanza con el teclado y tiene nombre ---------- */
+const CLICKABLE = '[data-a],[data-go],[data-pick],[data-cre],[data-choose],[data-tile],[data-folder],[data-receta],[data-wz],[data-wzstep],[data-wizmode],[data-amode],[data-amodel],[data-atag],[data-char],[data-filter],[data-imgmodel],[data-vidmodel],[data-vmotor],[data-vcam],[data-vstyle],[data-vratio],[data-ratio],[data-vbox],[data-sheet],[data-color],[data-compt],[data-recreate],[data-recreate2],[data-copy],[data-paptab],[data-fichaimg],[data-compimg],[data-guia],[data-mv],[data-ptab],[data-size],[data-imgq],[data-vq],[data-fbtipo],[data-untile],[data-unvbox],[data-favcre],[data-favref],[data-animate],[data-restore],[data-purge],[data-apikey],[data-snapgo],[data-snapdl],[data-lvuse],[data-choose]';
+function a11y() {
+  for (const el of document.body.querySelectorAll(CLICKABLE)) { if (el.matches('button,a[href],input,select,textarea,summary,label') || el.hasAttribute('tabindex')) continue; el.tabIndex = 0; if (!el.hasAttribute('role')) el.setAttribute('role', 'button'); }
+  for (const el of document.body.querySelectorAll('button:not([aria-label]),[role=button]:not([aria-label])')) if (!el.textContent.trim() && el.title) el.setAttribute('aria-label', el.title);
+  for (const im of document.body.querySelectorAll('img:not([alt])')) im.alt = '';
+  for (const t of document.body.querySelectorAll('button.toggle')) { t.setAttribute('role', 'switch'); t.setAttribute('aria-checked', t.classList.contains('on')); if (!t.getAttribute('aria-label')) { const r = t.parentElement; const txt = r ? [...r.childNodes].filter(n => n !== t).map(n => n.textContent).join(' ').replace(/\s+/g, ' ').trim() : ''; t.setAttribute('aria-label', txt.slice(0, 80) || t.title || 'Activar'); } }
+}
+let a11yQ = 0; new MutationObserver(() => { if (!a11yQ) a11yQ = requestAnimationFrame(() => { a11yQ = 0; a11y(); }); }).observe(document.body, { childList: true, subtree: true });
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if ((e.key === 'Enter' || e.key === ' ') && t.getAttribute && t.getAttribute('role') === 'button' && !t.matches('button,a,input,textarea,select,summary')) { e.preventDefault(); t.click(); return; }
+  if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && $('#menu') && $('#menu').contains(t)) { const bs = [...$('#menu').querySelectorAll('button:not([disabled])')]; const i = bs.indexOf(t); const n = bs[(i + (e.key === 'ArrowDown' ? 1 : -1) + bs.length) % bs.length]; if (n) { e.preventDefault(); n.focus(); } return; }
+  if (e.key === 'Tab') { const sc = $('#scrim'); if (!sc) return; // el foco no se escapa de la ventana abierta
+    const f = [...sc.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(x => !x.disabled && x.getClientRects().length);
+    if (!f.length) return; const a = document.activeElement, first = f[0], last = f[f.length - 1];
+    if (!sc.contains(a) || (e.shiftKey && (a === first || a === sc.firstElementChild))) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+    else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); } }
+});
 window.addEventListener('resize', () => $$('.seg').forEach(placeKnob));
+/* teclado del móvil: las hojas que suben desde abajo se quedan por encima del teclado (iPhone) */
+if (window.visualViewport) { const vv = visualViewport; const kb = () => { const h = Math.max(0, innerHeight - vv.height - vv.offsetTop); document.documentElement.style.setProperty('--kb', (h > 80 ? h : 0) + 'px'); document.documentElement.style.setProperty('--vvh', vv.height + 'px'); }; vv.addEventListener('resize', kb); kb(); }
 
 /* ---------- arranque ---------- */
 (async () => {
