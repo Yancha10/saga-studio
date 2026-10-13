@@ -2090,7 +2090,7 @@ function importResultModal(kind = 'img', prompt = '', refs = []) {
       files = await okFiles(files);
       if (!files.length) return toast('Añade al menos una foto o un vídeo');
       const cost = +sc.querySelector('#impc').value || 0; const m = sc.querySelector('#impm').value;
-      for (const [i, f] of files.entries()) S.creaciones.unshift({ id: uid(), kind: f.type.startsWith('video') ? 'vid' : 'img', media: await putMedia(f), prompt, model: m, cost: i === 0 ? cost : 0, date: today(), t: now(), fav: false, folder: '', char: S.active, trash: false, nsfw: !!S.nsfw || undefined });
+      try { for (const [i, f] of files.entries()) S.creaciones.unshift({ id: uid(), kind: f.type.startsWith('video') ? 'vid' : 'img', media: await putMedia(f), prompt, model: m, cost: i === 0 ? cost : 0, date: today(), t: now(), fav: false, folder: '', char: S.active, trash: false, nsfw: !!S.nsfw || undefined }); } finally { save(); render(); } // si uno falla, lo anterior queda guardado
       S.mv = S.mv || {}; S.mv[S.section] = 1; save(); closeModal(); render(); toast('Guardado en Creaciones');
     };
   });
@@ -2363,7 +2363,7 @@ async function gdSync(opts = {}) {
     } else if (localChanged) push = true;
     // 2) archivos: subir los que falten en el Drive y bajar los que falten aquí (solo los que se usan)
     const used = mediaRefs(S); const keys = new Set(await idbKeys());
-    if (opts.full || push || [...used].some(k => !GD.remote[k] || !keys.has(k))) {
+    if (opts.full || [...used].some(k => !GD.remote[k] || !keys.has(k))) {
       const list = []; let page = '';
       do { const j = await gdJson(`${GD.API}/files?q=${gq(`'${GD.media}' in parents and trashed=false`)}&fields=nextPageToken,files(id,appProperties)&pageSize=1000${page ? '&pageToken=' + page : ''}`); list.push(...j.files); page = j.nextPageToken; } while (page);
       GD.remote = {}; list.forEach(f => { const k = f.appProperties && f.appProperties.sagaId; if (k) GD.remote[k] = f.id; }); gdMetaSave();
@@ -2374,7 +2374,7 @@ async function gdSync(opts = {}) {
     for (const k of down) { gdSet('sync', `Bajando ${++n} de ${tot}…`); const b = await (await gdFetch(`${GD.API}/files/${GD.remote[k]}?alt=media`)).blob(); if (!db) break; try { await idbPut(k, b); } catch (x) { throw userErr(isQuota(x) ? 'No queda espacio en este dispositivo para bajar tus archivos del Drive' : 'No se pudo guardar un archivo bajado del Drive'); } setUrl(k, b); }
     if (down.length) render();
     // 3) datos, después de los archivos: así el otro dispositivo nunca ve una ficha sin su foto
-    if (push) await gdPushState(rt);
+    if (push) await gdPushState(rt, tot > 0); // si hubo subidas/bajadas (tarda), se vuelve a mirar el Drive justo antes de guardar
     await gdTrashOrphans();
     S.drive.last = Date.now(); writeState(); GD.retryN = 0;
     gdSet('ok', 'Todo guardado en tu Drive · ' + gdTime());
@@ -2389,8 +2389,8 @@ async function gdSync(opts = {}) {
   finally { GD.busy = false; job(-1); if (GD.again && !GD.conflict) { GD.again = false; setTimeout(() => gdSync(), 300); } }
 }
 /* sube los datos solo si el Drive sigue como lo vi (seen = su fecha); si otro dispositivo guardó entretanto, vuelta a empezar */
-async function gdPushState(seen) {
-  const now2 = await gdFind(STATE_NAME, GD.folder); const mt = now2 ? Date.parse(now2.modifiedTime) : 0;
+async function gdPushState(seen, recheck) {
+  const now2 = recheck ? await gdFind(STATE_NAME, GD.folder) : (GD.stateId ? { id: GD.stateId, modifiedTime: new Date(seen).toISOString() } : null); const mt = now2 ? Date.parse(now2.modifiedTime) : 0;
   if ((now2 ? mt : 0) !== (seen || 0) && mt > (S.drive.syncAt || 0) + 1000) throw Object.assign(new Error('again'), { again: true });
   const local = syncedState(); const h = hash(JSON.stringify(local));
   const blob = new Blob([JSON.stringify(local)], { type: 'application/json' });
@@ -2809,8 +2809,8 @@ A.importNotionFolder = async () => {
   toast(`${n} prendas nuevas, ${upd} actualizadas, ${imgs} imágenes`);
 };
 function setFolder(ids, fid) { S.creaciones.filter(x => ids.includes(x.id)).forEach(p => p.folder = fid); save(); render(); toast(fid ? 'Guardado en la carpeta' : 'Sacado de la carpeta'); }
-async function addToRefLib(key, fs) { fs = await okFiles(fs, key === 'filmoteca' ? ['video', 'image'] : ['image', 'video']); for (const f of fs) S[key].unshift({ id: uid(), media: await putMedia(f), prompt: '', model: '', cat: '', escena: '', date: today(), fav: false, n: S[key].length + 1 }); save(); render(); if (fs.length) toast(fs.length + ' añadido(s)'); }
-async function addToLib(lib, fs) { const L = LIBS[lib]; fs = await okFiles(fs, ['image']); for (const f of fs) S.libs[lib].unshift({ id: uid(), name: lib === 'vestidor' ? 'Prenda Nº ' + (S.libs[lib].length + 1) : f.name.replace(/\.[^.]+$/, ''), cat: L.cats[0] || '', tags: lib === 'vestidor' ? ['Nueva'] : [], img: await putMedia(f), desc: '' }); if (fs.length) S.picked[lib] = S.libs[lib][0].id; save(); render(); }
+async function addToRefLib(key, fs) { fs = await okFiles(fs, key === 'filmoteca' ? ['video', 'image'] : ['image', 'video']); try { for (const f of fs) S[key].unshift({ id: uid(), media: await putMedia(f), prompt: '', model: '', cat: '', escena: '', date: today(), fav: false, n: S[key].length + 1 }); } finally { save(); render(); } if (fs.length) toast(fs.length + ' añadido(s)'); }
+async function addToLib(lib, fs) { const L = LIBS[lib]; fs = await okFiles(fs, ['image']); try { for (const f of fs) S.libs[lib].unshift({ id: uid(), name: lib === 'vestidor' ? 'Prenda Nº ' + (S.libs[lib].length + 1) : f.name.replace(/\.[^.]+$/, ''), cat: L.cats[0] || '', tags: lib === 'vestidor' ? ['Nueva'] : [], img: await putMedia(f), desc: '' }); } finally { if (fs.length && S.libs[lib][0]) S.picked[lib] = S.libs[lib][0].id; save(); render(); } }
 
 /* ---------- delegación de eventos ---------- */
 document.addEventListener('click', async e => {
