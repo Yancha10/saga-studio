@@ -2139,7 +2139,8 @@ function papeleraModal(tab = 'todo') {
   modal(`<h2>Papelera</h2><p class="note">Lo que borras se guarda aquí <b>30 días</b> y después se elimina solo. «Borrar» no se puede deshacer.</p>
     <div class="chips" style="margin:12px 0">${T.map(([k, t]) => `<button class="chip ${tab === k ? 'on' : ''}" data-paptab="${k}">${t} <i>${S.trash.filter(x => k === 'todo' || x.tipo === k).length}</i></button>`).join('')}</div>
     ${L.length ? `<div class="paplist">${L.map(x => `<div class="papit"><div class="papim">${x.thumb && src(x.thumb) ? `<img src="${src(x.thumb)}">` : '<span>◇</span>'}</div><b>${esc(x.name || 'Sin nombre')}</b><small>quedan ${Math.max(1, 30 - Math.floor((now() - x.t) / 864e5))} días</small><div class="row" style="gap:4px"><button class="btn sm" data-restore="${x.id}">↩ Restaurar</button><button class="btn sm ghost" data-purge="${x.id}">Borrar</button></div></div>`).join('')}</div>
-      <button class="btn ghost wide" style="margin-top:12px" data-a="vaciar">Vaciar la papelera</button>` : '<p class="note" style="padding:20px 0;text-align:center">La papelera está vacía.</p>'}`, null, 'wide');
+      <button class="btn ghost wide" style="margin-top:12px" data-a="vaciar">Vaciar la papelera</button>` : '<p class="note" style="padding:20px 0;text-align:center">La papelera está vacía.</p>'}
+    <p class="note" style="margin-top:14px">Las fotos y vídeos que ya nada usa se borran solos de este dispositivo a los ${GC_DAYS} días (nunca si están en la papelera o en un punto de recuperación). <a class="lnk" data-a="gcNow">Liberar espacio ahora</a></p>`, null, 'wide');
 }
 function restoreTrash(id) {
   const x = S.trash.find(y => y.id === id); if (!x) return;
@@ -2344,6 +2345,7 @@ async function gdSync(opts = {}) {
     if (down.length) render();
     // 3) datos, después de los archivos: así el otro dispositivo nunca ve una ficha sin su foto
     if (push) await gdPushState(rt);
+    await gdTrashOrphans();
     S.drive.last = Date.now(); writeState(); GD.retryN = 0;
     gdSet('ok', 'Todo guardado en tu Drive · ' + gdTime());
     if (opts.toast) toast(tot ? `Drive al día · ${up.length} subidos, ${down.length} bajados` : 'Drive al día');
@@ -2649,6 +2651,35 @@ async function snapGo(k) {
 }
 async function snapDl(k) { const b = await idbGet(k); if (!b) return; let o; try { o = JSON.parse(await b.text()); } catch (e) { return download(`saga-recuperacion-${k.slice(5)}.json`, b); }
   download(`saga-recuperacion-${k.slice(5)}.json`, o.raw != null ? o.raw : JSON.stringify({ kind: 'saga-backup', v: 1, date: new Date(o.t).toISOString(), state: o.state, media: {} }), 'application/json'); }
+/* ---------- limpieza de archivos que ya nada usa ----------
+   Un archivo (foto, vídeo, audio) solo se borra de este dispositivo si NADA lo usa: ni tus datos, ni la papelera, ni ningún punto de recuperación,
+   ni la nota que estás escribiendo, y además lleva 7 días sin usarse (por si deshaces algo). Se mira como mucho una vez al día.
+   En tu Drive nunca se borra del todo: va a la papelera de Google Drive (que guarda 30 días). */
+const GC_KEY = 'saga-gc', GC_DAYS = 7;
+const gcGet = () => { try { const g = JSON.parse(localStorage.getItem(GC_KEY) || '{}'); return isObj(g) ? g : {}; } catch (e) { return {}; } };
+const gcSet = g => { try { localStorage.setItem(GC_KEY, JSON.stringify(g)); return true; } catch (e) { return false; } };
+const inUse = async () => { const u = mediaRefs(S); (await snapRefs()).forEach(k => u.add(k)); if (F.audio) u.add(F.audio); F.archivos.forEach(a => u.add(a.data)); return u; };
+async function mediaGC(o = {}) { // o.now: sin esperar los 7 días (lo pides tú). Devuelve { n, bytes }
+  if (!db || RECOVERY || jobs) return { n: 0, bytes: 0 };
+  const g = gcGet(); if (!o.now && now() - (g.at || 0) < 864e5) return { n: 0, bytes: 0 };
+  const used = await inUse(); const seen = isObj(g.seen) ? g.seen : {}; const next = {}, del = [];
+  for (const k of (await idbKeys()).filter(k => String(k).startsWith('m:'))) if (!used.has(k)) { next[k] = +seen[k] || now(); if (o.now || now() - next[k] >= GC_DAYS * 864e5) del.push(k); }
+  if (!gcSet(Object.assign(g, { at: now(), seen: next }))) return { n: 0, bytes: 0 }; // sin poder apuntar nada, no se borra nada
+  const again = await inUse(); const go = del.filter(k => !again.has(k)); // segunda comprobación justo antes de borrar
+  let bytes = 0; for (const k of go) { const b = await idbGet(k); bytes += (b && b.size) || 0; }
+  if (go.length) { await idbDel(go); go.forEach(k => { if (urls[k]) { URL.revokeObjectURL(urls[k]); delete urls[k]; } delete next[k]; }); }
+  g.seen = next; g.log = [{ t: now(), n: go.length, bytes }, ...(Array.isArray(g.log) ? g.log : [])].slice(0, 20); if (gdOn()) g.drive = [...new Set([...(g.drive || []), ...go])];
+  gcSet(g); if (go.length) console.info(`Saga Studio: ${go.length} archivos sin usar borrados (${(bytes / 1e6).toFixed(1)} MB)`, go);
+  return { n: go.length, bytes };
+}
+/* los que se borraron aquí, a la papelera de Drive, cuando Drive está al día con este dispositivo */
+async function gdTrashOrphans() {
+  const g = gcGet(); const L = Array.isArray(g.drive) ? g.drive : []; if (!L.length || gdPending()) return;
+  const used = mediaRefs(S); const keep = [];
+  for (const k of L) { if (used.has(k)) continue; const id = GD.remote[k]; if (!id) continue;
+    try { await gdFetch(`${GD.API}/files/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ trashed: true }) }); delete GD.remote[k]; } catch (e) { keep.push(k); if (e.need) break; } }
+  g.drive = keep; gcSet(g); gdMetaSave();
+}
 /* modo recuperación: lo guardado no se pudo leer al abrir; nada se pisa hasta que decides */
 function recoveryModal() {
   modal(`<h2>Tus datos necesitan revisión</h2><p class="note" style="margin:8px 0 16px;white-space:pre-line">Lo guardado en este dispositivo no se pudo leer (${esc(RECOVERY ? RECOVERY.why : '')}).\nNo he borrado nada: mientras decides, la app funciona pero no guarda cambios.</p>
@@ -2673,6 +2704,8 @@ async function importPack(L, quiet) {
   S.filter.vestidor = 'Mi Notion'; save(); if (!quiet) closeModal(); render(); toast(`${n} prendas nuevas, ${upd} actualizadas`);
 }
 Object.assign(A, {
+  async gcNow() { if (!(await ask('¿Liberar espacio ahora?\n\nBorro de este dispositivo las fotos, vídeos y audios que ya no usa nada: ni tus datos, ni la papelera, ni los puntos de recuperación.'))) return;
+    const r = await mediaGC({ now: true }); toast(r.n ? `Espacio liberado: ${r.n} archivos · ${(r.bytes / 1e6).toFixed(1)} MB` : 'No había nada que liberar', 3500); if (gdOn()) gdSync(); render(); },
   recDownload() { download(`saga-datos-sin-leer-${today()}.json`, (RECOVERY && RECOVERY.raw) || '', 'application/json'); },
   recBackup() { closeModal(); importBackup(); },
   recSnaps() { snapsModal(); },
@@ -2877,6 +2910,7 @@ window.addEventListener('resize', () => $$('.seg').forEach(placeKnob));
   if (!S.bienvenidaVista) setTimeout(bienvenidaModal, 400);
   autoVestidor();
   if (gdOn()) { gdSet(gdOk() ? 'sync' : 'need'); gdSync({ full: true }); }
+  setTimeout(() => mediaGC().catch(e => console.warn('limpieza', e)), 20000);
 })();
 })();</script>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") {
