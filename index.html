@@ -1092,6 +1092,7 @@ const urls = {};
 let db;
 const idb = () => new Promise((res, rej) => { const r = indexedDB.open('saga-studio-media', 1); r.onupgradeneeded = () => r.result.createObjectStore('m'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
 async function putMedia(file) {
+  if (file && /^image\/(jpeg|png|webp|heic)/.test(file.type) && file.size > 2.5e6) { try { const bmp = await createImageBitmap(file); const k = Math.min(1, 2400 / Math.max(bmp.width, bmp.height)); const cv = document.createElement('canvas'); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k); cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height); const b = await new Promise(r => cv.toBlob(r, 'image/jpeg', .9)); if (b && b.size < file.size) file = b; } catch (e) {} }
   const id = 'm:' + uid();
   if (db) await new Promise((res, rej) => { const t = db.transaction('m', 'readwrite'); t.objectStore('m').put(file, id); t.oncomplete = res; t.onerror = () => rej(t.error); });
   urls[id] = URL.createObjectURL(file); return id;
@@ -1200,7 +1201,7 @@ const defaultState = () => {
     picked: {}, filter: {}, q: '', sel: { prenda: '', peinado: '', expresion: '', efecto: '', look: '', cartoon: '', lugar: '', color: '' },
     receta: '', copyRef: '', copyMode: 'misma', refs: [], compsOff: {},
     img: { model: 'seedream', quality: '1.5k', ratio: '3:4', count: 1, prompt: '', idea: '' },
-    vid: { que: 'crear', model: 'sd20', motor: 'mc-sd20', metodo: 'normal', quality: '720p', dur: 5, ratio: 'auto', audio: true, cam: 'mano', style: 'natural', accion: '', extra: '', useSheet: true, motionRef: '', startRef: '', endRef: '', imgRef: '', prompt: '' },
+    vid: { que: 'crear', model: 'sd20', motor: 'mc-sd20', metodo: 'normal', quality: '480p', dur: 5, ratio: 'auto', audio: true, cam: 'mano', style: 'natural', accion: '', extra: '', useSheet: true, motionRef: '', startRef: '', endRef: '', imgRef: '', prompt: '' },
     aud: { modo: 'voz', model: { voz: 'el4', ambiente: 'seedaudio', cambiar: 'vchange', efecto: 'mirelo' }, texto: '', dir: '', escena: '', est: 0.5, ambienteFondo: false, limpiar: false, archivo: '' },
     apis: {}, notes: '', creFolder: 'all', selMode: false, selected: [], guiaOk: false, bienvenidaVista: false,
   };
@@ -1865,9 +1866,9 @@ function mtabsFor() {
   if (sec === 'audio') return [['Crear', 0], ['Mis audios', S.audios.length], 0];
   if (sec === 'perfil') return [['Datos', 0], ['Personaje', 0], 1];
   if (sec === 'creaciones') return [[S.picked.cre ? 'Detalle' : 'Resumen', 0], ['Creaciones', S.creaciones.filter(x => !x.trash).length], 1];
-  if (sec === 'biblio') return [['Añadir', 0], ['Fototeca', S.fototeca ? S.fototeca.length : 0], 1];
-  if (sec === 'videoteca') return [['Añadir', 0], ['Filmoteca', S.filmoteca.length], 1];
-  if (sec.startsWith('lib:')) { const k = sec.slice(4); return [['Añadir', 0], [LIBS[k] ? LIBS[k].t : 'Biblioteca', (S.libs[k] || []).length], 1]; }
+  if (sec === 'biblio') return [[S.picked.biblio ? 'Ficha' : 'Añadir', 0], ['Fototeca', S.fototeca ? S.fototeca.length : 0], 1];
+  if (sec === 'videoteca') return [[S.picked.videoteca ? 'Ficha' : 'Añadir', 0], ['Filmoteca', S.filmoteca.length], 1];
+  if (sec.startsWith('lib:')) { const k = sec.slice(4); return [[S.picked[k] ? 'Ficha' : 'Añadir', 0], [LIBS[k] ? LIBS[k].t : 'Biblioteca', (S.libs[k] || []).length], 1]; }
   return null;
 }
 function renderMTabs() {
@@ -2476,7 +2477,7 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-favref]'))) { e.stopPropagation(); const [k, id] = el.dataset.favref.split('|'); const x = S[k].find(y => y.id === id); x.fav = !x.fav; save(); return render(); }
   if ((el = d('[data-recreate2]'))) { e.stopPropagation(); const [k, id] = el.dataset.recreate2.split('|'); S.picked[k] = id; return k === 'fototeca' ? A.useCopy() : A.useMotion(); }
   if ((el = d('[data-recreate]'))) { S.picked.filmoteca = el.dataset.recreate; return A.useMotion(); }
-  if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); S.picked[kk] = id; save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
+  if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); S.picked[kk] = id; if (innerWidth <= 720 && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
   if ((el = d('[data-color]'))) { S.sel.color = S.sel.color === el.dataset.color ? '' : el.dataset.color; S.img.prompt = ''; save(); return render(); }
   if ((el = d('[data-apikey]'))) { const id = el.dataset.apikey; if (S.apis[id]?.key) delete S.apis[id]; else { const o = await textModal('Conectar ' + id, [['k','Clave de API','pega aquí tu clave']]); if (!o || !o.k) return apisModal(); S.apis[id] = { key: o.k }; } save(); renderHeader(); return apisModal(); }
   if ((el = d('[data-amode]'))) { S.aud.modo = el.dataset.amode; save(); return render(); }
