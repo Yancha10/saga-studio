@@ -1454,12 +1454,11 @@ const NAV = [
   { sep:true },
   { id:'biblio', t:'Fototeca', icon:'photos' },
   { id:'videoteca', t:'Filmoteca', icon:'film' },
-  { id:'lib:encuadres', t:'Encuadres', icon:'frame' },
-  { id:'lib:camara', t:'Cámara', icon:'move' },
-  { id:'lib:luz', t:'Luz', icon:'sun' },
   { sep:true },
   { group:'lib' },
 ];
+const PINS0 = ['vestidor','peinados','expresiones','lugares','poses'];
+const pins = () => MORE_ORDER.filter(k => k !== '-' && (S.pins || PINS0).includes(k));
 const lastLib = () => S.lastLib || 'vestidor';
 function navBtn(n) {
   if (n.story) { const c = char(); const a = src(c.avatar); return `<button class="nb story ${S.section === 'perfil' ? 'on' : ''}" data-go="perfil"><span class="ring">${a ? `<img src="${a}">` : `<span>${esc((c.name || '?')[0])}</span>`}</span>Perfil</button>`; }
@@ -1470,7 +1469,7 @@ function navBtn(n) {
 function renderNav() {
   $('#nav').innerHTML = NAV.map(n => {
     if (n.sep) return '<div class="navsep"></div>';
-    if (n.group === 'lib') { const k = lastLib(); const L = LIBS[k]; const on = S.section === 'lib:' + k; return `<div class="navgroup">${navBtn({ id: 'lib:' + k, t: L.t, icon: L.icon })}<button class="nb more ${S.section.startsWith('lib:') && !on ? 'on' : ''}" data-a="moreMenu">Más ▾</button></div>`; }
+    if (n.group === 'lib') { const P = pins(); const cur = S.section.startsWith('lib:') ? S.section.slice(4) : ''; const L = cur && !P.includes(cur) ? [...P, cur] : P; return `<div class="navgroup">${L.map(k => navBtn({ id: 'lib:' + k, t: LIBS[k].t, icon: LIBS[k].icon })).join('')}<button class="nb more" data-a="moreMenu">Más ▾</button></div>`; }
     if (n.group) return `<div class="navgroup">${n.group.map(navBtn).join('')}</div>`;
     return navBtn(n);
   }).join('');
@@ -2324,7 +2323,8 @@ const A = {
     '-', { t:'Guardar copia completa', sub:'Datos + fotos y vídeos, en un archivo', icon:'down', fn: exportBackup },
     { t:'Restaurar copia', sub:'En este u otro dispositivo', icon:'note', fn: importBackup },
   ]); },
-  moreMenu(e) { const r = rectOf(e); menu(r.right + 8, r.top - 120, [{ head: 'Bibliotecas' }, ...MORE_ORDER.map(k => k === '-' ? '-' : ({ t: LIBS[k].t, icon: LIBS[k].icon, badge: String(S.libs[k].length), on: S.section === 'lib:' + k, fn: () => go('lib:' + k) }))]); },
+  moreMenu(e) { const r = rectOf(e); const P = pins(); menu(r.right + 8, r.top - 120, [{ head: 'Bibliotecas' }, ...MORE_ORDER.map(k => k === '-' ? '-' : ({ t: LIBS[k].t, icon: LIBS[k].icon, badge: (P.includes(k) ? '📌 ' : '') + S.libs[k].length, on: S.section === 'lib:' + k, fn: () => go('lib:' + k) })), '-', { t: 'Elegir cuáles van en la barra…', icon: 'menu', fn: () => setTimeout(() => A.pinMenu(r), 0) }]); },
+  pinMenu(r) { const P = pins(); menu(r.right + 8, r.top - 120, [{ head: 'Fijadas en la barra lateral' }, ...MORE_ORDER.filter(k => k !== '-').map(k => ({ t: LIBS[k].t, icon: LIBS[k].icon, sw: 1, on: P.includes(k), fn: () => { S.pins = P.includes(k) ? P.filter(x => x !== k) : [...P, k]; save(); renderNav(); setTimeout(() => A.pinMenu(r), 0); } }))]); },
   mobileMore(e) { if (Date.now() - (window.__menuClosedAt || 0) < 400 && window.__lastMenu === 'more') return; const r = rectOf(e); setTimeout(() => { window.__lastMenu = 'more'; $('#menu')?.classList.add('mgrid'); }, 0); menu(r.left - 170, r.top - 520, [
     { t:'Fototeca', icon:'photos', fn: () => go('biblio') }, { t:'Filmoteca', icon:'film', fn: () => go('videoteca') }, '-',
     ...MORE_ORDER.map(k => k === '-' ? '-' : ({ t: LIBS[k].t, icon: LIBS[k].icon, fn: () => go('lib:' + k) })), '-',
