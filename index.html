@@ -1013,6 +1013,7 @@ header .meter span,header .pill{white-space:nowrap}
 .lvimg img{width:100%;height:100%;object-fit:cover}
 #lvi h2{margin-top:14px}
 .lvimg .pha{height:100%}.lvimg .pha svg{transform:scale(.6);opacity:.6}
+@media (max-width:720px){ .modal.wide .lb{gap:6px}.modal.wide .lbn{width:34px;height:34px}.lvimg{height:auto;max-height:52vh;width:100%} #lvi h2{font-size:21px;margin-top:10px} #lvi .row .btn{flex:1 1 45%} }
 </style></head>
 <body>
 <header>
@@ -2507,7 +2508,7 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-favref]'))) { e.stopPropagation(); const [k, id] = el.dataset.favref.split('|'); const x = S[k].find(y => y.id === id); x.fav = !x.fav; save(); return render(); }
   if ((el = d('[data-recreate2]'))) { e.stopPropagation(); const [k, id] = el.dataset.recreate2.split('|'); S.picked[k] = id; return k === 'fototeca' ? A.useCopy() : A.useMotion(); }
   if ((el = d('[data-recreate]'))) { S.picked.filmoteca = el.dataset.recreate; return A.useMotion(); }
-  if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); if (S.picked[kk] === id && !el.dataset.gol && LIBS[kk]) return libViewer(kk, id); S.picked[kk] = id; if (innerWidth <= 720 && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
+  if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); if ((S.picked[kk] === id || innerWidth <= 720) && !el.dataset.gol && LIBS[kk]) { S.picked[kk] = id; save(); return libViewer(kk, id); } S.picked[kk] = id; if (innerWidth <= 720 && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
   if ((el = d('[data-color]'))) { S.sel.color = S.sel.color === el.dataset.color ? '' : el.dataset.color; S.img.prompt = ''; save(); return render(); }
   if ((el = d('[data-apikey]'))) { const id = el.dataset.apikey; if (S.apis[id]?.key) delete S.apis[id]; else { const o = await textModal('Conectar ' + id, [['k','Clave de API','pega aquí tu clave']]); if (!o || !o.k) return apisModal(); S.apis[id] = { key: o.k }; } save(); renderHeader(); return apisModal(); }
   if ((el = d('[data-amode]'))) { S.aud.modo = el.dataset.amode; save(); return render(); }
