@@ -1014,6 +1014,7 @@ header .meter span,header .pill{white-space:nowrap}
 #lvi h2{margin-top:14px}
 .lvimg .pha{height:100%}.lvimg .pha svg{transform:scale(.6);opacity:.6}
 @media (max-width:720px){ .modal.wide .lb{gap:6px}.modal.wide .lbn{width:34px;height:34px}.lvimg{height:auto;max-height:52vh;width:100%} #lvi h2{font-size:21px;margin-top:10px} #lvi .row .btn{flex:1 1 45%} }
+@media (max-width:720px){.tiles:not(:has(.tile:nth-child(4))) .tile{flex:1 1 0;min-width:0}}
 </style></head>
 <body>
 <header>
@@ -1856,7 +1857,7 @@ function renderLib(lib) {
       <button class="btn wide" data-a="newLibText">✍ Crear desde una descripción</button>
       ${lib === 'vestidor' ? '<button class="btn acc wide" data-a="importVestidorPack">⇩ Importar mi vestidor de Notion</button><a class="lnk" data-a="importNotionFolder">o desde una carpeta exportada de Notion</a>' : ''}
       <button class="btn wide" data-a="importLibJson">⇩ Importar JSON</button></div>`;
-  const nNot = list.filter(x => x.notion).length; const filters = [['Todos', null], ...(nNot ? [['Mi Notion', nNot]] : []), ...L.cats.map(c => [c, list.filter(x => x.cat === c || (x.tags || []).includes(c)).length]), ['Con imagen', withImg], ['Sin imagen', list.length - withImg]];
+  const nNot = list.filter(x => x.notion).length; const filters = [['Todos', null], ...(nNot ? [['Mi Notion', nNot]] : []), ...L.cats.map(c => [c, list.filter(x => x.cat === c || (x.tags || []).includes(c)).length]), ...(withImg > 0 && withImg < list.length ? [['Con imagen', withImg], ['Sin imagen', list.length - withImg]] : [])];
   const stage = `${galleryHead(`${L.t} · ${list.length}`, filters, lib)}
     ${items.length ? `<div class="grid ${S.size} ${L.shape === '16/9' ? 'wide' : ''}">${items.slice(0, S._libLimit || 60).map((x, i) => `<div class="it lib ${S.picked[lib] === x.id ? 'on' : ''}" style="aspect-ratio:${L.shape};animation-delay:${Math.min(i, 24) * 18}ms" data-pick="lib:${lib}|${x.id}">
       ${x.img ? `<img loading="lazy" src="${src(x.img)}">` : phArt(x.name, x.id, L.shape)}
