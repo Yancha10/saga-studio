@@ -1059,13 +1059,24 @@ header .meter span,header .pill{white-space:nowrap}
 :focus-visible{outline:2px solid var(--hot,#ec4899);outline-offset:2px}
 input:focus-visible,textarea:focus-visible,select:focus-visible,.modal:focus-visible,.modal:focus{outline:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+/* pantalla de entrada (cuentas) */
+.prov .btn{flex:none;white-space:nowrap}
+body.gated>header,body.gated>main,body.gated>#mnav,body.gated>#mtabs,body.gated #fbw{display:none!important}
+#gate{position:fixed;inset:0;z-index:60;display:flex;overflow:auto;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));background:radial-gradient(120% 80% at 50% 0%,rgba(236,72,153,.14),transparent 60%),var(--bg)}
+.gatecard{margin:auto;width:min(420px,100%);background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:28px 24px;display:flex;flex-direction:column;gap:14px}
+.gatecard h1{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.1;margin:0}
+.gatecard .welmark svg{width:52px;height:52px;display:block}
+.gatebtn{display:flex;align-items:center;justify-content:flex-start;gap:12px;height:auto;min-height:54px;padding:8px 14px;text-align:left;text-transform:none;letter-spacing:0}
+.gav{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(140deg,#ff8a5b,#ec4899 55%,#8b5cf6);color:#fff;font-weight:700;flex:none}
+.gatetx{display:flex;flex-direction:column;min-width:0}.gatetx b{font-size:13px}.gatetx small{color:var(--mut);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gatelegacy b{font-size:13px}.gatemsg:empty{display:none}.gatefine{font-size:11px}
 /* avisos fijos (datos en riesgo) */
-#bars{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 52px);width:min(640px,calc(100% - 24px));z-index:98;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+#bars{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 52px);width:min(640px,calc(100% - 24px));z-index:59;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 #bars .bar{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 14px;border-radius:14px;background:var(--panel);border:1px solid var(--hotLine);box-shadow:0 12px 40px rgba(0,0,0,.35);font-size:12.5px;line-height:1.4;color:var(--ink)}
 #bars .bar>span{flex:1;min-width:0}
 #bars .bar .btn{flex:none;white-space:nowrap}
 #bars .bar .iconbtn{flex:none;width:30px;height:30px}
-@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#bars{top:calc(env(safe-area-inset-top,0px) + 62px)}#bars .bar{flex-wrap:wrap}}
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#bars{top:calc(env(safe-area-inset-top,0px) + 62px)}#bars .bar{flex-wrap:wrap}#bars .bar>span{flex:1 1 calc(100% - 44px)}} /* el texto en su propia línea en el móvil */
 
 /* v8: botón dinámico IA + comentarios */
 .fbseg{display:flex;gap:4px;padding:3px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);margin:0 34px 12px 0}
@@ -1168,14 +1179,15 @@ function phArt(name, id, ratio = '3/4') {
 /* ---------- media (IndexedDB) ---------- */
 const urls = {};
 let db;
-const idb = () => new Promise((res, rej) => { const r = indexedDB.open('saga-studio-media', 1); r.onupgradeneeded = () => r.result.createObjectStore('m'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); r.onblocked = () => rej(new Error('blocked')); });
-const idbWrite = fn => new Promise((res, rej) => { const t = db.transaction('m', 'readwrite'); fn(t.objectStore('m')); t.oncomplete = () => res(); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error || new Error('abort')); });
+const idbOpen = name => new Promise((res, rej) => { const r = indexedDB.open(name, 1); r.onupgradeneeded = () => r.result.createObjectStore('m'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); r.onblocked = () => rej(new Error('blocked')); });
+const idb = () => ST ? idbOpen(ST.db) : Promise.reject(new Error('sin cuenta'));
+const idbWrite = fn => new Promise((res, rej) => { if (ACC.stopped || !db) return rej(new Error('stopped')); const t = db.transaction('m', 'readwrite'); fn(t.objectStore('m')); t.oncomplete = () => res(); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error || new Error('abort')); });
 const idbPut = (k, b) => idbWrite(st => st.put(b, k));
 const idbDel = keys => idbWrite(st => keys.forEach(k => st.delete(k)));
 const idbKeys = () => !db ? Promise.resolve([]) : new Promise(res => { const r = db.transaction('m').objectStore('m').getAllKeys(); r.onsuccess = () => res(r.result || []); r.onerror = () => res([]); });
 const idbGet = k => new Promise(res => { const r = db.transaction('m').objectStore('m').get(k); r.onsuccess = () => res(r.result); r.onerror = () => res(null); });
 const isQuota = e => !!e && (e.name === 'QuotaExceededError' || /quota/i.test(e.message || ''));
-const setUrl = (k, b) => { if (urls[k]) URL.revokeObjectURL(urls[k]); urls[k] = URL.createObjectURL(b); };
+const setUrl = (k, b) => { if (ACC.stopped) return; if (urls[k]) URL.revokeObjectURL(urls[k]); urls[k] = URL.createObjectURL(b); };
 async function putMedia(file) {
   if (!file) throw userErr('No hay archivo que guardar');
   if (!db) throw userErr('Este navegador no deja guardar fotos, vídeos ni audios aquí (¿navegación privada?). No se ha guardado.');
@@ -1280,7 +1292,6 @@ const PROVIDERS = [
   ['openai','ChatGPT','Escribe y junta tus prompts'],
 ];
 /* ============ estado ============ */
-const KEY = 'saga-studio.v1';
 const newChar = (o = {}) => Object.assign({
   id: uid(), name: 'Nuevo personaje', handle: '', age: '', height: '', origin: '', langs: '', born: '', mision: '', contenido: '', redes: '',
   bio: '', ig: '', hair: '', eyes: '', hairstyle: '', public: false, chips: [], personality: '', voice: '', voiceId: '', promptBase: '',
@@ -1357,14 +1368,31 @@ function seedCatalog(s) {
   if (!s.posesV) { const have = new Set(s.libs.poses.map(x => x.id)); for (const it of CAT.poses || []) if (!have.has(it.id)) s.libs.poses.push({ id: it.id, name: it.name, cat: it.cat, tags: it.tags || [], desc: it.desc, img: '', cat0: 1 }); s.posesV = 1; }
 }
 /* arranque: si lo guardado está dañado no se pisa; la app entra en modo recuperación y no guarda nada hasta que decidas */
+/* ============ cuentas ============
+   Cada cuenta de Google tiene su propio espacio en este dispositivo: sus datos, sus fotos y vídeos, su Drive y sus claves.
+   «saga.device» solo apunta qué cuentas hay y dónde vive lo de cada una: nunca contenido, claves ni tokens.
+   Una cuenta se identifica con un número opaco sacado del «sub» de Google (SHA-256), nunca con el email ni el nombre.
+   Cambiar de cuenta o cerrar sesión recarga la página: así nada de una cuenta (temporizadores, peticiones, fotos en memoria) llega a la otra. */
+const DEV_KEY = 'saga.device', LEGACY = { state: 'saga-studio.v1', db: 'saga-studio-media', gc: 'saga-gc' };
+const DEV = (() => { let d = null; try { d = JSON.parse(localStorage.getItem(DEV_KEY) || 'null'); } catch (e) {} if (!isObj(d) || !isObj(d.accounts)) d = { v: 1, active: '', accounts: {}, legacy: {} }; if (!isObj(d.legacy)) d.legacy = {}; return d; })();
+const devSave = () => { try { localStorage.setItem(DEV_KEY, JSON.stringify(DEV)); return true; } catch (e) { return false; } };
+const ACC = { id: '', rec: null, gen: 1, stopped: false, ctrl: new AbortController() };
+if (DEV.active && isObj(DEV.accounts[DEV.active])) { ACC.id = DEV.active; ACC.rec = DEV.accounts[DEV.active]; }
+const accStore = (id, rec) => Object.assign({ state: 'saga-studio.v1@' + id, gc: 'saga-gc@' + id, db: 'saga-studio-media@' + id }, rec && isObj(rec.store) ? rec.store : {}); // la cuenta asociada al espacio anterior usa los nombres de siempre
+const ST = ACC.id ? accStore(ACC.id, ACC.rec) : null;
+const akey = base => ACC.id ? base + '@' + ACC.id : ''; // lo que antes no existía: token, Drive, claves de proveedores, trabajos
+const alive = g => !ACC.stopped && g === ACC.gen; // ¿sigue activa la sesión que empezó esta tarea?
+const KEY = ST ? ST.state : '';
+const legacyPending = () => { if (DEV.legacy.status === 'bound') return false; try { return !!localStorage.getItem(LEGACY.state); } catch (e) { return false; } };
+const firstName = () => String((ACC.rec && ACC.rec.name) || '').trim().split(/\s+/)[0] || '';
 let S, RECOVERY = null; // RECOVERY = { raw, why } mientras no se ha resuelto
-{ let raw = null; try { raw = localStorage.getItem(KEY); } catch (e) {}
+{ let raw = null; try { raw = KEY ? localStorage.getItem(KEY) : null; } catch (e) {}
   try { const o = raw ? JSON.parse(raw) : null; const why = o == null ? '' : stateProblem(o); if (why) throw new Error(why); S = o == null ? upgradeState({}) : upgradeState(o); }
   catch (e) { RECOVERY = { raw, why: e.message || String(e) }; S = upgradeState({}); } }
 
 let saveT, saveFail = false;
 function writeState() { // true si quedó guardado en este dispositivo
-  if (RECOVERY) return false;
+  if (RECOVERY || !KEY || ACC.stopped) return false;
   try { localStorage.setItem(KEY, JSON.stringify(S)); if (saveFail) { saveFail = false; bar('save'); toast('Guardado de nuevo'); } return true; }
   catch (e) { saveFail = true; bar('save', 'Tus cambios NO se están guardando: el almacenamiento del navegador está lleno. Haz una copia completa y vacía la papelera o la bitácora.', [['Guardar copia completa', () => exportBackup()]]); return false; }
 }
@@ -1605,7 +1633,7 @@ function guiaPasos() {
   ];
 }
 function renderHeader() {
-  const live = Object.values(S.apis).some(v => v && v.key);
+  const live = provHas();
   const total = S.creaciones.filter(x => !x.trash).length;
   const spent = S.creaciones.reduce((a, x) => a + (+x.cost || 0), 0) + S.audios.reduce((a, x) => a + (+x.cost || 0), 0);
   const G = guiaPasos(); const done = G.every(g => g[0]);
@@ -1617,7 +1645,7 @@ function renderHeader() {
     <button class="meter" data-a="gasto" title="Registro de gasto"><span>Total <b>${total}</b> generaciones</span><span>Gasto <b>${money(spent)}</b></span></button>
     <button class="iconbtn" data-a="ayuda" title="Ayuda">${ic('help', 'width="15" height="15"')}</button>
     <button class="iconbtn" data-a="theme" title="Tema">${ic(S.theme === 'dark' ? 'sun' : 'moon', 'width="15" height="15"')}</button>
-    <button class="avatar" data-a="account" title="Tu cuenta">${src(S.meAvatar) ? `<img src="${src(S.meAvatar)}" alt="">` : 'D'}</button>`;
+    <button class="avatar" data-a="account" title="Tu cuenta">${src(S.meAvatar) ? `<img src="${esc(src(S.meAvatar))}" alt="">` : esc((firstName() || '·').charAt(0).toUpperCase())}</button>`;
 }
 
 /* ---------- piezas compartidas ---------- */
@@ -1700,7 +1728,7 @@ R.perfil = () => {
   } else body = soonStage('Próximamente', 'Sus mascotas, con su propia ficha, llegarán en una próxima versión.');
 
   const stage = `<div class="pj">
-    <div><span class="creator"><span class="lbl">Creador</span> <b>Dani</b></span></div>
+    <div><span class="creator"><span class="lbl">Creador</span> <b>${esc(firstName() || 'Tú')}</b></span></div>
     <div class="stack" style="gap:12px"><span class="lbl">Mis personajes</span>
       <div class="circles">${S.chars.map(x => `<div class="circ ${x.id === c.id ? 'on' : ''}" data-char="${x.id}"><div class="c"><div>${avatarOf(x)}</div></div>${esc(x.name)}</div>`).join('')}
       <div class="circ add" data-a="newChar"><div class="c">＋</div>Crear personaje</div></div></div>
@@ -2015,7 +2043,7 @@ function renderLib(lib) {
     <div class="stack fold" style="padding-top:14px"><span class="lbl">Crea ${un} ${L.one}</span>
       <div class="dz" data-a="addLib" data-drop="libitem:${lib}"><span class="ic">＋</span><div><b>Arrastra aquí la foto</b><p>o haz clic para subirla · se crea su ficha</p></div></div>
       <button class="btn wide" data-a="newLibText">✍ Crear desde una descripción</button>
-      ${lib === 'vestidor' ? '<button class="btn acc wide" data-a="importVestidorPack">⇩ Importar mi vestidor de Notion</button><a class="lnk" data-a="importNotionFolder">o desde una carpeta exportada de Notion</a>' : ''}
+      ${lib === 'vestidor' && !S.vestidorWeb ? '<button class="btn wide" data-a="loadVestidorPack">⇩ Añadir el vestidor de ejemplo de Saga (261 prendas)</button>' : ''}${lib === 'vestidor' ? '<button class="btn acc wide" data-a="importVestidorPack">⇩ Importar mi vestidor de Notion</button><a class="lnk" data-a="importNotionFolder">o desde una carpeta exportada de Notion</a>' : ''}
       <button class="btn wide" data-a="importLibJson">⇩ Importar JSON</button></div>`;
   const nNot = list.filter(x => x.notion).length; const filters = [['Todos', null], ...(nNot ? [['Mi Notion', nNot]] : []), ...L.cats.map(c => [c, list.filter(x => x.cat === c || (x.tags || []).includes(c)).length]), ...(withImg > 0 && withImg < list.length ? [['Con imagen', withImg], ['Sin imagen', list.length - withImg]] : [])];
   const stage = `${galleryHead(`${L.t} · ${list.length}`, filters, lib)}
@@ -2056,6 +2084,7 @@ function renderMTabs() {
   if (el) el.innerHTML = `<div class="mtseg">${[0, 1].map(i => `<button class="${v === i ? 'on' : ''}" data-mv="${i}">${esc(t[i][0])}${t[i][1] ? ` <i>${t[i][1]}</i>` : ''}</button>`).join('')}<span class="mtknob" style="left:${v ? '50%' : '4px'}"></span></div>`;
 }
 function render() {
+  if (ACC.stopped || !ACC.id) return;
   // quien usa el teclado no pierde su sitio cuando la pantalla se vuelve a pintar
   const fa = document.activeElement; let fk = ''; if (fa && fa !== document.body && fa.closest && fa.closest('#side,#stage,#nav,#mnav,#hright,#mtabs')) { const at = [...fa.attributes].find(a => a.name.startsWith('data-')); if (at) fk = `[${at.name}="${CSS.escape(at.value)}"]`; }
   document.documentElement.dataset.theme = S.theme; document.documentElement.dataset.ui = S.ui || 'normal';
@@ -2117,9 +2146,22 @@ function pickerModal(key) {
     setTimeout(() => sc.querySelector('#pkq').focus(), 50);
   }, 'wide');
 }
+/* proveedores con generación directa (en preparación) y sus credenciales */
+const PROV_UI = [
+  ['wiro', 'Wiro', 'Imagen y vídeo de muchos fabricantes', [['key', 'API key'], ['secret', 'API secret']], 'Crea en Wiro un proyecto solo para Saga Studio, con autenticación por firma («Signature-Based»).'],
+  ['pollo', 'Pollo', 'Imagen y vídeo: Kling, Veo, Seedance…', [['key', 'API key']], 'Crea en Pollo una clave solo para Saga Studio.'],
+  ['fal', 'fal', 'Imagen y vídeo: más de mil modelos', [['key', 'API key']], 'fal recomienda no usar claves desde el navegador: usa una clave solo para Saga Studio y con poco saldo.'],
+];
+const provHas = () => { const P = provGet(); return PROV_UI.some(([k]) => P[k] && P[k].key) || Object.values(P.otros || {}).some(v => v && v.key); };
+const mask = v => v ? '····' + esc(String(v).slice(-4)) : '';
 function apisModal() {
-  modal(`<h2>Mis APIs</h2><p class="note" style="margin-bottom:16px">Generas con tus propias cuentas y pagas solo lo que usas. Las claves se guardan solo en este Mac. Sin clave, el flujo manual (preparar prompt → generar fuera → importar) funciona igual.</p>
-    <div class="stack" style="gap:6px">${PROVIDERS.map(([id, n, d]) => { const on = S.apis[id]?.key; return `<div class="prov"><span class="dot ${on ? 'on' : ''}"></span><div><b>${n}</b><p>${d}${on ? ' · clave ····' + esc(on.slice(-4)) : ''}</p></div><button class="btn sm ${on ? '' : 'acc'}" data-apikey="${id}">${on ? 'Quitar' : 'Conectar'}</button></div>`; }).join('')}
+  const P = provGet(), O = P.otros || {};
+  modal(`<h2>Mis APIs</h2><p class="note" style="margin-bottom:12px">Generas con tus propias cuentas y pagas directamente a cada servicio. Sin claves, el flujo manual (preparar prompt → generar fuera → importar) funciona igual.</p>
+    <div class="card" style="margin-bottom:12px"><b>🔒 Tus claves</b><p class="note" style="margin-top:6px">Se guardan solo en este dispositivo y solo para esta cuenta. Nunca van a tu Google Drive, a las copias completas ni a los puntos de recuperación. Como cualquier clave guardada en un navegador, el código que se ejecute en él podría leerla: usa claves propias para Saga Studio y con poco saldo.</p></div>
+    <div class="stack" style="gap:6px">${PROV_UI.map(([id, n, d, f, tip]) => { const c = P[id] || {}; const on = !!c.key; return `<div class="prov"><span class="dot ${on ? 'on' : ''}"></span><div><b>${n}</b><p>${d}${on ? ' · ' + f.map(([k, l]) => l + ' ' + mask(c[k])).join(' · ') : ''}</p>${on ? '' : `<p>${esc(tip)}</p>`}</div><button class="btn sm ${on ? '' : 'acc'}" data-${on ? 'provdel' : 'provset'}="${id}">${on ? 'Quitar' : 'Conectar'}</button></div>`; }).join('')}
+    <p class="note" style="margin:4px 0 10px">La generación directa aún no está activada: falta comprobar en tu navegador que estos servicios lo permiten. Guardar una clave no lanza nada ni gasta saldo.</p>
+    <div class="ayudas">Otras cuentas (solo como recordatorio)</div>
+    ${PROVIDERS.filter(([id]) => id !== 'fal').map(([id, n, d]) => { const on = O[id] && O[id].key; return `<div class="prov"><span class="dot ${on ? 'on' : ''}"></span><div><b>${n}</b><p>${d}${on ? ' · clave ' + mask(on) : ''}</p></div><button class="btn sm" data-${on ? 'provdel' : 'provset'}="otros:${id}">${on ? 'Quitar' : 'Guardar'}</button></div>`; }).join('')}
     <div class="prov"><span class="dot"></span><div><b>¿Usas otra API?</b><p>Apúntala en el feedback y la añadimos</p></div><button class="btn sm" data-a="feedback">Pedirla</button></div></div>
     <div class="card" style="margin-top:14px"><b>🔌 MCP</b><p class="note" style="margin-top:6px">En Aria Studio puedes pedir imágenes desde Claude o ChatGPT. Aquí llegará cuando la app tenga servicio local.</p></div>
     <p class="note" style="margin-top:14px">Guardar una clave no lanza generaciones todavía: la llamada directa a Higgsfield es el siguiente paso del proyecto.</p>`);
@@ -2135,7 +2177,7 @@ const AYUDA = [
   ['Crear imagen', [['¿Qué modelo elijo?', 'Seedream: equilibrado y admite la ficha completa. GPT Image 2.5: el mejor para «Misma foto». Nano Banana Pro: mucho detalle y piel muy real. Pulsa «¿Cuál elijo?» en el modo Pro para ver todos.'], ['«Misma foto» o «Desde su descripción»', '«Misma foto» edita la foto que recreas cambiando a la persona: conserva el encuadre exacto. «Desde su descripción» crea una foto nueva a partir de la descripción de la escena: no se envía la foto original, así no se cuela la cara de quien sale.'], ['¿Qué son las @IMG del prompt?', 'Cada referencia tiene su etiqueta (@IMG1, @IMG2…). @IMG1 es siempre la ficha principal. En el modo Pro ves cuál es cuál y en la ventana de Generar puedes descargarlas.'], ['¿Qué son las recetas?', 'Combinaciones ya hechas de peinado, expresión y prenda («Noche de gala», «Pista de esquí»…). Pulsas una y se ponen solas.']]],
   ['Crear vídeo', [['¿Cómo funciona?', 'Elige personaje, prenda, peinado y lugar como en Crear imagen. Si pones una imagen inicial (y, si quieres, una final), el vídeo sale de esa imagen. El prompt se monta solo con una estructura que funciona; tú escribes la ACCIÓN.'], ['¿Qué es Motion control?', 'Subes un vídeo de una persona y tu personaje hace exactamente lo mismo: el vídeo manda el movimiento y la cámara, la ficha 360 el personaje.']]],
   ['Bibliotecas', [['¿Por qué las fichas tienen láminas en vez de fotos?', 'El catálogo viene con todos los nombres y descripciones, pero sin imágenes. En cada ficha tienes «Prompt para crear su imagen»: lo generas con tu personaje y la subes. El contador te dice cuántas llevas.'], ['¿Puedo traer mi vestidor de Notion?', 'Sí: «Importar JSON (Notion)» en cualquier biblioteca. Acepta una lista con nombre, categoría, imagen (URL) y descripción.']]],
-  ['Gasto y datos', [['¿Dónde veo lo que he gastado?', 'En «Registro de gasto» (pulsa el total de arriba). Sale cada generación con el coste que apuntaste al importarla. La app no inventa precios.'], ['¿Dónde se guarda todo?', 'En este navegador de este Mac. Haz «Exportar copia» desde el menú de tu cuenta para tener un respaldo.'], ['¿Cómo apunto un fallo o una idea?', 'Con el botón redondo de abajo a la derecha: escribe, dicta o graba una nota de voz. Se guarda en tu Bitácora.']]],
+  ['Gasto y datos', [['¿Dónde veo lo que he gastado?', 'En «Registro de gasto» (pulsa el total de arriba). Sale cada generación con el coste que apuntaste al importarla. La app no inventa precios.'], ['¿Dónde se guarda todo?', 'En este navegador, en el espacio de tu cuenta, y en tu propio Google Drive si lo conectas. Cada cuenta de Google tiene su espacio aparte. Haz «Guardar copia completa» desde el menú de tu cuenta para tener un respaldo.'], ['¿Cómo apunto un fallo o una idea?', 'Con el botón redondo de abajo a la derecha: escribe, dicta o graba una nota de voz. Se guarda en tu Bitácora.']]],
 ];
 function ayudaModal() {
   modal(`<div class="devemo">?</div><h2>Ayuda</h2><input class="search" style="width:100%;margin:10px 0 14px" placeholder="Buscar en la ayuda…" id="ayq"><div id="ayl"></div>`, sc => {
@@ -2148,7 +2190,7 @@ function bienvenidaModal() {
   const G = guiaPasos(); const c = char(); const icons = ['user', 'image', 'video'];
   modal(`<div class="wel">
     <div class="welhero"><span class="welmark"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="url(#lg)"/><path d="M21.2 10.6c-1.1-1.5-2.9-2.3-5-2.3-3.2 0-5.4 1.8-5.4 4.4 0 2.5 1.8 3.6 4.9 4.4 2.6.7 3.6 1.3 3.6 2.7 0 1.5-1.4 2.5-3.5 2.5-2.1 0-3.7-.9-4.6-2.6" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round"/><circle cx="23.6" cy="23.4" r="1.7" fill="#fff"/></svg></span>
-      <small>Hola, Dani</small><h2>Tu estudio para ${esc(shortName(c))}</h2><p>Imágenes y vídeos de tus personajes, siempre con la misma cara. Tres pasos y listo.</p></div>
+      <small>Hola${firstName() ? ', ' + esc(firstName()) : ''}</small><h2>Tu estudio para ${esc(shortName(c))}</h2><p>Imágenes y vídeos de tus personajes, siempre con la misma cara. Tres pasos y listo.</p></div>
     <div class="welsteps">${G.map((g, i) => `<button class="welstep ${g[0] ? 'ok' : ''}" data-guia="${i}" data-close="1"><span class="wsi">${g[0] ? '✓' : ic(icons[i], 'width="20" height="20"')}</span><span class="wst"><i>Paso ${i + 1}</i><b>${g[1]}</b><small>${g[2]}</small></span><span class="wsa">→</span></button>`).join('')}</div>
     <div class="row welbtns"><button class="btn ghost" data-a="closeModal">Ahora no</button><button class="btn acc wide" data-guia="${Math.max(0, G.findIndex(g => !g[0]))}" data-close="1">Empezar</button></div></div>`, null, 'welm');
   S.bienvenidaVista = true; save();
@@ -2284,7 +2326,7 @@ const GD = {
   CLIENT: '635912304372-i9j4576iaq2s53b2lvfmmhfkh1vhuj9n.apps.googleusercontent.com',
   SCOPE: 'https://www.googleapis.com/auth/drive.file',
   API: 'https://www.googleapis.com/drive/v3', UP: 'https://www.googleapis.com/upload/drive/v3',
-  TK: 'saga-drive.token', META: 'saga-drive.meta',
+  TK: akey('saga-drive.token'), META: akey('saga-drive.meta'), driveUser: '', who: '',
   token: '', exp: 0, folder: '', media: '', stateId: '', remote: {}, // mediaId -> driveFileId
   status: 'off', msg: '', busy: false, client: null, wantGesture: false, lastHash: '', pushT: 0,
 };
@@ -2306,7 +2348,7 @@ function gdSet(status, msg = '') {
 const gdLabel = () => ({ off: 'Drive', need: 'Reconectar', sync: 'Guardando…', ok: 'En Drive', err: 'Drive ⚠', conflict: 'Elegir versión', offline: 'Sin conexión' })[GD.status] || 'Drive';
 const gdTitle = () => GD.msg || ({ off: 'Guardar en tu Google Drive', need: 'Toca para reconectar con tu Drive', sync: 'Sincronizando con tu Drive', ok: 'Todo guardado en tu Drive', err: 'No se pudo sincronizar', conflict: 'Hay dos versiones: elige cuál conservar', offline: 'Sin conexión: se guarda aquí y se sube al volver' })[GD.status];
 try { const t = JSON.parse(localStorage.getItem(GD.TK) || 'null'); if (t && t.exp > Date.now()) { GD.token = t.token; GD.exp = t.exp; } const m = JSON.parse(localStorage.getItem(GD.META) || 'null'); if (m) Object.assign(GD, m); } catch (e) {}
-const gdMetaSave = () => { try { localStorage.setItem(GD.META, JSON.stringify({ folder: GD.folder, media: GD.media, stateId: GD.stateId, remote: GD.remote })); } catch (e) {} };
+const gdMetaSave = () => { if (!GD.META || ACC.stopped) return; try { localStorage.setItem(GD.META, JSON.stringify({ folder: GD.folder, media: GD.media, stateId: GD.stateId, remote: GD.remote, driveUser: GD.driveUser })); } catch (e) {} };
 /* al pasar a esta versión, la «huella» de lo sincronizado se recalcula sin lo propio del dispositivo; si estaba al día, sigue al día */
 if (S.drive && S.drive.hash && S.drive.hv !== 2) { const o = {}; for (const k in S) if (!DEVICE_KEYS_V1.includes(k)) o[k] = S[k]; if (hash(JSON.stringify(o)) === S.drive.hash) S.drive.hash = hash(JSON.stringify(syncedState())); S.drive.hv = 2; }
 
@@ -2315,18 +2357,39 @@ function gdLoadLib() {
     const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true; s.onload = () => res(); s.onerror = () => rej(new Error('No se pudo cargar el acceso de Google (¿sin conexión?)')); document.head.appendChild(s); });
 }
 /* pide el permiso: la primera vez sale la ventana de Google; luego es casi instantáneo */
-async function gdAuth(interactive) {
+/* pide un permiso a Google (la ventanita). Siempre con «openid»: así sabemos de qué cuenta es el permiso */
+async function googleToken(o = {}) {
   await gdLoadLib();
   return new Promise((res, rej) => {
-    GD.client = google.accounts.oauth2.initTokenClient({ client_id: GD.CLIENT, scope: GD.SCOPE, prompt: interactive === 'consent' ? 'consent' : '',
-      callback: r => { if (r.error) return rej(new Error(r.error_description || r.error)); GD.token = r.access_token; GD.exp = Date.now() + (+r.expires_in || 3600) * 1000; try { localStorage.setItem(GD.TK, JSON.stringify({ token: GD.token, exp: GD.exp })); } catch (e) {} res(); },
-      error_callback: e => rej(new Error(e && e.type === 'popup_closed' ? 'Has cerrado la ventana de Google' : (e && e.message) || 'Google no respondió')) });
-    GD.client.requestAccessToken();
+    const c = google.accounts.oauth2.initTokenClient({ client_id: GD.CLIENT, scope: 'openid ' + GD.SCOPE, prompt: o.prompt || '', hint: o.hint || undefined, include_granted_scopes: true,
+      callback: r => { if (r.error) return rej(userErr(r.error_description || r.error)); let drive = true; try { drive = google.accounts.oauth2.hasGrantedAllScopes(r, GD.SCOPE); } catch (e) {} res({ token: r.access_token, exp: Date.now() + (+r.expires_in || 3600) * 1000, drive }); },
+      error_callback: e => rej(userErr(e && e.type === 'popup_closed' ? 'Has cerrado la ventana de Google' : (e && e.message) || 'Google no respondió')) });
+    c.requestAccessToken();
   });
 }
+const sha256 = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
+/* ¿de qué cuenta es este permiso? → el número opaco de Saga Studio para esa cuenta (el «sub» de Google no se guarda) */
+async function googleAccountId(token) {
+  const r = await fetch('https://openidconnect.googleapis.com/v1/userinfo', { headers: { Authorization: 'Bearer ' + token }, signal: ACC.ctrl.signal });
+  if (!r.ok) throw userErr('Google no ha confirmado tu cuenta (' + r.status + ')');
+  const j = await r.json(); if (!j || !j.sub) throw userErr('Google no ha devuelto tu cuenta');
+  return 'a' + (await sha256('saga-studio:' + j.sub)).slice(0, 24);
+}
+async function googleProfile(token) { try { const r = await fetch(GD.API + '/about?fields=user(displayName,emailAddress,photoLink,permissionId)', { headers: { Authorization: 'Bearer ' + token }, signal: ACC.ctrl.signal }); return r.ok ? ((await r.json()).user || null) : null; } catch (e) { return null; } }
+/* permiso de Drive para la cuenta activa: si en la ventanita eliges otra cuenta, se rechaza y no se toca ningún Drive */
+async function gdAuth(interactive) {
+  if (!ACC.id) throw userErr('Entra con tu cuenta de Google primero');
+  const t = await googleToken({ prompt: interactive === 'consent' ? 'consent' : '', hint: ACC.rec.email });
+  const id = await googleAccountId(t.token);
+  if (id !== ACC.id) throw userErr(`Has elegido otra cuenta de Google. Aquí solo se usa la de ${ACC.rec.name || 'esta sesión'}${ACC.rec.email ? ' (' + ACC.rec.email + ')' : ''}: no se ha tocado ningún Drive.`);
+  if (!t.drive) throw userErr('Falta el permiso de Google Drive: vuelve a intentarlo y marca la casilla de Drive');
+  if (ACC.stopped) return;
+  GD.token = t.token; GD.exp = t.exp; try { localStorage.setItem(GD.TK, JSON.stringify({ token: GD.token, exp: GD.exp })); } catch (e) {}
+}
 async function gdFetch(url, opt = {}) {
+  if (ACC.stopped) throw Object.assign(new Error('stopped'), { need: true });
   if (!gdOk()) throw Object.assign(new Error('need'), { need: true });
-  const r = await fetch(url, Object.assign({}, opt, { headers: Object.assign({ Authorization: 'Bearer ' + GD.token }, opt.headers || {}) }));
+  const r = await fetch(url, Object.assign({ signal: ACC.ctrl.signal }, opt, { headers: Object.assign({ Authorization: 'Bearer ' + GD.token }, opt.headers || {}) }));
   if (r.status === 401) { GD.token = ''; GD.exp = 0; throw Object.assign(new Error('need'), { need: true }); }
   if (!r.ok) { const t = await r.text().catch(() => ''); throw Object.assign(new Error(`Drive ${r.status}: ${t.slice(0, 160)}`), { status: r.status }); }
   return r;
@@ -2347,7 +2410,7 @@ async function gdFolder(name, parent) {
 async function gdUpload(meta, blob, fileId) {
   const r = await gdFetch(`${GD.UP}/files${fileId ? '/' + fileId : ''}?uploadType=resumable&fields=id,modifiedTime`, { method: fileId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json; charset=UTF-8', 'X-Upload-Content-Type': blob.type || 'application/octet-stream' }, body: JSON.stringify(fileId ? {} : meta) });
   const loc = r.headers.get('Location'); if (!loc) throw new Error('Drive no dio dirección de subida');
-  const u = await fetch(loc, { method: 'PUT', headers: { Authorization: 'Bearer ' + GD.token }, body: blob });
+  const u = await fetch(loc, { method: 'PUT', headers: { Authorization: 'Bearer ' + GD.token }, body: blob, signal: ACC.ctrl.signal });
   if (!u.ok) throw Object.assign(new Error('Drive ' + u.status + ' al subir'), { status: u.status });
   return u.json();
 }
@@ -2364,12 +2427,15 @@ const transient = e => !e.status || e.status === 429 || e.status >= 500;
 /* ---------- sincronizar: datos (el más reciente gana; si los dos cambiaron, te pregunto) + archivos que falten a cada lado ----------
    Nunca se sube encima de algo del Drive que este dispositivo no haya visto: antes de subir se comprueba la fecha del Drive. */
 async function gdSync(opts = {}) {
-  if (!gdOn() || RECOVERY) return;
+  if (!gdOn() || RECOVERY || ACC.stopped) return;
   if (GD.busy) { GD.again = true; return; }
   if (navigator.onLine === false) return gdSet('offline');
   if (!gdOk()) { gdSet('need'); GD.wantGesture = true; return; }
   GD.busy = true; GD.again = false; clearTimeout(GD.retryT); gdSet('sync'); job(1);
   try {
+    if (!GD.who) { const u = await gdJson(`${GD.API}/about?fields=user(permissionId)`); GD.who = (u.user && u.user.permissionId) || '?';
+      if (GD.driveUser && GD.driveUser !== GD.who) { GD.folder = GD.media = GD.stateId = ''; GD.remote = {}; if (S.drive) { delete S.drive.syncAt; delete S.drive.hash; } } // otro Drive: se empieza como la primera vez
+      GD.driveUser = GD.who; gdMetaSave(); }
     if (!GD.folder) { GD.folder = await gdFolder('Saga Studio'); GD.media = await gdFolder('archivos', GD.folder); gdMetaSave(); }
     // 1) datos: ¿qué hay en el Drive y qué hay aquí?
     const rf = await gdFind(STATE_NAME, GD.folder); GD.stateId = rf ? rf.id : '';
@@ -2435,12 +2501,18 @@ async function gdConnect() {
   try { gdSet('sync', 'Conectando con Google…'); await gdAuth('consent'); S.drive = Object.assign({ on: true }, S.drive || {}, { on: true, hv: 2 }); save(); await gdSync({ toast: true, full: true }); renderHeader(); }
   catch (e) { gdSet(gdOn() ? 'err' : 'off', e.message); toast(e.message); }
 }
+/* retirar el permiso que diste a Saga Studio en tu cuenta de Google (en todos tus dispositivos). Desconectar a secas solo afecta a este dispositivo */
+async function gdRevoke() {
+  if (!(await ask('¿Retirar el permiso de Google Drive a Saga Studio?\n\nAfecta a todos tus dispositivos: la próxima vez Google te volverá a pedir permiso. Tus archivos siguen en tu Drive.', { yes: 'Retirar permiso' }))) return;
+  const t = GD.token; try { if (t && window.google && google.accounts && google.accounts.oauth2) google.accounts.oauth2.revoke(t, () => {}); } catch (e) {}
+  gdDisconnect(); toast('Permiso de Google retirado. Tus archivos siguen en tu Drive', 3500);
+}
 function gdDisconnect() { S.drive = { on: false }; GD.token = ''; GD.exp = 0; GD.folder = GD.media = GD.stateId = ''; GD.remote = {}; GD.conflict = false; try { localStorage.removeItem(GD.TK); localStorage.removeItem(GD.META); } catch (e) {} save(); renderHeader(); bar('drive'); toast('Drive desconectado en este dispositivo (tus archivos siguen en tu Drive)'); }
 function gdMenu(e) {
   const r = rectOf(e);
   if (!gdOn()) return menu(r.left, r.bottom + 8, [{ head: 'Google Drive' }, { t: 'Conectar mi Google Drive', sub: 'Tus datos, fotos y vídeos iguales en el Mac y el móvil', icon: 'folder', fn: gdConnect }]);
   menu(r.left, r.bottom + 8, [{ head: 'Google Drive · ' + gdLabel() }, { t: GD.conflict ? 'Elegir qué versión conservar' : 'Sincronizar ahora', sub: GD.msg || '', icon: 'folder', fn: async () => { if (!gdOk()) { try { await gdAuth(); } catch (x) { return toast(x.message); } } GD.retryN = 0; gdSync({ toast: true, full: true }); } },
-    { t: 'Abrir la carpeta en Drive', icon: 'photos', fn: () => GD.folder ? window.open('https://drive.google.com/drive/folders/' + GD.folder, '_blank', 'noopener') : toast('Aún no hay carpeta') }, '-', { t: 'Desconectar en este dispositivo', icon: 'trash', fn: gdDisconnect }]);
+    { t: 'Abrir la carpeta en Drive', icon: 'photos', fn: () => GD.folder ? window.open('https://drive.google.com/drive/folders/' + GD.folder, '_blank', 'noopener') : toast('Aún no hay carpeta') }, '-', { t: 'Desconectar en este dispositivo', icon: 'trash', fn: gdDisconnect }, { t: 'Retirar el permiso de Google', sub: 'En todos tus dispositivos', icon: 'key', fn: gdRevoke }]);
 }
 /* si el permiso caducó, el primer toque en la app lo renueva. Va en «click»: en pantallas táctiles es el único gesto que deja abrir la ventanita de Google */
 document.addEventListener('click', e => {
@@ -2478,7 +2550,7 @@ const A = {
   theme() { S.theme = S.theme === 'dark' ? 'light' : 'dark'; save(); render(); },
   guiaOff() { S.guiaOk = true; save(); render(); },
   account(e) { const r = rectOf(e); menu(r.right - 240, r.bottom + 8, [
-    { head: 'Dani · Saga Studio' }, { t: src(S.meAvatar) ? 'Cambiar mi foto de perfil' : 'Poner mi foto de perfil', icon: 'user', fn: async () => { const [f] = await pickFiles(); if (!f) return; S.meAvatar = await putMedia(f); save(); render(); toast('Foto de perfil actualizada'); } },
+    { head: (ACC.rec.name || 'Tu cuenta') + ' · Saga Studio' }, { t: src(S.meAvatar) ? 'Cambiar mi foto de perfil' : 'Poner mi foto de perfil', icon: 'user', fn: async () => { const [f] = await pickFiles(); if (!f) return; S.meAvatar = await putMedia(f); save(); render(); toast('Foto de perfil actualizada'); } },
     { t:'Mis APIs', icon:'key', fn: apisModal }, { t:'Registro de gasto', icon:'ledger', fn: gastoModal },
     { t:'Bitácora', sub:`${S.feedback.length} notas`, icon:'book', fn: bitacoraModal }, { t:'Papelera', sub:`${S.trash.length}`, icon:'trash', fn: () => papeleraModal() },
     '-', { head: 'Tamaño' }, ...[['peq','Pequeño'],['normal','Normal'],['grande','Grande']].map(([k, t]) => ({ t, on: (S.ui || 'normal') === k, fn: () => { S.ui = k; save(); render(); } })),
@@ -2486,6 +2558,11 @@ const A = {
     '-', { t:'Guardar copia completa', sub:'Datos + fotos y vídeos, en un archivo', icon:'down', fn: exportBackup },
     { t:'Restaurar copia', sub:'En este u otro dispositivo', icon:'note', fn: importBackup },
     { t:'Puntos de recuperación', sub:'Deshacer una restauración o una carga del Drive', icon:'check', fn: snapsModal },
+    '-', { head: 'Cuenta' },
+    ...(legacyPending() && !ACC.rec.store ? [{ t:'Asociar el espacio anterior', sub:'Hay uno sin cuenta en este dispositivo', icon:'folder', fn: legacyBindCurrent }] : []),
+    ...(ACC.rec.store ? [{ t:'Desasociar el espacio anterior', sub:'No se borra nada', icon:'folder', fn: legacyUnbind }] : []),
+    { t:'Cambiar de cuenta o cerrar sesión', sub: ACC.rec.email || '', icon:'user', fn: accLeave },
+    { t:'Quitar esta cuenta de este dispositivo', sub:'Tu Drive no se toca', icon:'trash', fn: accRemove },
   ]); },
   moreMenu(e) { const r = rectOf(e); const P = pins(); menu(r.right + 8, r.top - 120, [{ head: 'Bibliotecas' }, ...MORE_ORDER.map(k => k === '-' ? '-' : ({ t: LIBS[k].t, icon: LIBS[k].icon, badge: (P.includes(k) ? '📌 ' : '') + S.libs[k].length, on: S.section === 'lib:' + k, fn: () => go('lib:' + k) })), '-', { t: 'Elegir cuáles van en la barra…', icon: 'menu', fn: () => setTimeout(() => A.pinMenu(r), 0) }]); },
   pinMenu(r) { const P = pins(); menu(r.right + 8, r.top - 120, [{ head: 'Fijadas en la barra lateral' }, ...MORE_ORDER.filter(k => k !== '-').map(k => ({ t: LIBS[k].t, icon: LIBS[k].icon, sw: 1, on: P.includes(k), fn: () => { S.pins = P.includes(k) ? P.filter(x => x !== k) : [...P, k]; save(); renderNav(); setTimeout(() => A.pinMenu(r), 0); } }))]); },
@@ -2608,7 +2685,8 @@ function importAudioModal(prompt) {
 /* ---------- copia completa (para pasar de un dispositivo a otro) ---------- */
 const blobToData = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsDataURL(b); });
 const mediaRefs = o => new Set(JSON.stringify(o).match(/m:[a-z0-9]+/g) || []); // todas las fotos/vídeos/audios a los que apunta un estado
-let jobs = 0; const job = d => { jobs += d; window.__sagaBusy = jobs > 0; }; // tareas largas en marcha: la actualización de la app espera a que terminen
+let jobs = 0, crit = 0; const job = d => { jobs += d; window.__sagaBusy = jobs > 0; }; // tareas largas en marcha: la actualización de la app espera a que terminen
+const critJob = d => { crit += d; job(d); }; // copia y restauración: no se interrumpen ni para cambiar de cuenta (Drive sí: se corta y se retoma)
 const BACKUP_WARN = 450e6;
 function backupState() { const o = Object.assign({}, S); delete o.apis; delete o.drive; return o; } // tus claves y el estado del Drive no salen de este dispositivo
 async function exportBackup() {
@@ -2617,16 +2695,16 @@ async function exportBackup() {
   let bytes = 0; for (const k of ks) { const b = await idbGet(k); bytes += (b && b.size) || 0; }
   const est = bytes * 1.37;
   if (est > BACKUP_WARN && !(await ask(`La copia ocuparía unos ${Math.round(est / 1e6)} MB.\n\nLas copias de más de ~500 MB pueden fallar al crearse o al restaurarse en algunos navegadores, sobre todo en iPhone. Tu Google Drive guarda cada foto y vídeo por separado y no tiene este límite.\n\n¿Crear la copia igualmente?`))) return;
-  job(1); toast('Preparando la copia…');
+  critJob(1); toast('Preparando la copia…');
   try {
-    const parts = ['{"kind":"saga-backup","v":1,"date":' + JSON.stringify(new Date().toISOString()) + ',"state":' + JSON.stringify(backupState()) + ',"media":{'];
+    const parts = ['{"kind":"saga-backup","v":1,"date":' + JSON.stringify(new Date().toISOString()) + ',"ws":' + JSON.stringify(ACC.id) + ',"app":"saga-studio","state":' + JSON.stringify(backupState()) + ',"media":{'];
     let n = 0;
     for (const k of ks) { const b = await idbGet(k); if (!b) continue; bar('backup', `Preparando la copia… ${n + 1} de ${ks.length} archivos`); parts.push(new Blob([(n++ ? ',' : '') + JSON.stringify(k) + ':"' + (await blobToData(b)) + '"'])); }
     parts.push('}}');
     download(`saga-copia-${today()}.json`, new Blob(parts, { type: 'application/json' }));
     toast(`Copia lista · ${n} archivos`);
   } catch (e) { bar('backup-err', 'No se pudo crear la copia completa (' + ((e && e.message) || e) + '). Prueba con Drive, o libera memoria cerrando otras pestañas.'); }
-  finally { job(-1); bar('backup'); }
+  finally { critJob(-1); bar('backup'); }
 }
 /* copias grandes: se leen por trozos (una foto o vídeo cada vez), así no chocan con el límite de memoria del navegador */
 async function* readBackup(file) {
@@ -2653,18 +2731,21 @@ const STREAM_MIN = 40e6;
 async function importBackup() {
   const [f] = await pickFiles('application/json,.json'); if (!f) return;
   const bad = why => toast('Ese archivo no es una copia válida de Saga Studio' + (why ? ': ' + why : ''), 4500);
-  let st, date = '', entries = null, it = null;
+  let st, date = '', ws = null, entries = null, it = null;
   if (f.size < STREAM_MIN) {
     let o; try { o = JSON.parse(await f.text()); } catch (x) { return bad(/Unexpected end|unterminated/i.test(x.message) ? 'está cortada o incompleta' : ''); }
-    st = isObj(o) && o.kind === 'saga-backup' ? o.state : o; date = (o && o.date) || ''; entries = Object.entries(isObj(o && o.media) ? o.media : {});
+    st = isObj(o) && o.kind === 'saga-backup' ? o.state : o; date = (o && o.date) || ''; ws = (o && typeof o.ws === 'string') ? o.ws : null; entries = Object.entries(isObj(o && o.media) ? o.media : {});
   } else { // copia grande: primero el estado; las fotos y vídeos se leen después, una a una
     it = readBackup(f);
-    try { for (;;) { const r = await it.next(); if (r.done) break; const v = r.value; if (v.field && v.field[0] === 'state') { st = v.field[1]; break; } if (v.field && v.field[0] === 'date') date = v.field[1]; if (v.media) throw new Error('formato no reconocido'); } }
+    try { for (;;) { const r = await it.next(); if (r.done) break; const v = r.value; if (v.field && v.field[0] === 'state') { st = v.field[1]; break; } if (v.field && v.field[0] === 'date') date = v.field[1]; if (v.field && v.field[0] === 'ws') ws = String(v.field[1] || ''); if (v.media) throw new Error('formato no reconocido'); } }
     catch (x) { return bad(x.message); }
   }
   const why = stateProblem(st); if (why) return bad(why);
-  if (!(await ask(`¿Restaurar esta copia${date ? ' del ' + new Date(date).toLocaleString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}?\n\nSustituye lo que tienes ahora en este dispositivo. Antes guardo un punto de recuperación, por si quieres volver atrás (menú de tu cuenta → Puntos de recuperación).`))) return;
-  job(1); let n = 0, fail = 0, quota = false;
+  // nunca se restaura en silencio la copia de otra cuenta, ni una de antes de las cuentas
+  const who = (ACC.rec && ACC.rec.name) || 'esta cuenta';
+  const whose = ws === ACC.id ? '' : ws ? `⚠ Esta copia es de OTRA cuenta de Saga Studio. Se restaurará en la cuenta de ${who}.\n\n` : `Esta copia es de antes de que hubiera cuentas. Se restaurará en la cuenta de ${who}.\n\n`;
+  if (!(await ask(`${whose}¿Restaurar esta copia${date ? ' del ' + new Date(date).toLocaleString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}?\n\nSustituye lo que tienes ahora en este dispositivo. Antes guardo un punto de recuperación, por si quieres volver atrás (menú de tu cuenta → Puntos de recuperación).`, ws && ws !== ACC.id ? { title: 'Copia de otra cuenta', yes: `Restaurar en ${who}` } : { yes: `Restaurar en ${who}` }))) return;
+  critJob(1); let n = 0, fail = 0, quota = false;
   try {
     const one = async (k, d) => { if (typeof k !== 'string' || !/^m:[a-z0-9]+$/i.test(k) || typeof d !== 'string' || !d.startsWith('data:')) { fail++; return; }
       if (!db) { fail++; return; }
@@ -2676,7 +2757,7 @@ async function importBackup() {
     if (fail && !(await ask(`No se pudieron guardar ${fail} archivo(s)${quota ? ': no queda espacio en este dispositivo' : ''}.\n\n¿Restaurar los datos igualmente? Esas fotos o vídeos se verán vacíos.`))) return toast('Restauración cancelada; no se ha cambiado nada');
     await safetySnapshot('Antes de restaurar una copia');
     adoptState(st); writeState(); await migrateLegacyMedia(); render(); toast(`Copia restaurada · ${n} archivos`, 3500);
-  } finally { job(-1); bar('restore'); }
+  } finally { critJob(-1); bar('restore'); }
 }
 /* notas de la bitácora de versiones anteriores: su audio y adjuntos iban en base64 dentro de los datos (y llenaban el almacenamiento). Se pasan a archivos */
 async function migrateLegacyMedia() {
@@ -2687,11 +2768,11 @@ async function migrateLegacyMedia() {
 }
 /* ---------- puntos de recuperación: antes de restaurar una copia o de cargar lo del Drive se guarda lo que había ---------- */
 const SNAP_MAX = 4;
-async function snapshot(why, raw, state) { // raw: texto tal cual (datos dañados); state: otro estado; si no, el actual
+async function snapshot(why, raw, state, o = {}) { // raw: texto tal cual (datos dañados); state: otro estado; si no, el actual
   if (!db) return false; const t = Date.now();
   try {
     await idbPut('snap:' + t, new Blob(['{"kind":"saga-snapshot","t":' + t + ',"why":' + JSON.stringify(why) + (raw != null ? ',"raw":' + JSON.stringify(raw) : ',"state":' + JSON.stringify(state || S)) + '}'], { type: 'application/json' }));
-    const old = (await idbKeys()).filter(k => String(k).startsWith('snap:')).sort().reverse().slice(SNAP_MAX); if (old.length) await idbDel(old);
+    const old = o.keepAll ? [] : (await idbKeys()).filter(k => String(k).startsWith('snap:')).sort().reverse().slice(SNAP_MAX); if (old.length) await idbDel(old);
     return true;
   } catch (e) { bar('snap', 'No se pudo guardar el punto de recuperación (' + (isQuota(e) ? 'no queda espacio' : (e && e.message) || e) + '). Haz una copia completa antes de seguir.'); return false; }
 }
@@ -2717,9 +2798,9 @@ async function snapDl(k) { const b = await idbGet(k); if (!b) return; let o; try
    Un archivo (foto, vídeo, audio) solo se borra de este dispositivo si NADA lo usa: ni tus datos, ni la papelera, ni ningún punto de recuperación,
    ni la nota que estás escribiendo, y además lleva 7 días sin usarse (por si deshaces algo). Se mira como mucho una vez al día.
    En tu Drive nunca se borra del todo: va a la papelera de Google Drive (que guarda 30 días). */
-const GC_KEY = 'saga-gc', GC_DAYS = 7;
+const GC_KEY = ST ? ST.gc : '', GC_DAYS = 7;
 const gcGet = () => { try { const g = JSON.parse(localStorage.getItem(GC_KEY) || '{}'); return isObj(g) ? g : {}; } catch (e) { return {}; } };
-const gcSet = g => { try { localStorage.setItem(GC_KEY, JSON.stringify(g)); return true; } catch (e) { return false; } };
+const gcSet = g => { if (!GC_KEY || ACC.stopped) return false; try { localStorage.setItem(GC_KEY, JSON.stringify(g)); return true; } catch (e) { return false; } };
 const inUse = async () => { const u = mediaRefs(S); (await snapRefs()).forEach(k => u.add(k)); if (F.audio) u.add(F.audio); F.archivos.forEach(a => u.add(a.data)); return u; };
 async function mediaGC(o = {}) { // o.now: sin esperar los 7 días (lo pides tú). Devuelve { n, bytes }
   if (!db || RECOVERY || jobs) return { n: 0, bytes: 0 };
@@ -2767,6 +2848,7 @@ async function importPack(L, quiet) {
   if (!quiet || !S.vestidorWeb) S.filter.vestidor = 'Mi Notion'; save(); if (!quiet) closeModal(); render(); if (!quiet || S.vestidorWeb) toast(`${n} prendas nuevas, ${upd} actualizadas`); // la primera carga, en silencio: no tapa la bienvenida
 }
 Object.assign(A, {
+  async loadVestidorPack() { toast('Añadiendo el vestidor de ejemplo…'); await autoVestidor(true); if (!S.vestidorWeb) toast('No se pudo cargar el vestidor de ejemplo (¿sin conexión?)', 4000); else render(); },
   async gcNow() { if (!(await ask('¿Liberar espacio ahora?\n\nBorro de este dispositivo las fotos, vídeos y audios que ya no usa nada: ni tus datos, ni la papelera, ni los puntos de recuperación.'))) return;
     const r = await mediaGC({ now: true }); toast(r.n ? `Espacio liberado: ${r.n} archivos · ${(r.bytes / 1e6).toFixed(1)} MB` : 'No había nada que liberar', 3500); if (gdOn()) gdSync(); render(); },
   recDownload() { download(`saga-datos-sin-leer-${today()}.json`, (RECOVERY && RECOVERY.raw) || '', 'application/json'); },
@@ -2784,8 +2866,8 @@ A.importVestidorPack = async () => {
 };
 /* el vestidor publicado junto a la web (vestidor/index.json): la primera vez entra entero; si después se publica una versión nueva,
    solo se añaden las prendas nuevas (las que ya tienes, con tus cambios, no se tocan) */
-async function autoVestidor() {
-  if (!/^https?:/.test(location.protocol) || RECOVERY) return;
+async function autoVestidor(force) {
+  if (!/^https?:/.test(location.protocol) || RECOVERY || !(force || S.vestidorWeb)) return;
   try { const r = await fetch('vestidor/index.json', { cache: 'no-cache' }); if (!r.ok) return; const txt = await r.text(); const h = hash(txt); if (S.vestidorWeb && S.vestidorWebH === h) return;
     const p = JSON.parse(txt); let L = Array.isArray(p.items) ? p.items : []; if (!L.length) return;
     if (S.vestidorWeb) { const have = new Set(S.libs.vestidor.filter(x => x.notion).flatMap(x => [x.notionId, String(x.name || '').toLowerCase()])); L = L.filter(o => isObj(o) && !have.has(o.id) && !have.has(String(o.name || '').toLowerCase())); }
@@ -2847,6 +2929,7 @@ async function addToLib(lib, fs) { const L = LIBS[lib]; fs = await okFiles(fs, [
 /* ---------- delegación de eventos ---------- */
 document.addEventListener('click', async e => {
   const t = e.target; const d = sel => t.closest(sel); let el;
+  if ((el = d('[data-gate]'))) return gateSignIn(el.dataset.gate);
   if ((el = d('[data-bar]'))) { const [id, i] = el.dataset.bar.split('|'); const b = BARS[id]; return b && b.acts[+i] && b.acts[+i][1](); }
   if ((el = d('[data-barx]'))) return bar(el.dataset.barx);
   if ((el = d('[data-snapgo]'))) return snapGo(el.dataset.snapgo);
@@ -2891,7 +2974,10 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-recreate]'))) { S.picked.filmoteca = el.dataset.recreate; return A.useMotion(); }
   if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); if ((S.picked[kk] === id || isMob()) && !el.dataset.gol && LIBS[kk]) { S.picked[kk] = id; save(); return libViewer(kk, id); } S.picked[kk] = id; if (isMob() && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
   if ((el = d('[data-color]'))) { S.sel.color = S.sel.color === el.dataset.color ? '' : el.dataset.color; S.img.prompt = ''; save(); return render(); }
-  if ((el = d('[data-apikey]'))) { const id = el.dataset.apikey; if (S.apis[id]?.key) delete S.apis[id]; else { const o = await textModal('Conectar ' + id, [['k','Clave de API','pega aquí tu clave']]); if (!o || !o.k) return apisModal(); S.apis[id] = { key: o.k }; } save(); renderHeader(); return apisModal(); }
+  if ((el = d('[data-provset]'))) { const id = el.dataset.provset; const [grp, oid] = id.split(':'); const ui = PROV_UI.find(p => p[0] === id); const fields = ui ? ui[3] : [['key', 'Clave de API']];
+    const o = await textModal('Conectar ' + (ui ? ui[1] : oid), fields.map(([k, l]) => [k, l, 'pega aquí tu ' + l.toLowerCase()])); if (!o || fields.some(([k]) => !o[k])) return apisModal();
+    const P = provGet(); if (oid) { P.otros = Object.assign({}, P.otros, { [oid]: { key: o.key } }); } else P[id] = o; provSet(P); renderHeader(); toast('Clave guardada solo en este dispositivo'); return apisModal(); }
+  if ((el = d('[data-provdel]'))) { const id = el.dataset.provdel; const [grp, oid] = id.split(':'); if (!(await ask('¿Quitar esta clave de este dispositivo?'))) return apisModal(); const P = provGet(); if (oid) { if (P.otros) delete P.otros[oid]; } else delete P[id]; provSet(P); renderHeader(); return apisModal(); }
   if ((el = d('[data-amode]'))) { S.aud.modo = el.dataset.amode; save(); return render(); }
   if ((el = d('[data-amodel]'))) { S.aud.model[S.aud.modo] = el.dataset.amodel; save(); return render(); }
   if ((el = d('[data-atag]'))) { S.aud.texto = (S.aud.texto + ' ' + el.dataset.atag).trim(); save(); return render(); }
@@ -2985,15 +3071,124 @@ window.addEventListener('resize', () => $$('.seg').forEach(placeKnob));
 /* teclado del móvil: las hojas que suben desde abajo se quedan por encima del teclado (iPhone) */
 if (window.visualViewport) { const vv = visualViewport; const kb = () => { const h = Math.max(0, innerHeight - vv.height - vv.offsetTop); document.documentElement.style.setProperty('--kb', (h > 80 ? h : 0) + 'px'); document.documentElement.style.setProperty('--vvh', vv.height + 'px'); }; vv.addEventListener('resize', kb); kb(); }
 
+/* ============ cuentas: entrar, asociar el espacio anterior, cambiar, salir ============ */
+/* claves de proveedores de IA: solo en este dispositivo y solo para esta cuenta. Nunca dentro de tus datos (así nunca van a Drive, a copias ni a puntos de recuperación) */
+const PROV_KEY = akey('saga-prov');
+function provGet() { if (!PROV_KEY) return {}; try { const o = JSON.parse(localStorage.getItem(PROV_KEY) || '{}'); return isObj(o) ? o : {}; } catch (e) { return {}; } }
+function provSet(o) { if (!PROV_KEY || ACC.stopped) return false; try { localStorage.setItem(PROV_KEY, JSON.stringify(o)); return true; } catch (e) { toast('No se pudo guardar la clave: el almacenamiento está lleno', 4500); return false; } }
+/* para la sesión de esta cuenta: guarda lo pendiente, corta peticiones y temporizadores, suelta fotos en memoria (después siempre se recarga la página) */
+function accStop() {
+  if (ACC.stopped) return; flushSave(); closeModal(); closeMenu();
+  ACC.stopped = true; ACC.gen++; try { ACC.ctrl.abort(); } catch (e) {}
+  clearTimeout(saveT); clearTimeout(GD.pushT); clearTimeout(GD.retryT);
+  try { db && db.close(); } catch (e) {} db = null;
+  for (const k in urls) { URL.revokeObjectURL(urls[k]); delete urls[k]; }
+  GD.token = ''; GD.exp = 0;
+}
+/* cerrar sesión / cambiar de cuenta: tus datos se quedan en este dispositivo y en tu Drive; solo se olvida el permiso de Google */
+function accLeave() {
+  if (crit) return toast('Espera a que termine la copia o la restauración en curso', 4000);
+  accStop(); try { localStorage.removeItem(GD.TK); } catch (e) {}
+  DEV.active = ''; devSave(); location.reload();
+}
+async function accRemove() {
+  if (crit) return toast('Espera a que termine la copia o la restauración en curso', 4000);
+  const who = ACC.rec.name || 'esta cuenta';
+  if (!(await ask(`¿Quitar a ${who} de este dispositivo?\n\nSe borran de ESTE dispositivo sus datos, fotos, vídeos, claves y puntos de recuperación. Tu Google Drive no se toca.\n\nSi no tienes una copia, cancela y haz antes «Guardar copia completa».`, { title: 'Quitar la cuenta de este dispositivo', yes: 'Quitar de este dispositivo', no: 'Cancelar' }))) return;
+  if (!(await ask('No se puede deshacer en este dispositivo.', { title: '¿Seguro del todo?', yes: 'Sí, quitar', no: 'Cancelar' }))) return;
+  const dbName = ST.db; accStop();
+  for (const k of [ST.state, ST.gc, GD.TK, GD.META, PROV_KEY, akey('saga-jobs')]) try { localStorage.removeItem(k); } catch (e) {}
+  await new Promise(r => { const q = indexedDB.deleteDatabase(dbName); q.onsuccess = q.onerror = () => r(); q.onblocked = () => { alert('Cierra las otras pestañas de Saga Studio para terminar de borrar las fotos de esta cuenta.'); r(); }; });
+  if (ACC.rec.store) DEV.legacy = { status: 'removed', at: Date.now() };
+  delete DEV.accounts[ACC.id]; DEV.active = ''; devSave(); location.reload();
+}
+/* qué hay en un espacio: se compara antes y después de asociar el espacio anterior */
+async function wsCounts(st, keys) {
+  const refs = mediaRefs(st), K = new Set(keys || []);
+  return { personajes: st.chars.length, creaciones: st.creaciones.length, fototeca: st.fototeca.length, filmoteca: st.filmoteca.length, audios: st.audios.length, carpetas: st.folders.length, bitacora: st.feedback.length, papelera: st.trash.length,
+    fichas: Object.values(st.libs).reduce((a, L) => a + L.length, 0), archivos: refs.size, archivosPresentes: [...refs].filter(k => K.has(k)).length };
+}
+const wsEmpty = st => !st.creaciones.length && !st.fototeca.length && !st.filmoteca.length && !st.audios.length && !st.feedback.length && !st.folders.length && st.chars.length <= 1 && !Object.values(st.libs).some(L => L.some(x => !x.cat0 && !x.notion));
+/* antes de asociar: punto de recuperación (con lo guardado tal cual) y recuento. No se mueve ni se borra nada */
+async function legacyPrepare() {
+  let raw = null, st = null, keys = [], snap = false; try { raw = localStorage.getItem(LEGACY.state); const o = JSON.parse(raw); if (!stateProblem(o)) st = upgradeState(o); } catch (e) {}
+  const prev = db; try { db = await idbOpen(LEGACY.db); keys = await idbKeys(); snap = await snapshot('Antes de asociar este espacio a una cuenta', raw || '', null, { keepAll: true }); } catch (e) { console.warn('espacio anterior', e); }
+  finally { try { db && db !== prev && db.close(); } catch (e) {} db = prev; }
+  return { counts: st ? await wsCounts(st, keys) : null, snap };
+}
+function legacyAsk(rec) { return new Promise(res => { let done = false; const fin = v => { if (!done) { done = true; res(v); } };
+  modal(`<h2>¿Asociar el espacio anterior?</h2><p class="note" style="white-space:pre-line;margin:8px 0 16px">En este dispositivo hay un espacio de Saga Studio de antes de que hubiera cuentas. ¿Quieres que sea el de esta cuenta?\n\n<b>${esc(rec.name || 'Tu cuenta')}</b>${rec.email ? '\n' + esc(rec.email) : ''}\n\nNo se borra ni se mueve nada: antes guardo un punto de recuperación y siempre podrás desasociarlo.</p>
+    <div class="stack" style="gap:8px"><button class="btn acc wide" id="lgb">Asociar a esta cuenta</button><button class="btn wide" id="lgo">Es de otra cuenta</button><button class="btn ghost wide" id="lgl">Ahora no</button></div>`,
+    sc => { sc.querySelector('#lgb').onclick = () => { fin('bind'); closeModal(); }; sc.querySelector('#lgo').onclick = () => { fin('other'); closeModal(); }; sc.querySelector('#lgl').onclick = () => { fin('later'); closeModal(); }; }, '', () => fin('later')); }); }
+const LEGACY_STORE = { state: LEGACY.state, gc: LEGACY.gc, db: LEGACY.db };
+async function legacyBindCurrent() { // desde dentro de una cuenta que aún no tiene nada propio
+  if (!legacyPending() || ACC.rec.store) return;
+  if (!wsEmpty(S)) return toast('Esta cuenta ya tiene su propio trabajo en este dispositivo: el espacio anterior solo se puede asociar a una cuenta vacía', 5000);
+  if ((await legacyAsk(ACC.rec)) !== 'bind') return;
+  flushSave(); const p = await legacyPrepare();
+  accStop(); ACC.rec.store = LEGACY_STORE; ACC.rec.bound = { at: Date.now(), counts: p.counts, check: 1 }; DEV.legacy = { status: 'bound', at: Date.now() }; devSave(); location.reload();
+}
+async function legacyUnbind() {
+  if (!(await ask('¿Desasociar el espacio anterior de esta cuenta?\n\nNo se borra nada: el espacio anterior se queda en este dispositivo, sin cuenta, y esta cuenta pasa a tener un espacio propio nuevo.', { yes: 'Desasociar' }))) return;
+  if (crit) return toast('Espera a que termine la copia o la restauración en curso', 4000);
+  accStop(); delete ACC.rec.store; delete ACC.rec.bound; DEV.legacy = { status: 'unbound', at: Date.now() }; devSave(); location.reload();
+}
+/* primer arranque de una cuenta recién asociada: el Drive se comprueba como la primera vez y se verifica que no falte nada */
+async function bindCheck() {
+  const b = ACC.rec && ACC.rec.bound; if (!b || !b.check || RECOVERY) return;
+  if (isObj(S.drive)) { delete S.drive.syncAt; delete S.drive.hash; }
+  writeState();
+  if (b.counts) { const now2 = await wsCounts(S, await idbKeys()); const diff = Object.keys(b.counts).filter(k => b.counts[k] !== now2[k]);
+    if (diff.length) { b.mismatch = diff.map(k => `${k}: ${b.counts[k]} → ${now2[k]}`); bar('bind', `Al asociar el espacio anterior algo no cuadra (${b.mismatch.join(', ')}). No se ha borrado nada.`, [['Desasociar', legacyUnbind], ['Puntos de recuperación', snapsModal]]); } }
+  b.check = 0; devSave(); if (!b.mismatch) toast('Espacio anterior asociado a tu cuenta', 3500);
+}
+/* claves de versiones anteriores (antes iban dentro de tus datos): pasan al almacén de claves de esta cuenta */
+function migrateApis() { if (!isObj(S.apis) || !Object.keys(S.apis).length) return; const p = provGet(); const a = Object.assign({}, S.apis); if (a.fal && a.fal.key && !(p.fal && p.fal.key)) p.fal = { key: a.fal.key }; delete a.fal; p.otros = Object.assign({}, p.otros, a); if (provSet(p)) { S.apis = {}; writeState(); } }
+/* ---------- pantalla de entrada ---------- */
+const LOGO = '<svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8a5b"/><stop offset=".55" stop-color="#ec4899"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs><rect width="32" height="32" rx="9" fill="url(#lgg)"/><path d="M21.2 10.6c-1.1-1.5-2.9-2.3-5-2.3-3.2 0-5.4 1.8-5.4 4.4 0 2.5 1.8 3.6 4.9 4.4 2.6.7 3.6 1.3 3.6 2.7 0 1.5-1.4 2.5-3.5 2.5-2.1 0-3.7-.9-4.6-2.6" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round"/><circle cx="23.6" cy="23.4" r="1.7" fill="#fff"/></svg>';
+function gateShow(note = '') {
+  document.body.classList.add('gated');
+  let g = $('#gate'); if (!g) { g = document.createElement('div'); g.id = 'gate'; document.body.appendChild(g); }
+  const accs = Object.entries(DEV.accounts).sort((a, b) => (b[1].last || 0) - (a[1].last || 0));
+  g.innerHTML = `<div class="gatecard"><span class="welmark">${LOGO}</span><h1 id="gate-h">Saga Studio</h1>
+    <p class="note">Tu estudio privado. Tus personajes, fotos y vídeos se guardan en este dispositivo y en tu propio Google Drive.</p>
+    ${legacyPending() ? '<div class="card gatelegacy"><b>Hay un espacio de Saga Studio de antes en este dispositivo</b><p class="note">Al entrar podrás asociarlo a tu cuenta. No se borra ni se mueve nada.</p></div>' : ''}
+    <div class="stack" style="gap:8px">${accs.map(([id, a]) => `<button class="btn wide gatebtn" data-gate="${esc(id)}"><span class="gav" aria-hidden="true">${esc(String(a.name || '?').trim().charAt(0).toUpperCase() || '?')}</span><span class="gatetx"><b>Continuar como ${esc(a.name || 'tu cuenta')}</b>${a.email ? `<small>${esc(a.email)}</small>` : ''}</span></button>`).join('')}
+      <button class="btn ${accs.length ? '' : 'acc'} wide" data-gate="">${accs.length ? 'Usar otra cuenta de Google' : 'Continuar con Google'}</button></div>
+    <p class="note gatemsg" role="status" aria-live="polite">${esc(note || (navigator.onLine === false ? 'Sin conexión: para entrar hace falta internet.' : ''))}</p>
+    <p class="note gatefine">Cada cuenta de Google tiene su propio espacio. Saga Studio no tiene servidor: tus datos no salen de tu dispositivo y de tu Drive.</p></div>`;
+  g.querySelector('button')?.focus({ preventScroll: true });
+}
+let gateBusy = false;
+async function gateSignIn(pref) {
+  const msg = t => { const m = $('#gate .gatemsg'); if (m) m.textContent = t; };
+  if (gateBusy) return; if (navigator.onLine === false) return msg('Sin conexión: conéctate a internet para entrar.');
+  const known = pref && DEV.accounts[pref]; gateBusy = true; msg('Abriendo Google…');
+  try {
+    const t = await googleToken({ prompt: known ? '' : 'select_account', hint: known && known.email });
+    msg('Comprobando tu cuenta…'); const id = await googleAccountId(t.token); const prof = t.drive ? await googleProfile(t.token) : null;
+    const old = DEV.accounts[id]; const rec = Object.assign({}, old || {}, { name: (prof && prof.displayName) || (old && old.name) || 'Tu cuenta', email: (prof && prof.emailAddress) || (old && old.email) || '', last: Date.now() });
+    if (legacyPending() && !(old && old.store)) {
+      const own = accStore(id, null); let empty = true; try { const o = JSON.parse(localStorage.getItem(own.state) || 'null'); if (o && !stateProblem(o)) empty = wsEmpty(upgradeState(o)); else if (o) empty = false; } catch (e) { empty = false; }
+      if (empty) { const ch = await legacyAsk(rec);
+        if (ch === 'other') { gateBusy = false; gateShow('Pulsa «Usar otra cuenta de Google» y elige la cuenta de ese espacio.'); return; }
+        if (ch === 'bind') { msg('Guardando un punto de recuperación…'); const p = await legacyPrepare(); rec.store = LEGACY_STORE; rec.bound = { at: Date.now(), counts: p.counts, check: 1 }; DEV.legacy = { status: 'bound', at: Date.now() }; } }
+    }
+    DEV.accounts[id] = rec; DEV.active = id; if (!devSave()) throw userErr('No se pudo guardar: el almacenamiento del navegador está lleno');
+    if (t.drive) try { localStorage.setItem('saga-drive.token@' + id, JSON.stringify({ token: t.token, exp: t.exp })); } catch (e) {}
+    location.reload();
+  } catch (e) { gateBusy = false; msg(e.message || 'No se pudo entrar'); }
+}
 /* ---------- arranque ---------- */
 (async () => {
+  if (!ACC.id) return gateShow(); // sin cuenta: solo la pantalla de entrada (nada se lee ni se guarda)
   try { db = await idb(); await loadAllMedia(); } catch (e) { console.warn('IndexedDB no disponible', e); db = null; bar('idb', 'Este navegador no deja guardar fotos, vídeos ni audios aquí (¿navegación privada?). Lo que importes no se guardará.'); }
   // pide al navegador que no borre tus datos cuando le falte espacio (Safari, Chrome…)
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persisted().then(p => p || navigator.storage.persist()).catch(() => {}); } catch (e) {}
   const h = location.hash.slice(1).replace('-', ':');
   if (h && (R[h] || (h.startsWith('lib:') && LIBS[h.slice(4)]))) S.section = h;
   if (S.section.startsWith('lib:') && !LIBS[S.section.slice(4)]) S.section = 'perfil';
-  if (!RECOVERY) await migrateLegacyMedia();
+  if (!RECOVERY) { await bindCheck(); migrateApis(); await migrateLegacyMedia(); }
   try { render(); } catch (e) { // lo guardado se lee pero no se puede mostrar: mejor modo recuperación que una app en blanco
     if (RECOVERY) throw e; console.error(e); let raw = null; try { raw = localStorage.getItem(KEY); } catch (x) {}
     RECOVERY = { raw, why: 'no se pudieron mostrar (' + e.message + ')' }; S = upgradeState({}); render(); }
@@ -3001,6 +3196,7 @@ if (window.visualViewport) { const vv = visualViewport; const kb = () => { const
   if (RECOVERY) { bar('recovery', 'Modo recuperación: tus datos no se pudieron leer y no se guarda nada hasta que decidas qué hacer.', [['Ver opciones', recoveryModal]]); recoveryModal(); return; }
   if (!S.bienvenidaVista) setTimeout(bienvenidaModal, 400);
   autoVestidor();
+  if (legacyPending() && !ACC.rec.store && wsEmpty(S)) bar('legacy', 'En este dispositivo hay un espacio de Saga Studio de antes, sin cuenta.', [['Asociarlo a esta cuenta', legacyBindCurrent]]);
   if (gdOn()) { gdSet(gdOk() ? 'sync' : 'need'); gdSync({ full: true }); }
   setTimeout(() => mediaGC().catch(e => console.warn('limpieza', e)), 20000);
 })();
