@@ -2087,11 +2087,11 @@ function importResultModal(kind = 'img', prompt = '', refs = []) {
     dz.ondragover = e => { e.preventDefault(); dz.classList.add('over'); }; dz.ondragleave = () => dz.classList.remove('over');
     dz.ondrop = e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove('over'); setF([...e.dataTransfer.files]); };
     sc.querySelector('#impok').onclick = async () => {
-      files = await okFiles(files);
-      if (!files.length) return toast('Añade al menos una foto o un vídeo');
+      const n0 = files.length; files = await okFiles(files); const nBad = n0 - files.length;
+      if (!files.length) return n0 ? null : toast('Añade al menos una foto o un vídeo');
       const cost = +sc.querySelector('#impc').value || 0; const m = sc.querySelector('#impm').value;
       try { for (const [i, f] of files.entries()) S.creaciones.unshift({ id: uid(), kind: f.type.startsWith('video') ? 'vid' : 'img', media: await putMedia(f), prompt, model: m, cost: i === 0 ? cost : 0, date: today(), t: now(), fav: false, folder: '', char: S.active, trash: false, nsfw: !!S.nsfw || undefined }); } finally { save(); render(); } // si uno falla, lo anterior queda guardado
-      S.mv = S.mv || {}; S.mv[S.section] = 1; save(); closeModal(); render(); toast('Guardado en Creaciones');
+      S.mv = S.mv || {}; S.mv[S.section] = 1; save(); closeModal(); render(); toast('Guardado en Creaciones' + (nBad ? ` · ${nBad} archivo(s) no válidos, no se han añadido` : ''), nBad ? 4500 : 2400);
     };
   });
 }
