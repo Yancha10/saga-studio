@@ -2290,7 +2290,7 @@ const A = {
   mobileMore(e) { if (Date.now() - (window.__menuClosedAt || 0) < 400 && window.__lastMenu === 'more') return; const r = rectOf(e); setTimeout(() => { window.__lastMenu = 'more'; $('#menu')?.classList.add('mgrid'); }, 0); menu(r.left - 170, r.top - 520, [
     { t:'Fototeca', icon:'photos', fn: () => go('biblio') }, { t:'Filmoteca', icon:'film', fn: () => go('videoteca') }, '-',
     ...MORE_ORDER.map(k => k === '-' ? '-' : ({ t: LIBS[k].t, icon: LIBS[k].icon, fn: () => go('lib:' + k) })), '-',
-    { t:'Audio', icon:'mic', fn: () => go('audio') }, { t:'Efectos', icon:'spark', off:1 }, { t:'Comunidad', icon:'people', off:1 },
+    { t:'Audio', icon:'mic', fn: () => go('audio') }, { t:'Efectos', icon:'spark', badge:'PRONTO', fn: () => go('fx') }, { t:'Comunidad', icon:'people', badge:'PRONTO', fn: () => go('comunidad') }, { t:'Mensajes', icon:'chat', badge:'PRONTO', fn: () => go('mensajes') },
     { t:'Papelera', icon:'trash', fn: () => papeleraModal() }, { t:'Feedback', icon:'chat', fn: () => { F.open = true; paintFb(); } },
   ]); },
   charMenu(e) { const r = rectOf(e); menu(r.left - 180, r.bottom + 6, [{ head: 'Personaje' }, ...S.chars.map(c => ({ t: c.name, icon:'user', on: c.id === S.active, fn: () => { S.active = c.id; S.img.prompt = ''; save(); render(); } })), '-', { t:'＋ Crear personaje', fn: A.newChar }]); },
