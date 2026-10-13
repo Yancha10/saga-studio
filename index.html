@@ -2085,7 +2085,7 @@ function renderLib(lib) {
 /* ---------- secciones «pronto» ---------- */
 const soon = (t, d) => () => ({ side: `<div class="stack"><span class="lbl">${t}</span><p class="note">${d}</p><button class="btn" data-a="feedback">💬 Proponer una idea</button></div>`, stage: soonStage(t, d) });
 R.fx = soon('Efectos de vídeo', 'Plantillas de efectos para vídeo (zoom, explosión de color, transiciones…). Próximamente.');
-R.comunidad = soon('Comunidad', 'En Aria Studio es un directorio de creadores para seguir, colaborar y recrear creaciones publicadas. Aquí, al ser tu estudio local, llegará cuando tengamos servidor.');
+R.comunidad = soon('Comunidad', 'Un directorio de creadores para seguir, colaborar y recrear creaciones publicadas. Todavía no está disponible.');
 R.mensajes = soon('Mensajes', 'Bandeja de mensajes entre creadores. Llegará junto a la Comunidad.');
 
 /* ============ RENDER ============ */
@@ -2191,7 +2191,7 @@ function apisModal() {
     <div class="ayudas">Otras cuentas (solo como recordatorio)</div>
     ${PROVIDERS.filter(([id]) => id !== 'fal').map(([id, n, d]) => { const on = O[id] && O[id].key; return `<div class="prov"><span class="dot ${on ? 'on' : ''}"></span><div><b>${n}</b><p>${d}${on ? ' · clave ' + mask(on) : ''}</p></div><button class="btn sm" data-${on ? 'provdel' : 'provset'}="otros:${id}">${on ? 'Quitar' : 'Guardar'}</button></div>`; }).join('')}
     <div class="prov"><span class="dot"></span><div><b>¿Usas otra API?</b><p>Apúntala en el feedback y la añadimos</p></div><button class="btn sm" data-a="feedback">Pedirla</button></div></div>
-    <div class="card" style="margin-top:14px"><b>🔌 MCP</b><p class="note" style="margin-top:6px">En Aria Studio puedes pedir imágenes desde Claude o ChatGPT. Aquí llegará cuando la app tenga servicio local.</p></div>
+    <div class="card" style="margin-top:14px"><b>🔌 MCP</b><p class="note" style="margin-top:6px">Más adelante podrás pedir imágenes a Saga Studio desde Claude o ChatGPT. Todavía no está disponible.</p></div>
     <p class="note" style="margin-top:14px">Las generaciones directas aparecen en «Trabajos» (arriba) mientras se hacen, y al terminar se guardan solas en Creaciones.</p>`);
 }
 function modelInfoModal(vid) {
