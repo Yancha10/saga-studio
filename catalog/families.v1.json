@@ -1,0 +1,8 @@
+{
+  "v": 1,
+  "reviewed": "2026-10-13",
+  "notes": "Qué modelos de cada servicio son el mismo modelo que uno de la lista de Saga Studio. Solo entradas comprobadas en la documentación oficial del servicio; en la duda, no se añade. Saga Studio nunca elige el servicio por ti: esto solo los marca como «Recomendados» en el buscador.",
+  "families": {
+    "sd25": { "name": "Seedance 2.5", "endpoints": [ { "provider": "pollo", "id": "bytedance/seedance-2-5", "source": "https://docs.pollo.ai/m/bytedance/seedance-2-5" } ] }
+  }
+}

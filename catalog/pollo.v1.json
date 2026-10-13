@@ -1,0 +1,39 @@
+{
+  "v": 1,
+  "provider": "pollo",
+  "reviewed": "2026-10-13",
+  "source": "https://docs.pollo.ai (páginas de cada modelo). Pollo no publica una lista de modelos por API: este archivo se mantiene a mano. Ver catalog/README.md.",
+  "notes": "Solo campos vistos en la documentación oficial. Las imágenes (image, imageTail) no se envían desde Saga Studio: Pollo solo las acepta por enlace público.",
+  "models": [
+    { "pid": "kling-ai/kling-v2-1", "kind": "vid", "name": "Kling 2.1", "family": "", "ver": "2.1", "src": "https://docs.pollo.ai/m/kling-ai/kling-v2-1",
+      "fields": [
+        { "id": "negativePrompt", "type": "text", "label": "Prompt negativo" },
+        { "id": "strength", "type": "float", "label": "Strength", "num": true, "adv": true },
+        { "id": "length", "type": "int", "label": "Duración (s)", "num": true },
+        { "id": "mode", "type": "text", "label": "Modo", "adv": true }
+      ] },
+    { "pid": "kling-ai/kling-v2-6", "kind": "vid", "name": "Kling 2.6", "family": "", "ver": "2.6", "src": "https://docs.pollo.ai/m/kling-ai/kling-v2-6",
+      "fields": [
+        { "id": "negativePrompt", "type": "text", "label": "Prompt negativo" },
+        { "id": "length", "type": "int", "label": "Duración (s)", "num": true },
+        { "id": "generateAudio", "type": "bool", "label": "Generar audio" }
+      ] },
+    { "pid": "bytedance/seedance", "kind": "vid", "name": "Seedance (Pollo)", "family": "", "ver": "", "src": "https://docs.pollo.ai/m/bytedance/seedance",
+      "fields": [
+        { "id": "resolution", "type": "text", "label": "Resolución" },
+        { "id": "length", "type": "int", "label": "Duración (s)", "num": true },
+        { "id": "seed", "type": "int", "label": "Semilla", "num": true, "adv": true },
+        { "id": "cameraFixed", "type": "bool", "label": "Cámara fija", "adv": true }
+      ] },
+    { "pid": "bytedance/seedance-2-5", "kind": "vid", "name": "Seedance 2.5", "family": "sd25", "ver": "2.5", "src": "https://docs.pollo.ai/m/bytedance/seedance-2-5",
+      "fields": [
+        { "id": "resolution", "type": "text", "label": "Resolución" },
+        { "id": "aspectRatio", "type": "text", "label": "Formato" },
+        { "id": "length", "type": "int", "label": "Duración (s)", "num": true },
+        { "id": "generateAudio", "type": "bool", "label": "Generar audio" },
+        { "id": "seed", "type": "int", "label": "Semilla", "num": true, "adv": true },
+        { "id": "cameraFixed", "type": "bool", "label": "Cámara fija", "adv": true },
+        { "id": "webSearch", "type": "bool", "label": "Búsqueda web", "adv": true }
+      ] }
+  ]
+}
