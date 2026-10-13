@@ -1061,6 +1061,25 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,.modal:focus-vis
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 /* pantalla de entrada (cuentas) */
 .prov .btn{flex:none;white-space:nowrap}
+.prov .row .btn{margin-left:0}
+.prov>.row{margin-left:auto}
+.mpbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.mpbar input{flex:1 1 100%;min-width:0}.mpbar select{flex:1 1 0;min-width:0}
+@media (max-width:440px){.prov{flex-wrap:wrap}.prov>div{flex:1 1 calc(100% - 24px);min-width:0}}
+.spin{display:inline-block;width:10px;height:10px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:-1px;margin-right:4px}
+.pill.jobs{gap:4px}
+.genvia{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left}
+.genvia .gvt{display:flex;flex-direction:column;align-items:flex-end;min-width:0;text-align:right;font-size:12px}
+.genvia .gvt b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.mplist{max-height:min(56vh,520px);overflow:auto;display:flex;flex-direction:column;gap:4px;contain:content}
+.mprow{display:flex;align-items:stretch;gap:4px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.mprow.on{border-color:var(--ink)}
+.mpfav{flex:none;width:36px;font-size:16px;color:var(--mut)}.mpfav.on{color:var(--warn)}
+.mpgo{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left;padding:9px 10px 9px 0}
+.mpgo b{font-size:13px;overflow-wrap:anywhere}.mpgo small,.mpgo i{font-size:11px;color:var(--mut);overflow-wrap:anywhere}
+.mpgo[data-dis]{opacity:.55}
+.jobrow{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.jobrow>div:first-child{min-width:0;overflow-wrap:anywhere}
+.jobrow a{text-decoration:underline}
 body.gated>header,body.gated>main,body.gated>#mnav,body.gated>#mtabs,body.gated #fbw{display:none!important}
 #gate{position:fixed;inset:0;z-index:60;display:flex;overflow:auto;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));background:radial-gradient(120% 80% at 50% 0%,rgba(236,72,153,.14),transparent 60%),var(--bg)}
 .gatecard{margin:auto;width:min(420px,100%);background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:28px 24px;display:flex;flex-direction:column;gap:14px}
@@ -1318,7 +1337,7 @@ const defaultState = () => {
     img: { model: 'seedream', quality: '1.5k', ratio: '3:4', count: 1, prompt: '', idea: '' },
     vid: { que: 'crear', model: 'sd20', motor: 'mc-sd20', metodo: 'normal', quality: '480p', dur: 5, ratio: 'auto', audio: true, cam: 'mano', style: 'natural', accion: '', extra: '', useSheet: true, motionRef: '', startRef: '', endRef: '', imgRef: '', prompt: '' },
     aud: { modo: 'voz', model: { voz: 'el4', ambiente: 'seedaudio', cambiar: 'vchange', efecto: 'mirelo' }, texto: '', dir: '', escena: '', est: 0.5, ambienteFondo: false, limpiar: false, archivo: '' },
-    apis: {}, notes: '', creFolder: 'all', selMode: false, selected: [], guiaOk: false, bienvenidaVista: false,
+    apis: {}, gen: { via: { img: '', vid: '', motion: '' }, fav: [], recent: [], custom: [], seen: {} }, notes: '', creFolder: 'all', selMode: false, selected: [], guiaOk: false, bienvenidaVista: false,
   };
 };
 /* ---------- validar y poner al día un estado: lo usan el arranque, «Restaurar copia» y lo que llega del Drive ---------- */
@@ -1334,7 +1353,9 @@ function upgradeState(raw) { // devuelve un estado completo; nunca toca el origi
   const D = defaultState(); const s = Object.assign(defaultState(), raw);
   for (const k of ['chars','fototeca','filmoteca','creaciones','audios','trash','feedback','folders']) s[k] = Array.isArray(s[k]) ? s[k].filter(isObj) : [];
   for (const k of ['selected','refs']) s[k] = Array.isArray(s[k]) ? s[k].filter(x => typeof x === 'string') : [];
-  for (const k of ['libs','picked','filter','sel','compsOff','apis','img','vid','aud']) if (!isObj(s[k])) s[k] = D[k];
+  for (const k of ['libs','picked','filter','sel','compsOff','apis','img','vid','aud','gen']) if (!isObj(s[k])) s[k] = D[k];
+  s.gen = Object.assign(D.gen, s.gen); s.gen.via = Object.assign(D.gen.via, isObj(s.gen.via) ? s.gen.via : {}); for (const k of ['img','vid','motion']) if (typeof s.gen.via[k] !== 'string') s.gen.via[k] = '';
+  for (const k of ['fav','recent','custom']) s.gen[k] = Array.isArray(s.gen[k]) ? s.gen[k].filter(x => k === 'custom' ? isObj(x) : typeof x === 'string').slice(0, 100) : []; if (!isObj(s.gen.seen)) s.gen.seen = {};
   for (const k of ['open','mv']) if (s[k] !== undefined && !isObj(s[k])) delete s[k];
   if (s.drive !== undefined && !isObj(s.drive)) s.drive = { on: false };
   if (typeof s.section !== 'string') s.section = 'perfil';
@@ -1476,7 +1497,7 @@ function refList() { // @IMG1 ficha · @IMG2 copia · resto
   return L;
 }
 function buildImgPrompt() {
-  const c = char(); const m = S.img.model; const B = []; const R = refList(); const tagOf = w => (R.find(r => r.what.startsWith(w)) || {}).tag;
+  const c = char(); const vm = viaModel('img'); const m = vm ? (vm.prof === 'flux' ? 'flux' : '') : S.img.model; const B = []; const R = refList(); const tagOf = w => (R.find(r => r.what.startsWith(w)) || {}).tag;
   if (c.promptBase) B.push(c.promptBase.trim());
   const comps = compsActive(c).map(x => x.desc || x.name);
   B.push(`⟦PERSONAJE: Create one new photograph (a single photo, never a collage or a character sheet) of the woman of @IMG1 (her character sheet: her face and her full body): same face, ${en(c.eyes) || 'same'} eyes, ${en(c.hair) || 'same'} hair${c.hairstyle && !S.sel.peinado ? ', ' + en(c.hairstyle) : ''}${comps.length ? ', ' + comps.join(', ') : ''}.⟧`);
@@ -1642,6 +1663,7 @@ function renderHeader() {
   $('#hright').innerHTML = `${guia}
     <button class="pill gd ${GD.status}" id="gdpill" data-a="drive" title="${esc(gdTitle())}"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.2 4.5 4.5 0 0 0 7 18Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><i>${gdLabel()}</i></button>
     <button class="pill" data-a="apis"><span class="dot ${live ? 'on' : ''}"></span>MIS APIS</button>
+    ${jobsGet().length ? `<button class="pill jobs" data-a="jobs" title="Trabajos de generación">${jobsLive() ? '<span class="spin"></span>' + jobsLive() : '✓'} TRABAJOS</button>` : ''}
     <button class="meter" data-a="gasto" title="Registro de gasto"><span>Total <b>${total}</b> generaciones</span><span>Gasto <b>${money(spent)}</b></span></button>
     <button class="iconbtn" data-a="ayuda" title="Ayuda">${ic('help', 'width="15" height="15"')}</button>
     <button class="iconbtn" data-a="theme" title="Tema">${ic(S.theme === 'dark' ? 'sun' : 'moon', 'width="15" height="15"')}</button>
@@ -1846,8 +1868,10 @@ R.crear = () => {
     <div class="mrow3">${pro ? '' : `<button class="bar" data-a="toPro"><span class="lbl">Ajustes</span><span class="mut">${model.n} · ${S.img.quality} · ${S.img.ratio} ▸</span></button>`}
     <div class="between mcnt"><span class="lbl">Imágenes</span><div class="row" style="gap:10px"><div class="stepper"><button data-a="cnt-">−</button><b>${S.img.count}</b><button data-a="cnt+">＋</button></div></div></div>
     ${nsfwRow('Solo Seedream 5.0 Pro · sin vestidor')}</div>
-    <div class="sticky-gen"><button class="btn acc big" data-a="genImg">${S.nsfw ? '🔥 ' : ''}Generar · ${model.usd ? money(imgUsd(model, S.img.quality) * S.img.count) : S.img.count}</button>
-    <p class="note" style="text-align:center;margin-top:8px">Copia el prompt y sus referencias, genera en ${esc(model.n)} e importa aquí el resultado.</p></div>`;
+    ${genRow('img')}
+    <div class="sticky-gen">${viaModel('img') ? `<button class="btn acc big" data-a="genImg">Generar con ${esc(PNAME[viaModel('img').provider])}</button>
+    <p class="note" style="text-align:center;margin-top:8px">${esc(viaModel('img').name)} · se cobra en tu cuenta del servicio. Lo verás en Creaciones al terminar.</p>` : `<button class="btn acc big" data-a="genImg">${S.nsfw ? '🔥 ' : ''}Generar · ${model.usd ? money(imgUsd(model, S.img.quality) * S.img.count) : S.img.count}</button>
+    <p class="note" style="text-align:center;margin-top:8px">Copia el prompt y sus referencias, genera en ${esc(model.n)} e importa aquí el resultado.</p>`}</div>`;
   const items = S.creaciones.filter(x => x.kind === 'img' && !x.trash && x.char === c.id);
   const last = items[0];
   const rec = `<div class="recetas"><button class="rec ${!S.receta ? 'on' : ''}" data-receta=""><span class="ri">✦</span><b>Tu creación</b><small>combina lo que añadas</small></button>${RECETAS.map(r => `<button class="rec ${S.receta === r.id ? 'on' : ''}" data-receta="${r.id}"><span class="ri ini">${esc(r.name.split(/\s+/).filter(w => w.length > 2).slice(0, 2).map(w => w[0].toUpperCase()).join(''))}</span><b>${esc(r.name)}</b><small>receta</small></button>`).join('')}</div>`;
@@ -1888,7 +1912,8 @@ R.video = () => {
 `)}
       <p class="note">Sube un vídeo de 4 a 30 s con una persona. Tu personaje hará lo mismo. ${esc(mm.n)}: ${esc(mm.tarifa)} (tarifa de referencia). El vídeo final lleva tu audio original.</p>
       ${nsfwRow(mm.nsfw ? 'Solo con motores Seedance' : 'Elige un motor Seedance para usarlo')}
-      <div class="sticky-gen"><button class="btn acc big" data-a="genMotion">${S.nsfw && mm.nsfw ? '🔥 ' : ''}Recrear el vídeo</button></div>`;
+      ${genRow('motion')}
+      <div class="sticky-gen"><button class="btn acc big" data-a="genMotion">${viaModel('motion') ? 'Recrear con ' + esc(PNAME[viaModel('motion').provider]) : (S.nsfw && mm.nsfw ? '🔥 ' : '') + 'Recrear el vídeo'}</button></div>`;
   } else {
     side = `${head}${charBox}
       <div class="tiles">${['prenda','peinado','lugar'].map(k => tile(k)).join('')}</div>
@@ -1908,7 +1933,8 @@ R.video = () => {
       <p class="note">${esc(vm.n)}: ${esc(vm.info)}${vm.tarifa ? ' · ' + esc(vm.tarifa) : ''}</p>`)}
       ${secOpen('vprompt', 'Prompt montado', 'se actualiza solo', `<textarea class="prompt" readonly style="min-height:240px">${esc(buildVidPrompt())}</textarea><button class="btn sm" data-copy="${esc(buildVidPrompt())}">Copiar prompt</button>`)}
       ${nsfwRow(vm.nsfw ? 'Solo con Seedance 2.0 y 2.5' : 'Elige Seedance para usarlo')}
-      <div class="sticky-gen"><button class="btn acc big" data-a="genVid">${S.nsfw && vm.nsfw ? '🔥 ' : ''}Generar vídeo</button></div>`;
+      ${genRow('vid')}
+      <div class="sticky-gen"><button class="btn acc big" data-a="genVid">${viaModel('vid') ? 'Generar con ' + esc(PNAME[viaModel('vid').provider]) : (S.nsfw && vm.nsfw ? '🔥 ' : '') + 'Generar vídeo'}</button></div>`;
   }
   const items = S.creaciones.filter(x => x.kind === 'vid' && !x.trash);
   const imgs = S.creaciones.filter(x => x.kind === 'img' && !x.trash);
@@ -2108,9 +2134,9 @@ function renderSelBar() {
   b.innerHTML = `<span><b>${S.selected.length}</b> seleccionadas</span><button class="btn" data-a="selFolder">▱ Carpeta</button><button class="btn" data-a="selUnfolder">Quitar de la carpeta</button><button class="btn acc" data-a="selDl">⇩ Descargar</button><button class="btn" data-a="selTrash">${ic('trash', 'width="14" height="14"')}</button><button class="btn" data-a="selMode">✕</button>`;
 }
 /* ============ ventanas ============ */
-function importResultModal(kind = 'img', prompt = '', refs = []) {
+function importResultModal(kind = 'img', prompt = '', refs = [], mname = '') {
   const isV = kind === 'vid';
-  const model = isV ? ((S.vid.que === 'recrear' ? MOTION_MODELS.find(m => m.id === S.vid.motor) : VID_MODELS.find(m => m.id === S.vid.model)) || {}).n : (IMG_MODELS.find(m => m.id === S.img.model) || {}).n;
+  const model = mname || (isV ? ((S.vid.que === 'recrear' ? MOTION_MODELS.find(m => m.id === S.vid.motor) : VID_MODELS.find(m => m.id === S.vid.model)) || {}).n : (IMG_MODELS.find(m => m.id === S.img.model) || {}).n);
   let files = [];
   modal(`<h2>${prompt ? 'Genera y vuelve' : 'Importar resultado'}</h2><p class="note" style="margin-bottom:14px">${prompt ? 'El prompt ya está copiado. Genera fuera con estas referencias y suelta aquí lo que salga.' : 'Añade una imagen o vídeo generado fuera.'}</p>
     ${refs.length ? `<div class="refs" style="margin-bottom:12px">${refs.map(r => `<a class="ref" href="${src(r.ref)}" download="${r.tag}" title="${esc(r.what)} · descargar">${src(r.ref) ? `<div><img src="${src(r.ref)}"></div>` : '<div>—</div>'}${r.tag}</a>`).join('')}</div>` : ''}
@@ -2158,13 +2184,15 @@ function apisModal() {
   const P = provGet(), O = P.otros || {};
   modal(`<h2>Mis APIs</h2><p class="note" style="margin-bottom:12px">Generas con tus propias cuentas y pagas directamente a cada servicio. Sin claves, el flujo manual (preparar prompt → generar fuera → importar) funciona igual.</p>
     <div class="card" style="margin-bottom:12px"><b>🔒 Tus claves</b><p class="note" style="margin-top:6px">Se guardan solo en este dispositivo y solo para esta cuenta. Nunca van a tu Google Drive, a las copias completas ni a los puntos de recuperación. Como cualquier clave guardada en un navegador, el código que se ejecute en él podría leerla: usa claves propias para Saga Studio y con poco saldo.</p></div>
-    <div class="stack" style="gap:6px">${PROV_UI.map(([id, n, d, f, tip]) => { const c = P[id] || {}; const on = !!c.key; return `<div class="prov"><span class="dot ${on ? 'on' : ''}"></span><div><b>${n}</b><p>${d}${on ? ' · ' + f.map(([k, l]) => l + ' ' + mask(c[k])).join(' · ') : ''}</p>${on ? '' : `<p>${esc(tip)}</p>`}</div><button class="btn sm ${on ? '' : 'acc'}" data-${on ? 'provdel' : 'provset'}="${id}">${on ? 'Quitar' : 'Conectar'}</button></div>`; }).join('')}
-    <p class="note" style="margin:4px 0 10px">La generación directa aún no está activada: falta comprobar en tu navegador que estos servicios lo permiten. Guardar una clave no lanza nada ni gasta saldo.</p>
+    <div class="stack" style="gap:6px">${PROV_UI.map(([id, n, d, f, tip]) => { const c = P[id] || {}; const on = !!c.key; const T = isObj(c.test) ? c.test : null;
+      return `<div class="prov"><span class="dot ${c.ok ? 'on' : ''}"></span><div><b>${n}</b><p>${d}${on ? ' · ' + f.map(([k, l]) => l + ' ' + mask(c[k])).join(' · ') : ''}</p>${on ? `<p>${c.ok ? '✓ Conexión comprobada el ' + new Date(c.ok).toLocaleDateString() + ': generación directa activada' : T ? '✗ ' + esc(T.msg) : 'Pulsa «Probar» para activar la generación directa (no gasta saldo)'}</p>` : `<p>${esc(tip)}</p>`}</div>
+        <span class="row" style="gap:6px;flex:none">${on ? `<button class="btn sm ${c.ok ? '' : 'acc'}" data-provtest="${id}">Probar</button>` : ''}<button class="btn sm ${on ? '' : 'acc'}" data-${on ? 'provdel' : 'provset'}="${id}">${on ? 'Quitar' : 'Conectar'}</button></span></div>`; }).join('')}
+    <p class="note" style="margin:4px 0 10px">«Probar» hace una llamada gratuita (no genera nada). Cada generación directa te pide confirmación antes de gastar saldo. El modo manual sigue disponible siempre.</p>
     <div class="ayudas">Otras cuentas (solo como recordatorio)</div>
     ${PROVIDERS.filter(([id]) => id !== 'fal').map(([id, n, d]) => { const on = O[id] && O[id].key; return `<div class="prov"><span class="dot ${on ? 'on' : ''}"></span><div><b>${n}</b><p>${d}${on ? ' · clave ' + mask(on) : ''}</p></div><button class="btn sm" data-${on ? 'provdel' : 'provset'}="otros:${id}">${on ? 'Quitar' : 'Guardar'}</button></div>`; }).join('')}
     <div class="prov"><span class="dot"></span><div><b>¿Usas otra API?</b><p>Apúntala en el feedback y la añadimos</p></div><button class="btn sm" data-a="feedback">Pedirla</button></div></div>
     <div class="card" style="margin-top:14px"><b>🔌 MCP</b><p class="note" style="margin-top:6px">En Aria Studio puedes pedir imágenes desde Claude o ChatGPT. Aquí llegará cuando la app tenga servicio local.</p></div>
-    <p class="note" style="margin-top:14px">Guardar una clave no lanza generaciones todavía: la llamada directa a Higgsfield es el siguiente paso del proyecto.</p>`);
+    <p class="note" style="margin-top:14px">Las generaciones directas aparecen en «Trabajos» (arriba) mientras se hacen, y al terminar se guardan solas en Creaciones.</p>`);
 }
 function modelInfoModal(vid) {
   const L = vid ? VID_MODELS : IMG_MODELS; const cur = vid ? S.vid.model : S.img.model;
@@ -2520,7 +2548,8 @@ document.addEventListener('click', e => {
   gdAuth().then(() => gdSync({ full: true })).catch(x => { gdSet('need', x.message); });
 }, true);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && gdOn()) { if (gdOk()) gdSync({ full: true }); else gdSet('need'); } });
-addEventListener('online', () => { if (gdOn()) { GD.retryN = 0; gdSync({ full: true }); } });
+addEventListener('online', () => { if (gdOn()) { GD.retryN = 0; gdSync({ full: true }); } jobKick(500); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') jobKick(500); });
 /* al volver a esta ventana (y cada pocos minutos mientras está a la vista) se mira si el otro dispositivo guardó algo: así lo traes antes de ponerte a editar */
 let gdLastLook = 0; const gdLook = () => { if (gdOn() && gdOk() && !GD.busy && !GD.conflict && document.visibilityState === 'visible' && Date.now() - gdLastLook > 20000) { gdLastLook = Date.now(); gdSync(); } };
 addEventListener('focus', gdLook); setInterval(gdLook, 180000);
@@ -2540,6 +2569,7 @@ async function textModal(title, fields) { // fields: [[key,label,placeholder,are
 function toggleNsfw() {
   S.nsfw = !S.nsfw; let sw = '';
   if (S.nsfw) {
+    if (Object.values(S.gen.via).some(Boolean)) { S.gen.via = { img: '', vid: '', motion: '' }; sw += ' · vuelve a modo manual'; }
     const im = IMG_MODELS.find(m => m.id === S.img.model); if (!im || !im.nsfw) { S.img.model = 'seedream'; sw = ' · modelo: Seedream 5.0 Pro'; }
     if (S.section === 'video') { if (S.vid.que === 'recrear') { const mm = MOTION_MODELS.find(m => m.id === S.vid.motor); if (!mm || !mm.nsfw) { S.vid.motor = 'mc-sd20'; sw = ' · motor: Seedance 2.0'; } } else { const vm = VID_MODELS.find(m => m.id === S.vid.model); if (!vm || !vm.nsfw) { S.vid.model = 'sd20'; sw = ' · modelo: Seedance 2.0'; } } }
   }
@@ -2596,9 +2626,10 @@ const A = {
   clearCopy(e) { e.stopPropagation(); S.copyRef = ''; S.img.prompt = ''; save(); render(); },
   async addRef() { const fs = await pickFiles('image/*', true); for (const f of fs) S.refs.push(await putMedia(f)); S.img.prompt = ''; save(); render(); },
   modelInfo: () => modelInfoModal(false), vModelInfo: () => modelInfoModal(true),
-  async genImg() { const p = S.imgMode === 'pro' ? S.img.prompt : buildImgPrompt(); await copy(p); importResultModal('img', p, refList()); },
-  async genVid() { const p = buildVidPrompt(); await copy(p); const c = char(); importResultModal('vid', p, [S.vid.useSheet && { tag: 'ficha', what: 'ficha', ref: c.sheet.main }, S.vid.startRef && { tag: 'inicio', what: 'imagen inicial', ref: S.vid.startRef }, S.vid.endRef && { tag: 'final', what: 'imagen final', ref: S.vid.endRef }].filter(Boolean)); },
-  async genMotion() { if (!S.vid.motionRef) return toast('Primero sube el vídeo a recrear'); const p = buildMotionPrompt(); await copy(p); importResultModal('vid', p, [{ tag: 'image_1', what: 'ficha', ref: char().sheet.main }, S.vid.imgRef && { tag: 'image_2', what: 'referencia', ref: S.vid.imgRef }].filter(Boolean)); },
+  async genImg() { const p = S.imgMode === 'pro' ? S.img.prompt : buildImgPrompt(); if (viaKey('img')) return directGen('img', p, refList()); await copy(p); importResultModal('img', p, refList()); },
+  async genVid() { const p = buildVidPrompt(); const c = char(); const R = [S.vid.useSheet && { tag: 'ficha', what: 'ficha', ref: c.sheet.main }, S.vid.startRef && { tag: 'inicio', what: 'imagen inicial', ref: S.vid.startRef }, S.vid.endRef && { tag: 'final', what: 'imagen final', ref: S.vid.endRef }].filter(Boolean); if (viaKey('vid')) return directGen('vid', p, R); await copy(p); importResultModal('vid', p, [S.vid.useSheet && { tag: 'ficha', what: 'ficha', ref: c.sheet.main }, S.vid.startRef && { tag: 'inicio', what: 'imagen inicial', ref: S.vid.startRef }, S.vid.endRef && { tag: 'final', what: 'imagen final', ref: S.vid.endRef }].filter(Boolean)); },
+  async genMotion() { if (!S.vid.motionRef) return toast('Primero sube el vídeo a recrear'); const p = buildMotionPrompt(); const R = [{ tag: 'image_1', what: 'ficha', ref: char().sheet.main }, S.vid.imgRef && { tag: 'image_2', what: 'referencia', ref: S.vid.imgRef }].filter(Boolean); if (viaKey('motion')) return directGen('motion', p, R); await copy(p); importResultModal('vid', p, R); },
+  pickModel(e) { modelPicker(e.target.closest('[data-kind]')?.dataset.kind || genKind()); }, jobs: jobsModal,
   vidSheet() { S.vid.useSheet = !S.vid.useSheet; save(); render(); },
   importResult(e) { importResultModal(e.target.closest('[data-kind]')?.dataset.kind || (S.section === 'video' ? 'vid' : 'img')); },
   openBig() { const p = curCre(); if (p) lightbox(p.id); },
@@ -2977,6 +3008,7 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-provset]'))) { const id = el.dataset.provset; const [grp, oid] = id.split(':'); const ui = PROV_UI.find(p => p[0] === id); const fields = ui ? ui[3] : [['key', 'Clave de API']];
     const o = await textModal('Conectar ' + (ui ? ui[1] : oid), fields.map(([k, l]) => [k, l, 'pega aquí tu ' + l.toLowerCase()])); if (!o || fields.some(([k]) => !o[k])) return apisModal();
     const P = provGet(); if (oid) { P.otros = Object.assign({}, P.otros, { [oid]: { key: o.key } }); } else P[id] = o; provSet(P); renderHeader(); toast('Clave guardada solo en este dispositivo'); return apisModal(); }
+  if ((el = d('[data-provtest]'))) { await provTest(el.dataset.provtest); return $('#scrim') && apisModal(); }
   if ((el = d('[data-provdel]'))) { const id = el.dataset.provdel; const [grp, oid] = id.split(':'); if (!(await ask('¿Quitar esta clave de este dispositivo?'))) return apisModal(); const P = provGet(); if (oid) { if (P.otros) delete P.otros[oid]; } else delete P[id]; provSet(P); renderHeader(); return apisModal(); }
   if ((el = d('[data-amode]'))) { S.aud.modo = el.dataset.amode; save(); return render(); }
   if ((el = d('[data-amodel]'))) { S.aud.model[S.aud.modo] = el.dataset.amodel; save(); return render(); }
@@ -3076,11 +3108,491 @@ if (window.visualViewport) { const vv = visualViewport; const kb = () => { const
 const PROV_KEY = akey('saga-prov');
 function provGet() { if (!PROV_KEY) return {}; try { const o = JSON.parse(localStorage.getItem(PROV_KEY) || '{}'); return isObj(o) ? o : {}; } catch (e) { return {}; } }
 function provSet(o) { if (!PROV_KEY || ACC.stopped) return false; try { localStorage.setItem(PROV_KEY, JSON.stringify(o)); return true; } catch (e) { toast('No se pudo guardar la clave: el almacenamiento está lleno', 4500); return false; } }
+
+/* ============ generación directa: proveedores, catálogo de modelos y trabajos ============
+   Siempre con las claves de quien usa la app (Mis APIs), solo de la cuenta activa y solo desde este dispositivo.
+   El flujo manual (copiar prompt → generar fuera → importar) sigue siendo el de siempre y nunca depende de esto. */
+const ERRS = {
+  AUTH_REQUIRED: 'Falta la clave de este servicio. Añádela en Mis APIs.', INVALID_CREDENTIALS: 'El servicio no acepta tu clave. Revísala en Mis APIs.',
+  INSUFFICIENT_BALANCE: 'No te queda saldo en ese servicio. Recarga en su web y vuelve a intentarlo.', RATE_LIMIT: 'El servicio pide esperar un poco (demasiadas peticiones a la vez).',
+  MODEL_UNAVAILABLE: 'Ese modelo no está disponible ahora en el servicio.', INVALID_INPUT: 'El servicio no acepta algún ajuste de los que se han enviado.',
+  UNSUPPORTED_INPUT: 'Ese modelo no admite lo que se le iba a enviar.', SAFETY_REJECTION: 'El servicio lo ha rechazado por su filtro de contenido.',
+  TASK_FAILED: 'La generación ha fallado en el servicio.', PROVIDER_ERROR: 'El servicio ha dado un error.', NETWORK_ERROR: 'No se pudo conectar con el servicio (sin conexión, o el servicio no deja llamarle desde una web).',
+  TIMEOUT: 'El servicio ha tardado demasiado en responder.', CANCELLED: 'Cancelado.',
+};
+const gErr = (code, detail) => Object.assign(new Error(ERRS[code] || ERRS.PROVIDER_ERROR), { code: ERRS[code] ? code : 'PROVIDER_ERROR', detail: String(detail || '').replace(/\s+/g, ' ').slice(0, 240), user: true });
+const errCode = e => (e && e.code && ERRS[e.code]) ? e.code : 'PROVIDER_ERROR';
+const msgOf = d => !d ? '' : typeof d === 'string' ? d : typeof d.detail === 'string' ? d.detail : d.detail ? JSON.stringify(d.detail) : d.message || d.msg || d.error || (Array.isArray(d.errors) ? d.errors.map(x => (x && x.message) || x).join(' · ') : '') || '';
+const classify = (code, m) => /balance|credit|insufficient|exhausted|saldo|top.?up/i.test(m) ? 'INSUFFICIENT_BALANCE' : /nsfw|safety|content.?(polic|filter)|moderat|sensitive|inappropriate/i.test(m) ? 'SAFETY_REJECTION' : code;
+const httpCode = st => st === 401 || st === 403 ? 'INVALID_CREDENTIALS' : st === 402 ? 'INSUFFICIENT_BALANCE' : st === 429 ? 'RATE_LIMIT' : st === 404 ? 'MODEL_UNAVAILABLE' : st === 400 || st === 422 ? 'INVALID_INPUT' : st === 408 || st === 504 ? 'TIMEOUT' : 'PROVIDER_ERROR';
+const jread = async r => { try { return await r.json(); } catch (e) { return null; } };
+/* toda llamada a un proveedor: sin cookies, sin referer, sin caché, con tiempo máximo y cortada si cambias de cuenta */
+async function pfetch(url, o = {}, ms = 30000) {
+  if (ACC.stopped) throw gErr('CANCELLED');
+  const c = new AbortController(); let why = ''; const t = setTimeout(() => { why = 't'; c.abort(); }, ms); const off = () => { why = 's'; c.abort(); };
+  ACC.ctrl.signal.addEventListener('abort', off);
+  try { return await fetch(url, Object.assign({}, o, { signal: c.signal, cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer' })); }
+  catch (e) { throw gErr(why === 's' ? 'CANCELLED' : why === 't' ? 'TIMEOUT' : 'NETWORK_ERROR'); }
+  finally { clearTimeout(t); ACC.ctrl.signal.removeEventListener('abort', off); }
+}
+const okUrl = u => { try { const x = new URL(u); return x.protocol === 'https:' && !x.username && !x.password ? x.href : ''; } catch (e) { return ''; } };
+const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+const credOf = p => { const c = provGet()[p]; return isObj(c) && c.key ? c : null; };
+const provOk = p => { const c = credOf(p); return !!(c && c.ok); };
+/* la imagen de una referencia (foto guardada o imagen de la web) como archivo para mandarla */
+async function refBlob(ref) {
+  if (!ref) return null;
+  if (String(ref).startsWith('m:')) { const b = await idbGet(ref); return b instanceof Blob ? b : null; }
+  try { const u = new URL(ref, location.href); if (u.origin !== location.origin) return null; const r = await fetch(u.href); return r.ok ? await r.blob() : null; } catch (e) { return null; }
+}
+
+/* ---------- precio: conocido, estimado o desconocido. Nunca se inventa ---------- */
+const PRICE_TXT = { known: 'precio conocido', est: 'precio estimado', unk: 'precio desconocido' };
+const priceTxt = p => !p || p.st === 'unk' || !(p.usd >= 0) ? (p && p.note) || 'precio desconocido' : (p.st === 'est' ? '≈ ' : '') + money(p.usd) + (p.max > p.usd ? '–' + money(p.max) : '') + (p.unit && p.unit !== 'cpr' ? ' (' + ({ cps: 'por segundo', cpo: 'por resultado', cpt: 'por token' }[p.unit] || p.unit) + ')' : '');
+
+/* ---------- Wiro (docs oficiales: wiro.ai/docs · autenticación por firma, recomendada para apps en el navegador) ---------- */
+const WIRO_API = 'https://api.wiro.ai/v1';
+async function wiroHead(c) {
+  const nonce = String(Date.now()) + String(Math.floor(Math.random() * 1e6)).padStart(6, '0'); const te = new TextEncoder();
+  const k = await crypto.subtle.importKey('raw', te.encode(c.key), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  return { 'x-api-key': c.key, 'x-nonce': nonce, 'x-signature': hex(await crypto.subtle.sign('HMAC', k, te.encode(String(c.secret || '') + nonce))) };
+}
+async function wiroCall(c, path, body, form) {
+  const h = await wiroHead(c); if (!form) h['Content-Type'] = 'application/json';
+  const r = await pfetch(WIRO_API + path, { method: 'POST', headers: h, body: form || JSON.stringify(body || {}) }, form ? 180000 : 30000);
+  const d = await jread(r);
+  if (!d) throw gErr(httpCode(r.status), 'HTTP ' + r.status);
+  if (d.result === false || !r.ok || (Array.isArray(d.errors) && d.errors.length)) {
+    const e0 = (Array.isArray(d.errors) && d.errors[0]) || {}; const m = String(e0.message || msgOf(d) || 'HTTP ' + r.status); const n = +e0.code;
+    const code = /authoriz|signature|sign.?in|bearer|api.?key/i.test(m) || n === 98 || n === 99 || r.status === 401 || r.status === 403 ? 'INVALID_CREDENTIALS' : n === 97 ? 'INSUFFICIENT_BALANCE' : n === 96 || r.status === 429 ? 'RATE_LIMIT' : n === 1 ? 'MODEL_UNAVAILABLE' : r.ok ? 'PROVIDER_ERROR' : httpCode(r.status);
+    throw gErr(classify(code, m), m);
+  }
+  return d;
+}
+function wiroPrice(dp, approx) {
+  let a = dp; if (typeof a === 'string') { try { a = JSON.parse(a); } catch (e) { a = null; } }
+  a = Array.isArray(a) ? a.filter(x => isObj(x) && isFinite(+x.price) && +x.price >= 0) : [];
+  if (a.length) { const ps = a.map(x => +x.price); const flat = a.length === 1 && !Object.keys(isObj(a[0].inputs) ? a[0].inputs : {}).length;
+    return { st: flat ? 'known' : 'est', usd: Math.min(...ps), max: Math.max(...ps), unit: String(a[0].priceMethod || 'cpr'), tiers: a.slice(0, 60).map(x => ({ in: isObj(x.inputs) ? x.inputs : {}, usd: +x.price })) }; }
+  if (+approx > 0) return { st: 'est', usd: +approx, unit: 'cpr', note: 'según lo que suele tardar' };
+  return { st: 'unk' };
+}
+const WIRO_CATS = [['text-to-image', 'img'], ['image-to-image', 'img'], ['image-editing', 'img'], ['text-to-video', 'vid'], ['image-to-video', 'vid']];
+const ADAPTERS = {
+  wiro: {
+    n: 'Wiro', creds: ['key', 'secret'],
+    async test(c) { // gratis: listar 1 modelo y pedir una tarea que no existe. Solo falla si la firma o la clave no valen
+      await wiroCall(c, '/Tool/List', { start: '0', limit: '1', hideworkflows: true, summary: true });
+      try { await wiroCall(c, '/Task/Detail', { taskid: '0' }); } catch (e) { if (e.code === 'INVALID_CREDENTIALS') throw e; }
+      return 'La firma y la clave funcionan.';
+    },
+    async catalog(c) {
+      const out = new Map();
+      for (const [cat, kind] of WIRO_CATS) for (let start = 0; start < 3000; start += 100) {
+        const d = await wiroCall(c, '/Tool/List', { start: String(start), limit: '100', categories: [cat], hideworkflows: true, summary: true });
+        const L = Array.isArray(d.tool) ? d.tool : [];
+        for (const t of L) { if (!isObj(t) || !t.slugowner || !t.slugproject) continue; const pid = String(t.slugowner) + '/' + String(t.slugproject); const prev = out.get(pid);
+          const cats = Array.isArray(t.categories) ? t.categories.map(String) : [];
+          const k = cats.some(x => /video/.test(x)) && !cats.some(x => /to-image|image-generation|image-editing/.test(x)) ? 'vid' : prev ? prev.kind : kind;
+          out.set(pid, { provider: 'wiro', pid, kind: k, name: String(t.title || pid).slice(0, 120), desc: String(t.description || '').slice(0, 300), tags: cats.slice(0, 12), price: wiroPrice(t.dynamicprice, t.approximatelycost), members: String(t.onlymembers) === '1' }); }
+        if (L.length < 100) break;
+      }
+      return [...out.values()];
+    },
+    async detail(c, m) {
+      const [o, p] = m.pid.split('/'); const d = await wiroCall(c, '/Tool/Detail', { slugowner: o, slugproject: p });
+      const t = Array.isArray(d.tool) ? d.tool[0] : null; if (!isObj(t)) throw gErr('MODEL_UNAVAILABLE');
+      const params = [];
+      for (const g of Array.isArray(t.parameters) ? t.parameters : []) for (const i of (isObj(g) && Array.isArray(g.items) ? g.items : [])) {
+        if (!isObj(i) || !i.id || !/^[\w.-]{1,64}$/.test(String(i.id))) continue;
+        const raw = Array.isArray(i.options) ? i.options : Array.isArray(i.values) ? i.values : null;
+        params.push({ id: String(i.id), type: String(i.type || 'text'), req: i.required === true || String(i.required) === '1' || i.required === 'true', adv: i.advanced === true || String(i.advanced) === '1',
+          label: String(i.label || i.title || i.id).slice(0, 80), note: String(i.note || '').slice(0, 200), def: i.default !== undefined ? i.default : i.value !== undefined ? i.value : '',
+          opts: raw ? raw.slice(0, 80).map(x => isObj(x) ? { v: String(x.value !== undefined ? x.value : x.id !== undefined ? x.id : ''), l: String(x.label || x.text || x.value || '') } : { v: String(x), l: String(x) }) : null,
+          min: i.min, max: i.max, step: i.step });
+      }
+      return { params, price: wiroPrice(t.dynamicprice, t.approximatelycost) };
+    },
+    async submit(c, m, job, refs) { // refs: [{blob}] van como archivos (multipart), nunca a un servidor nuestro
+      const P = job.params || {}; const files = (job.schema || []).filter(x => /fileinput$/.test(x.type));
+      if (refs.length && !files.length) throw gErr('UNSUPPORTED_INPUT', 'Este modelo no admite imágenes de referencia.');
+      let body, form = null;
+      if (files.length) {
+        form = new FormData(); for (const [k, v] of Object.entries(P)) if (v !== '' && v !== undefined && v !== null) form.append(k, String(v));
+        const f = files.find(x => x.id === job.refParam) || files[0];
+        const use = f.type === 'fileinput' ? refs.slice(0, 1) : refs;
+        use.forEach((r, i) => form.append(f.id, r.blob, 'ref' + (i + 1) + '.' + extOf(r.blob.type)));
+        if (f.type !== 'combinefileinput') form.append(f.id + 'Url', '');
+        for (const x of files) if (x !== f && x.type !== 'combinefileinput') { form.append(x.id, ''); form.append(x.id + 'Url', ''); }
+      } else body = P;
+      const d = await wiroCall(c, '/Run/' + m.pid.split('/').map(encodeURIComponent).join('/'), body, form);
+      if (!d.taskid) throw gErr('PROVIDER_ERROR', 'Sin número de tarea');
+      return { task: String(d.taskid), token: String(d.socketaccesstoken || '') };
+    },
+    async status(c, job) {
+      const d = await wiroCall(c, '/Task/Detail', { taskid: job.task }); const t = Array.isArray(d.tasklist) ? d.tasklist[0] : null;
+      if (!isObj(t)) return { st: 'lost' };
+      const s = String(t.status || ''); const cost = +t.totalcost;
+      if (s === 'task_cancel') return { st: 'cancelled' };
+      if (s === 'task_postprocess_end') {
+        const urls = (Array.isArray(t.outputs) ? t.outputs : []).filter(o => isObj(o) && okUrl(o.url) && /^(image|video)\//.test(String(o.contenttype || 'image/'))).map(o => okUrl(o.url));
+        if (String(t.pexit) === '0' && urls.length) return { st: 'done', urls, cost: isFinite(cost) ? cost : undefined };
+        const m = String(t.debugerror || 'sin resultado'); return { st: 'failed', err: classify('TASK_FAILED', m), detail: m, cost: isFinite(cost) ? cost : undefined };
+      }
+      return { st: /queue|accept|assign/.test(s) ? 'queued' : 'running' };
+    },
+    async cancel(c, job) { if (job.status === 'queued') await wiroCall(c, '/Task/Cancel', { taskid: job.task }); else await wiroCall(c, '/Task/Kill', job.token ? { socketaccesstoken: job.token } : { taskid: job.task }); },
+  },
+  /* ---------- fal (cliente oficial @fal-ai/client: cola en queue.fal.run, subidas en rest.fal.ai) ---------- */
+  fal: {
+    n: 'fal', creds: ['key'],
+    async test(c) { // gratis: pide permiso para subir un archivo (no se sube nada ni se genera nada)
+      const r = await pfetch('https://rest.fal.ai/storage/upload/initiate?storage_type=fal-cdn-v3', { method: 'POST', headers: { Authorization: 'Key ' + c.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ content_type: 'text/plain', file_name: 'saga-test.txt' }) });
+      const d = await jread(r); if (!r.ok) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status);
+      return 'La clave funciona.';
+    },
+    async catalog() { return []; }, // fal no publica (de forma verificada) una lista de modelos para el navegador: los añades tú por su id
+    async detail(c, m) { return { params: [{ id: 'prompt', type: 'textarea', label: 'Prompt', req: true }], price: { st: 'unk', note: 'mira el precio en la ficha del modelo en fal' } }; },
+    async upload(c, blob) {
+      const r = await pfetch('https://rest.fal.ai/storage/upload/initiate?storage_type=fal-cdn-v3', { method: 'POST', headers: { Authorization: 'Key ' + c.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ content_type: blob.type || 'application/octet-stream', file_name: 'ref.' + extOf(blob.type) }) });
+      const d = await jread(r); if (!r.ok || !d || !okUrl(d.upload_url) || !okUrl(d.file_url)) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status);
+      const u = await pfetch(d.upload_url, { method: 'PUT', headers: { 'Content-Type': blob.type || 'application/octet-stream' }, body: blob }, 180000);
+      if (!u.ok) throw gErr('PROVIDER_ERROR', 'Subida: HTTP ' + u.status);
+      return okUrl(d.file_url);
+    },
+    base(pid) { const [o, a] = pid.split('/'); return 'https://queue.fal.run/' + encodeURIComponent(o) + '/' + encodeURIComponent(a); },
+    async submit(c, m, job, refs) {
+      const input = Object.assign({}, job.params);
+      if (refs.length) { const f = m.imgField || ''; if (!f) throw gErr('UNSUPPORTED_INPUT', 'Indica en el modelo qué campo recibe las imágenes.');
+        const urls = []; for (const r of refs) urls.push(await this.upload(c, r.blob));
+        input[f] = /s$/.test(f) ? urls : urls[0]; }
+      const r = await pfetch('https://queue.fal.run/' + m.pid.split('/').map(encodeURIComponent).join('/'), { method: 'POST', headers: { Authorization: 'Key ' + c.key, 'Content-Type': 'application/json' }, body: JSON.stringify(input) });
+      const d = await jread(r); if (!r.ok || !d || !d.request_id) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status);
+      return { task: String(d.request_id) };
+    },
+    async status(c, job) {
+      const b = this.base(job.pid) + '/requests/' + encodeURIComponent(job.task); const H = { Authorization: 'Key ' + c.key };
+      const r = await pfetch(b + '/status', { headers: H }); const d = await jread(r);
+      if (r.status === 404) return { st: 'lost' };
+      if (!r.ok || !d) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status);
+      if (d.status === 'IN_QUEUE') return { st: 'queued' };
+      if (d.status !== 'COMPLETED') return { st: 'running' };
+      const x = await pfetch(b, { headers: H }); const res = await jread(x);
+      if (!x.ok || !res) { const m = msgOf(res) || 'HTTP ' + x.status; return { st: 'failed', err: classify(x.status === 422 ? 'INVALID_INPUT' : 'TASK_FAILED', m), detail: m }; }
+      const urls = []; const add = o => { if (isObj(o) && okUrl(o.url)) urls.push(okUrl(o.url)); };
+      for (const k of ['images', 'videos']) (Array.isArray(res[k]) ? res[k] : []).forEach(add); add(res.image); add(res.video);
+      if (Array.isArray(res.has_nsfw_concepts) && res.has_nsfw_concepts.some(Boolean) && !urls.length) return { st: 'failed', err: 'SAFETY_REJECTION' };
+      return urls.length ? { st: 'done', urls } : { st: 'failed', err: 'TASK_FAILED', detail: 'sin imágenes ni vídeos en la respuesta' };
+    },
+    async cancel(c, job) { await pfetch(this.base(job.pid) + '/requests/' + encodeURIComponent(job.task) + '/cancel', { method: 'PUT', headers: { Authorization: 'Key ' + c.key } }); },
+  },
+  /* ---------- Pollo (API pública documentada en docs.pollo.ai; nunca la CLI ni sus rutas internas) ---------- */
+  pollo: {
+    n: 'Pollo', creds: ['key'], api: 'https://pollo.ai/api/platform',
+    async call(c, path, o = {}) {
+      const r = await pfetch(this.api + path, Object.assign({}, o, { headers: Object.assign({ 'x-api-key': c.key }, o.body ? { 'Content-Type': 'application/json' } : {}) }));
+      const d = await jread(r); const m = msgOf(d);
+      if (!r.ok || !d || (d.code !== undefined && d.code !== 0 && d.code !== 200 && d.code !== 'SUCCESS' && !d.data)) throw Object.assign(gErr(classify(r.ok ? 'PROVIDER_ERROR' : httpCode(r.status), m), m || 'HTTP ' + r.status), { http: r.status });
+      return isObj(d.data) ? d.data : d;
+    },
+    async test(c) { const d = await this.call(c, '/credit/balance'); const n = +(d.availableCredits ?? d.available ?? NaN); return isFinite(n) ? 'La clave funciona · ' + n + ' créditos disponibles.' : 'La clave funciona.'; },
+    async catalog() { const M = await manifest('pollo'); return M ? M.models.map(x => Object.assign({ provider: 'pollo' }, x)) : []; },
+    async detail(c, m) { return { params: m.fields || [], price: { st: 'unk', note: 'se cobra en créditos de Pollo' } }; },
+    async submit(c, m, job, refs) {
+      if (refs.length) throw gErr('UNSUPPORTED_INPUT', 'Pollo solo acepta imágenes por enlace público; Saga Studio no publica tus fotos. Usa este modelo sin imágenes o genera a mano.');
+      const d = await this.call(c, '/generation/' + m.pid.split('/').map(encodeURIComponent).join('/'), { method: 'POST', body: JSON.stringify({ input: job.params }) });
+      const id = d.taskId || d.id; if (!id) throw gErr('PROVIDER_ERROR', 'Sin número de tarea'); return { task: String(id) };
+    },
+    async status(c, job) { // la documentación da dos rutas para el estado; se prueba la segunda solo si la primera no existe
+      let d; try { d = await this.call(c, '/generation/' + encodeURIComponent(job.task) + '/status'); }
+      catch (e) { if (e.http !== 404) throw e; try { d = await this.call(c, '/v1/generation/' + encodeURIComponent(job.task) + '/status'); } catch (x) { if (x.http === 404) return { st: 'lost' }; throw x; } }
+      const G = Array.isArray(d.generations) ? d.generations.filter(isObj) : []; const s = String(d.status || (G[0] && G[0].status) || '').toLowerCase();
+      if (/^(succeed|succeeded|success|completed)$/.test(s)) { const urls = G.map(g => okUrl(g.url)).filter(Boolean); return urls.length ? { st: 'done', urls } : { st: 'failed', err: 'TASK_FAILED', detail: 'sin resultado' }; }
+      if (/fail|error/.test(s)) { const m = String((G[0] && (G[0].failMsg || G[0].message)) || d.failMsg || d.message || ''); return { st: 'failed', err: classify('TASK_FAILED', m), detail: m }; }
+      return { st: /wait|pend|queue/.test(s) ? 'queued' : 'running' };
+    },
+    cancel: null, // la API pública de Pollo no documenta cancelar
+  },
+};
+const PNAME = { manual: 'Manual', wiro: 'Wiro', fal: 'fal', pollo: 'Pollo' };
+
+/* ---------- catálogos: manifiestos versionados (en la web) + listas en vivo, guardadas en este dispositivo ---------- */
+const MANI = {};
+async function manifest(name) {
+  if (MANI[name]) return MANI[name];
+  try { const r = await fetch('./catalog/' + name + '.v1.json'); const d = r.ok ? await r.json() : null; if (isObj(d) && d.v === 1 && (Array.isArray(d.models) || isObj(d.families))) return (MANI[name] = d); } catch (e) {}
+  return null;
+}
+let catDb = null; const CATV = 1;
+const catOpen = () => catDb || (catDb = idbOpen('saga-catalog').catch(() => null));
+async function catGet(p) { const d = await catOpen(); if (!d || !ACC.id) return null; return new Promise(res => { try { const r = d.transaction('m').objectStore('m').get(ACC.id + ':' + p); r.onsuccess = () => res(isObj(r.result) && r.result.v === CATV ? r.result : null); r.onerror = () => res(null); } catch (e) { res(null); } }); }
+async function catPut(p, val) { const d = await catOpen(); if (!d || !ACC.id || ACC.stopped) return; try { d.transaction('m', 'readwrite').objectStore('m').put(Object.assign({ v: CATV }, val), ACC.id + ':' + p); } catch (e) {} }
+async function catDrop(id) { const d = await catOpen(); if (!d) return; try { const st = d.transaction('m', 'readwrite').objectStore('m'); for (const p of Object.keys(ADAPTERS)) st.delete(id + ':' + p); } catch (e) {} }
+const MCAT = { models: {}, t: {}, busy: {}, err: {} }; // en memoria, solo de esta sesión
+const mkey = (p, pid) => p + ':' + pid;
+const clean = s => String(s || '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim();
+function normModel(x) { // todo lo que viene de un catálogo es texto sin confianza: se limpia y luego siempre se escapa al pintar
+  if (!isObj(x) || !ADAPTERS[x.provider] || typeof x.pid !== 'string' || !/^[\w.-]{1,80}(\/[\w.-]{1,120}){1,3}$/.test(x.pid)) return null;
+  return { key: mkey(x.provider, x.pid), provider: x.provider, pid: x.pid, kind: ['img', 'vid', 'motion'].includes(x.kind) ? x.kind : 'img', name: clean(x.name || x.pid).slice(0, 120), desc: clean(x.desc).slice(0, 300),
+    tags: Array.isArray(x.tags) ? x.tags.map(clean).slice(0, 12) : [], price: isObj(x.price) ? x.price : { st: 'unk' }, family: typeof x.family === 'string' ? x.family : '', prof: x.prof === 'flux' || /\bflux\b/i.test(x.name || x.pid) ? 'flux' : 'generic',
+    fields: Array.isArray(x.fields) ? x.fields : null, imgField: typeof x.imgField === 'string' && /^[\w]{1,40}$/.test(x.imgField) ? x.imgField : '', custom: !!x.custom, members: !!x.members, ver: clean(x.ver).slice(0, 20), src: x.src || '' };
+}
+async function catLoad(p, force) {
+  const A = ADAPTERS[p]; const c = credOf(p);
+  if (!MCAT.models[p]) { const k = await catGet(p); if (k) { MCAT.models[p] = (k.models || []).map(normModel).filter(Boolean); MCAT.t[p] = k.t; MCAT.first = Object.assign(MCAT.first || {}, k.first || {}); } }
+  const stale = !MCAT.t[p] || now() - MCAT.t[p] > 864e5;
+  if ((force || stale) && !MCAT.busy[p] && (p === 'pollo' || (c && c.ok))) {
+    MCAT.busy[p] = true; MCAT.err[p] = '';
+    try { const L = (await A.catalog(c)).map(normModel).filter(Boolean); const old = new Set((MCAT.models[p] || []).map(m => m.key)); const first = {};
+      const k0 = await catGet(p); const F = Object.assign({}, k0 && k0.first); L.forEach(m => { F[m.key] = F[m.key] || (old.size ? now() : 1); first[m.key] = F[m.key]; });
+      if (L.length || !MCAT.models[p]) { MCAT.models[p] = L; MCAT.t[p] = now(); MCAT.first = Object.assign(MCAT.first || {}, first); await catPut(p, { t: MCAT.t[p], models: L, first }); } }
+    catch (e) { MCAT.err[p] = e.message; } // si falla, se queda la última lista buena
+    finally { MCAT.busy[p] = false; }
+  }
+  return MCAT.models[p] || [];
+}
+/* modelos que añades tú (fal sobre todo): van en tus datos, sin claves */
+const customModels = () => (S.gen.custom || []).map(x => normModel(Object.assign({}, x, { custom: true }))).filter(Boolean);
+function manualModels(kind) {
+  const L = kind === 'img' ? IMG_MODELS : kind === 'vid' ? VID_MODELS : MOTION_MODELS;
+  return L.map(m => ({ key: 'manual:' + m.id, provider: 'manual', pid: m.id, kind, name: m.n, desc: m.info || m.tarifa || '', tags: [m.tag || '', m.p || ''].filter(Boolean),
+    price: m.usd ? { st: 'est', usd: imgUsd(m, S.img.quality), note: '' } : { st: 'unk', note: m.tarifa || 'lo apuntas al importar' }, family: m.id, prof: m.id === 'flux' ? 'flux' : 'generic', nsfw: !!m.nsfw, b: m }));
+}
+let FAM = null; manifest('families').then(d => { FAM = d; });
+const famEndpoints = id => { const f = FAM && isObj(FAM.families) && FAM.families[id]; return f && Array.isArray(f.endpoints) ? f.endpoints.filter(e => isObj(e) && ADAPTERS[e.provider]).map(e => mkey(e.provider, e.id)) : []; };
+const viaKey = kind => (S.gen.via || {})[kind] || '';
+function findModel(key) { if (!key) return null; const [p] = key.split(':'); return [...(MCAT.models[p] || []), ...customModels()].find(m => m.key === key) || (S.gen.seen && S.gen.seen[key] ? normModel(S.gen.seen[key]) : null); }
+const viaModel = kind => { const k = viaKey(kind); return k ? findModel(k) : null; };
+const famOf = kind => kind === 'img' ? S.img.model : kind === 'vid' ? S.vid.model : S.vid.motor;
+const genKind = () => S.section === 'video' ? (S.vid.que === 'recrear' ? 'motion' : 'vid') : 'img';
+const directReady = m => !!m && m.provider !== 'manual' && provOk(m.provider);
+
+/* ---------- elegir modelo: buscador para catálogos grandes ---------- */
+function genRow(kind) {
+  const m = viaModel(kind); const k = viaKey(kind);
+  const lbl = m ? `${esc(PNAME[m.provider])} · ${esc(m.name)}` : k ? 'Modelo directo no disponible' : 'Manual · copiar prompt y generar fuera';
+  const warn = k && !directReady(m) ? `<span class="mut" style="color:var(--warn,#b45309)">${m ? 'Prueba la conexión en Mis APIs' : 'vuelve a elegir'}</span>` : `<span class="mut">${m ? esc(priceTxt(m.price)) : 'cambiar ▸'}</span>`;
+  return `<button class="bar genvia" data-a="pickModel" data-kind="${kind}"><span class="lbl">Generar con</span><span class="gvt"><b>${lbl}</b>${warn}</span></button>`;
+}
+async function modelPicker(kind) {
+  const P = provGet(); const provs = Object.keys(ADAPTERS).filter(p => p === 'pollo' || credOf(p));
+  let q = '', fp = 'all', grp = 'all', lim = 150;
+  const sc = modal(`<h2>Elegir modelo · ${kind === 'img' ? 'imagen' : kind === 'vid' ? 'vídeo' : 'motion control'}</h2>
+    <p class="note" style="margin-bottom:10px">«Manual» copia el prompt y generas fuera, como siempre. Los demás generan aquí mismo con tu cuenta del servicio (Mis APIs) y pagas tú directamente.</p>
+    <div class="mpbar"><input id="mpq" placeholder="Buscar modelo, fabricante o servicio…" aria-label="Buscar modelo"><select id="mpp" aria-label="Servicio"><option value="all">Todos los servicios</option><option value="manual">Manual</option>${Object.keys(ADAPTERS).map(p => `<option value="${p}">${PNAME[p]}</option>`).join('')}</select>
+    <select id="mpg" aria-label="Grupo"><option value="all">Todos</option><option value="fav">Favoritos</option><option value="recent">Recientes</option><option value="rec">Recomendados</option><option value="new">Nuevos</option></select></div>
+    <div id="mpst" class="note" style="margin-bottom:6px"></div><div id="mpl" class="mplist" role="listbox" aria-label="Modelos"></div>
+    <div class="row" style="margin-top:10px;gap:6px"><button class="btn sm" id="mpref">↻ Actualizar catálogos</button><button class="btn sm" id="mpadd">＋ Añadir modelo de fal</button></div>`, null, 'wide');
+  const all = () => { const L = [...manualModels(kind)]; for (const p of Object.keys(ADAPTERS)) L.push(...(MCAT.models[p] || []).filter(m => m.kind === kind)); L.push(...customModels().filter(m => m.kind === kind)); const seen = new Set(); return L.filter(m => !seen.has(m.key) && seen.add(m.key)); };
+  const draw = () => {
+    const fav = new Set(S.gen.fav || []), rec = S.gen.recent || [], reco = new Set([...famEndpoints(famOf(kind)), 'manual:' + famOf(kind)]);
+    const t = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    let L = all().filter(m => (fp === 'all' || m.provider === fp) && (!t.length || t.every(w => (m.name + ' ' + m.pid + ' ' + PNAME[m.provider] + ' ' + m.tags.join(' ')).toLowerCase().includes(w))));
+    if (grp === 'fav') L = L.filter(m => fav.has(m.key)); else if (grp === 'recent') L = rec.map(k => L.find(m => m.key === k)).filter(Boolean); else if (grp === 'rec') L = L.filter(m => reco.has(m.key));
+    else if (grp === 'new') L = L.filter(m => MCAT.first && MCAT.first[m.key] > 1 && now() - MCAT.first[m.key] < 14 * 864e5);
+    if (grp === 'all' && !t.length) L.sort((a, b) => (fav.has(b.key) - fav.has(a.key)) || (reco.has(b.key) - reco.has(a.key)) || (a.provider === 'manual' ? -1 : b.provider === 'manual' ? 1 : 0));
+    const cur = viaKey(kind) || 'manual:' + famOf(kind);
+    const st = Object.keys(ADAPTERS).map(p => MCAT.busy[p] ? `${PNAME[p]}: cargando…` : MCAT.err[p] ? `${PNAME[p]}: ${esc(MCAT.err[p])}${MCAT.models[p] ? ' (se muestra la última lista)' : ''}` : p !== 'pollo' && credOf(p) && !provOk(p) ? `${PNAME[p]}: prueba la conexión en Mis APIs` : '').filter(Boolean);
+    sc.querySelector('#mpst').innerHTML = `${L.length} modelo${L.length === 1 ? '' : 's'}${L.length > lim ? ` · se muestran ${lim}: afina la búsqueda` : ''}${st.length ? ' · ' + st.join(' · ') : ''}`;
+    sc.querySelector('#mpl').innerHTML = L.slice(0, lim).map(m => { const off = m.provider !== 'manual' && !provOk(m.provider); const nsfwOff = S.nsfw && !m.nsfw;
+      return `<div class="mprow ${m.key === cur ? 'on' : ''}"><button class="mpfav ${fav.has(m.key) ? 'on' : ''}" data-mpfav="${esc(m.key)}" aria-label="Favorito" title="Favorito">${fav.has(m.key) ? '★' : '☆'}</button>
+        <button class="mpgo" data-mpgo="${esc(m.key)}" ${nsfwOff ? 'data-dis="nsfw"' : off ? 'data-dis="prov"' : ''} role="option" aria-selected="${m.key === cur}"><b>${esc(m.name)}</b><small>${esc(PNAME[m.provider])}${m.provider === 'manual' ? '' : ' · ' + esc(m.pid)}${m.custom ? ' · añadido por ti' : ''}${m.members ? ' · solo miembros' : ''}</small><i>${esc(priceTxt(m.price))}${off ? ' · conecta y prueba ' + esc(PNAME[m.provider]) + ' en Mis APIs' : ''}${nsfwOff ? ' · no admite 🔥' : ''}</i></button></div>`; }).join('') || '<p class="note" style="padding:12px">No hay modelos con eso.</p>';
+  };
+  const reload = async force => { draw(); await Promise.all(provs.map(p => catLoad(p, force).then(() => sc.isConnected && draw()))); };
+  sc.querySelector('#mpq').oninput = e => { q = e.target.value; draw(); };
+  sc.querySelector('#mpp').onchange = e => { fp = e.target.value; draw(); };
+  sc.querySelector('#mpg').onchange = e => { grp = e.target.value; draw(); };
+  sc.querySelector('#mpref').onclick = () => reload(true);
+  sc.querySelector('#mpadd').onclick = () => addFalModel(kind);
+  sc.querySelector('#mpl').onclick = e => {
+    const f = e.target.closest('[data-mpfav]'); if (f) { const k = f.dataset.mpfav; const a = S.gen.fav || []; S.gen.fav = a.includes(k) ? a.filter(x => x !== k) : [k, ...a].slice(0, 100); save(); return draw(); }
+    const g = e.target.closest('[data-mpgo]'); if (!g) return;
+    if (g.dataset.dis === 'nsfw') return toast('Ese modelo no admite 🔥. Quita 🔥 para usarlo');
+    if (g.dataset.dis === 'prov') return toast('Conecta ese servicio y pulsa «Probar conexión» en Mis APIs');
+    chooseModel(kind, g.dataset.mpgo); closeModal(); render();
+  };
+  setTimeout(() => { const i = sc.querySelector('#mpq'); i && i.focus(); }, 50);
+  reload(false);
+}
+function chooseModel(kind, key) {
+  const [p, ...rest] = key.split(':'); const pid = rest.join(':');
+  S.gen.via = Object.assign({}, S.gen.via);
+  if (p === 'manual') { S.gen.via[kind] = ''; if (kind === 'img') { S.img.model = pid; S.img.prompt = ''; } else if (kind === 'vid') S.vid.model = pid; else S.vid.motor = pid; }
+  else { const m = findModel(key); if (!m) return; S.gen.via[kind] = key; S.gen.seen = Object.assign({}, S.gen.seen, { [key]: Object.assign({}, m, { tags: m.tags.slice(0, 4) }) });
+    const ks = Object.keys(S.gen.seen); if (ks.length > 60) delete S.gen.seen[ks[0]]; if (kind === 'img') S.img.prompt = ''; }
+  S.gen.recent = [key, ...(S.gen.recent || []).filter(x => x !== key)].slice(0, 20); save();
+}
+async function addFalModel(kind) {
+  const o = await textModal('Añadir modelo de fal', [['pid', 'Id del modelo (como aparece en fal: dueño/modelo)', 'p. ej. fal-ai/…'], ['name', 'Nombre para verlo aquí', 'opcional'], ['img', 'Campo que recibe las imágenes (opcional)', 'p. ej. image_url o image_urls']]);
+  if (!o) return modelPicker(kind);
+  const pid = String(o.pid || '').trim().replace(/^https?:\/\/[^/]+\/(models\/)?/, '').replace(/\/+$/, '');
+  if (!/^[\w.-]{1,80}(\/[\w.-]{1,120}){1,3}$/.test(pid)) { toast('Ese id no parece de fal (dueño/modelo)', 4000); return modelPicker(kind); }
+  const imgField = String(o.img || '').trim(); if (imgField && !/^\w{1,40}$/.test(imgField)) { toast('El campo de imágenes solo puede tener letras, números y _', 4000); return modelPicker(kind); }
+  S.gen.custom = [{ provider: 'fal', pid, kind, name: String(o.name || '').trim().slice(0, 80) || pid, imgField }, ...(S.gen.custom || []).filter(x => !(x.provider === 'fal' && x.pid === pid && x.kind === kind))].slice(0, 100);
+  save(); toast('Modelo añadido'); modelPicker(kind);
+}
+
+/* ---------- trabajos de generación: guardados en este dispositivo, de esta cuenta, y se retoman al volver ---------- */
+const JOBS_KEY = akey('saga-jobs');
+const LIVE = ['submitting', 'queued', 'running', 'downloading'];
+const JST = { submitting: 'Enviando…', queued: 'En cola', running: 'Generando…', downloading: 'Descargando…', done: 'Listo', failed: 'Ha fallado', cancelled: 'Cancelado', expired: 'Caducado', lost: 'Sin noticias' };
+function jobsGet() { if (!JOBS_KEY) return []; try { const a = JSON.parse(localStorage.getItem(JOBS_KEY) || '[]'); return Array.isArray(a) ? a.filter(j => isObj(j) && j.acc === ACC.id) : []; } catch (e) { return []; } }
+function jobsSet(a) { if (!JOBS_KEY || ACC.stopped) return false; const keep = a.filter(j => LIVE.includes(j.status) || !j.seen || now() - j.t < 7 * 864e5).slice(0, 80); try { localStorage.setItem(JOBS_KEY, JSON.stringify(keep)); return true; } catch (e) { return false; } }
+function jobUpd(id, f) { const a = jobsGet(); const j = a.find(x => x.id === id); if (j) { f(j); j.u = now(); jobsSet(a); } paintJobs(); return j; }
+function paintJobs() { if (ACC.stopped) return; try { renderHeader(); } catch (e) {} const sc = $('#scrim'); if (sc && sc.querySelector('#jobl')) drawJobs(sc); }
+const jobsLive = () => jobsGet().filter(j => LIVE.includes(j.status)).length;
+let jobTimer = 0, jobBusy = false;
+function jobKick(ms = 300) { clearTimeout(jobTimer); if (!ACC.stopped && ACC.id) jobTimer = setTimeout(jobTick, ms); }
+async function jobTick() {
+  if (jobBusy || ACC.stopped || !ACC.id) return; jobBusy = true;
+  const run = async () => {
+    const g = ACC.gen; const a = jobsGet(); let next = Infinity;
+    for (const j0 of a) {
+      if (!alive(g)) return;
+      if (!LIVE.includes(j0.status)) continue;
+      if (j0.status === 'submitting') { if (now() - j0.t > 120000) jobUpd(j0.id, j => { j.status = 'lost'; j.err = 'PROVIDER_ERROR'; j.detail = 'Se cerró la app mientras se enviaba. Mira en tu cuenta de ' + PNAME[j.provider] + ' si llegó, antes de repetir (para no pagar dos veces).'; }); else next = Math.min(next, j0.t + 120000); continue; }
+      if (j0.status === 'downloading' && j0.dl && now() - j0.dl < 120000) { next = Math.min(next, j0.dl + 120000); continue; } // otra pestaña lo está descargando
+      if ((j0.next || 0) > now()) { next = Math.min(next, j0.next); continue; }
+      if (!navigator.onLine) break;
+      const c = credOf(j0.provider); const A = ADAPTERS[j0.provider];
+      if (!c || !A) { jobUpd(j0.id, j => { j.status = 'failed'; j.err = 'AUTH_REQUIRED'; }); continue; }
+      if (now() - j0.t > 24 * 3600e3 && j0.status !== 'downloading') { jobUpd(j0.id, j => { j.status = 'expired'; }); continue; }
+      let r;
+      if (j0.status === 'downloading') r = { st: 'done', urls: j0.urls || [], cost: j0.cost };
+      else try { r = await A.status(c, j0); } catch (e) {
+        const code = errCode(e); if (!alive(g)) return;
+        jobUpd(j0.id, j => { j.tries = (j.tries || 0) + 1; j.last = code; if (code === 'INVALID_CREDENTIALS' && j.tries > 3) { j.status = 'failed'; j.err = code; } else j.next = now() + Math.min(60000, 5000 * Math.pow(1.6, j.tries)); });
+        continue; }
+      if (!alive(g)) return;
+      if (r.st === 'lost') { jobUpd(j0.id, j => { j.miss = (j.miss || 0) + 1; if (j.miss >= 3) { j.status = 'lost'; j.detail = 'El servicio ya no encuentra este trabajo.'; } else j.next = now() + 15000; }); continue; }
+      if (r.st === 'queued' || r.st === 'running') { jobUpd(j0.id, j => { j.status = r.st; j.tries = (j.tries || 0) + 1; j.next = now() + Math.min(60000, 5000 * Math.pow(1.35, Math.min(j.tries, 12))); }); next = Math.min(next, now() + 5000); continue; }
+      if (r.st === 'failed' || r.st === 'cancelled') { jobUpd(j0.id, j => { j.status = r.st; j.err = r.err || ''; j.detail = r.detail || ''; if (r.cost !== undefined) j.cost = r.cost; }); toast(r.st === 'failed' ? 'Una generación ha fallado: ' + (ERRS[r.err] || ERRS.TASK_FAILED) : 'Generación cancelada', 4500); continue; }
+      if (r.st === 'done') await jobFinish(j0.id, r, g);
+    }
+    if (next < Infinity && alive(g)) jobKick(Math.max(1000, next - now()));
+  };
+  try { if (navigator.locks && navigator.locks.request) await navigator.locks.request('saga-jobs@' + ACC.id, { ifAvailable: true }, async l => { if (l) await run(); else jobKick(8000); }); else await run(); }
+  catch (e) {} finally { jobBusy = false; }
+}
+/* resultado: se descarga y se guarda solo (AUTO_IMPORT). Si el servicio no deja descargarlo desde la web, queda el enlace para abrirlo e importarlo tú (URL_ONLY) */
+async function jobFinish(id, r, g) {
+  const j0 = jobUpd(id, j => { j.status = 'downloading'; j.dl = now(); if (!j.urls) j.urls = r.urls.slice(0, 8); if (r.cost !== undefined) j.cost = r.cost; j.got = j.got || []; j.cre = j.cre || []; }); if (!j0) return;
+  const bad = []; job(1);
+  try {
+    for (const u of j0.urls) {
+      if (!alive(g)) return;
+      if (j0.got.includes(u)) continue; // ya guardado antes de una recarga: nunca dos veces
+      let f;
+      try { const x = await pfetch(u, {}, 300000); if (!x.ok) throw gErr('PROVIDER_ERROR', 'HTTP ' + x.status);
+        const b = await x.blob(); const ty = /^(image|video)\//.test(b.type) ? b.type : (j0.kind === 'img' ? 'image/png' : 'video/mp4');
+        if (b.size > 500e6) throw gErr('UNSUPPORTED_INPUT', 'demasiado grande');
+        const ok = await okFiles([new File([b], 'resultado.' + extOf(ty), { type: ty })], ['image', 'video']); if (!ok.length) throw gErr('UNSUPPORTED_INPUT', 'no es una imagen ni un vídeo válidos'); f = ok[0]; }
+      catch (e) { bad.push(u); continue; }
+      if (!alive(g)) return;
+      try { const media = await putMedia(f); const cid = uid(); const first = !j0.cre.length;
+        S.creaciones.unshift({ id: cid, kind: f.type.startsWith('video') ? 'vid' : 'img', media, prompt: j0.prompt, model: j0.mname + ' · ' + PNAME[j0.provider], cost: first && j0.cost > 0 ? +(+j0.cost).toFixed(4) : 0, date: today(), t: now(), fav: false, folder: '', char: j0.char || S.active, trash: false,
+          gen: { provider: j0.provider, providerModelId: j0.pid, familyId: j0.family || '', version: j0.ver || '', modelName: j0.mname, params: j0.pub || {}, jobId: j0.id, cost: j0.cost > 0 ? { usd: +j0.cost, st: 'known' } : { st: j0.pst || 'unk' } } });
+        writeState(); j0.got.push(u); j0.cre.push(cid); jobUpd(id, j => { j.got = j0.got.slice(); j.cre = j0.cre.slice(); j.dl = now(); }); render(); }
+      catch (e) { bad.push(u); toast(e.message || 'No se pudo guardar el resultado', 5000); }
+    }
+  } finally { job(-1); }
+  if (!alive(g)) return;
+  const n = j0.cre.length;
+  jobUpd(id, j => { j.status = 'done'; j.dl = 0; j.left = bad; j.mode = bad.length ? (n ? 'PARTIAL' : 'URL_ONLY') : 'AUTO_IMPORT'; });
+  toast(n ? `Listo: ${n} resultado(s) en Creaciones${bad.length ? ' · ' + bad.length + ' para abrir a mano en Trabajos' : ''}` : 'Listo, pero no se pudo descargar aquí: ábrelo desde Trabajos', 5000);
+}
+async function jobCancel(id) {
+  const j = jobsGet().find(x => x.id === id); if (!j || !LIVE.includes(j.status)) return;
+  const A = ADAPTERS[j.provider]; const c = credOf(j.provider);
+  if (!A || !A.cancel || !j.task) { if (await ask(`${PNAME[j.provider]} no permite cancelar desde aquí: seguirá en tu cuenta del servicio (y puede cobrarse). ¿Dejar de seguirlo en Saga Studio?`, { yes: 'Dejar de seguirlo' })) jobUpd(id, x => { x.status = 'cancelled'; x.detail = 'Dejado de seguir; puede que el servicio lo termine igualmente.'; }); return; }
+  try { await A.cancel(c, j); jobUpd(id, x => { x.next = now() + 1500; }); toast('Cancelación pedida'); jobKick(1500); } catch (e) { toast('No se pudo cancelar: ' + e.message, 4500); }
+}
+function drawJobs(sc) {
+  const a = jobsGet(); a.forEach(j => j.seen = 1); jobsSet(a);
+  sc.querySelector('#jobl').innerHTML = a.length ? a.map(j => { const live = LIVE.includes(j.status); const left = (j.left || []).map(okUrl).filter(Boolean);
+    return `<div class="jobrow"><div><b>${esc(j.mname)}</b> <small class="mut">${esc(PNAME[j.provider])} · ${new Date(j.t).toLocaleString()}</small>
+      <p class="note">${live ? '<span class="spin"></span> ' : ''}${JST[j.status] || esc(j.status)}${j.status === 'done' && j.cre && j.cre.length ? ` · ${j.cre.length} en Creaciones` : ''}${j.cost > 0 ? ' · ' + money(j.cost) : ''}${j.err ? ' · ' + esc(ERRS[j.err] || '') : ''}${j.detail ? ' <i>(' + esc(j.detail) + ')</i>' : ''}${live && j.last ? ' · reintentando (' + esc(ERRS[j.last] || j.last) + ')' : ''}</p>
+      ${left.length ? `<p class="note">No se pudo descargar aquí. Ábrelo, guárdalo y pulsa «Importar» (el enlace caduca pronto): ${left.map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">resultado ${i + 1}</a>`).join(' · ')}</p>` : ''}</div>
+      <div class="row" style="gap:6px;flex:none">${live ? `<button class="btn sm" data-jobcancel="${esc(j.id)}">Cancelar</button>` : `${left.length ? `<button class="btn sm" data-jobimp="${esc(j.id)}">Importar</button>` : ''}<button class="btn sm" data-jobdel="${esc(j.id)}" aria-label="Quitar de la lista">×</button>`}</div></div>`; }).join('') : '<p class="note">No hay trabajos. Cuando generes con un servicio desde aquí, aparecerán en esta lista.</p>';
+}
+function jobsModal() {
+  modal(`<h2>Trabajos</h2><p class="note" style="margin-bottom:12px">Generaciones lanzadas desde Saga Studio con tus servicios. Se siguen solas aunque cierres la app: al volver, se retoman. Son solo de esta cuenta y de este dispositivo.</p><div id="jobl" class="stack" style="gap:8px"></div>`, sc => {
+    drawJobs(sc);
+    sc.querySelector('#jobl').onclick = async e => { const t = e.target.closest('button'); if (!t) return;
+      if (t.dataset.jobcancel) return jobCancel(t.dataset.jobcancel);
+      if (t.dataset.jobdel) { jobsSet(jobsGet().filter(x => x.id !== t.dataset.jobdel)); return paintJobs(); }
+      if (t.dataset.jobimp) { const j = jobsGet().find(x => x.id === t.dataset.jobimp); closeModal(); if (j) importResultModal(j.kind === 'img' ? 'img' : 'vid', j.prompt, [], j.mname + ' · ' + PNAME[j.provider]); } };
+  });
+}
+/* ---------- lanzar: siempre con confirmación (gasta saldo de tu cuenta del servicio) ---------- */
+async function directGen(kind, prompt, refs) {
+  const m = viaModel(kind);
+  if (!m) { toast('Ese modelo ya no está disponible: elige otro', 4000); return modelPicker(kind); }
+  if (S.nsfw && !m.nsfw) return toast('Con 🔥 solo se genera a mano. Quita 🔥 o vuelve a «Manual»', 4500);
+  const c = credOf(m.provider); if (!c) return toast(ERRS.AUTH_REQUIRED, 4500);
+  if (!c.ok) return toast('Primero pulsa «Probar conexión» en Mis APIs para ' + PNAME[m.provider], 4500);
+  if (!navigator.onLine) return toast('Sin conexión: la generación directa necesita internet. El modo manual sigue funcionando.', 4500);
+  let det; try { det = await ADAPTERS[m.provider].detail(c, m); } catch (e) { return toast('No se pudo leer el modelo: ' + e.message, 5000); }
+  const schema = (det.params || []).filter(x => isObj(x) && /^[\w.-]{1,64}$/.test(x.id || ''));
+  const files = schema.filter(x => /fileinput$/.test(x.type));
+  const promptId = (schema.find(x => x.id === 'prompt') || schema.find(x => /textarea/.test(x.type)) || {}).id || (m.provider !== 'wiro' ? 'prompt' : '');
+  const show = schema.filter(x => x.id !== promptId && !/fileinput$/.test(x.type) && x.id !== 'image' && x.id !== 'imageTail');
+  const canRefs = m.provider === 'wiro' ? files.length > 0 : m.provider === 'fal' ? !!m.imgField : false;
+  const R = refs.filter(r => r && r.ref);
+  const fld = x => { const v = x.def === undefined || x.def === null ? '' : String(x.def); const id = 'gp-' + esc(x.id);
+    const inp = x.opts && x.opts.length ? `<select id="${id}" data-gp="${esc(x.id)}">${x.req ? '' : '<option value="">(por defecto)</option>'}${x.opts.map(o => `<option value="${esc(o.v)}" ${o.v === v ? 'selected' : ''}>${esc(o.l || o.v)}</option>`).join('')}</select>`
+      : x.type === 'checkbox' || x.type === 'bool' ? `<select id="${id}" data-gp="${esc(x.id)}"><option value="">(por defecto)</option><option value="true">sí</option><option value="false">no</option></select>`
+      : `<input id="${id}" data-gp="${esc(x.id)}" ${/range|float|number|int/.test(x.type) ? 'inputmode="decimal"' : ''} value="${esc(v)}" placeholder="${x.req ? 'obligatorio' : '(por defecto)'}">`;
+    return `<label class="stack" style="gap:3px"><span class="lbl">${esc(x.label || x.id)}${x.req ? ' *' : ''}</span>${inp}${x.note ? `<small class="mut">${esc(x.note)}</small>` : ''}</label>`; };
+  const basic = show.filter(x => !x.adv), adv = show.filter(x => x.adv);
+  const sc = modal(`<h2>Generar con ${esc(PNAME[m.provider])}</h2><p class="note" style="margin-bottom:12px"><b>${esc(m.name)}</b> · ${esc(m.pid)}<br>Se usa tu cuenta de ${esc(PNAME[m.provider])} y <b>se cobra en tu saldo</b> de ese servicio: ${esc(priceTxt(det.price || m.price))}${(det.price || m.price || {}).st === 'est' ? ' (estimado: el importe final lo pone el servicio)' : ''}.</p>
+    ${m.provider === 'fal' ? '<p class="note" style="margin-bottom:10px">🔒 fal recomienda no usar claves desde un navegador. Tu clave solo sale hacia fal, pero cualquier código que corra en esta web podría leerla: usa una clave solo para Saga Studio y con poco saldo.</p>' : ''}
+    ${R.length ? `<p class="note" style="margin-bottom:8px">${canRefs ? `Van ${m.provider === 'wiro' && files[0] && files[0].type === 'fileinput' ? '1 imagen' : R.length + ' imágenes'} de referencia (${m.provider === 'fal' ? 'se suben a tu almacenamiento de fal' : 'se envían a ' + esc(PNAME[m.provider])}).` : '⚠ Este modelo no recibe imágenes desde aquí: se generará solo con el texto.'}</p>` : ''}
+    ${files.length > 1 ? `<label class="stack" style="gap:3px;margin-bottom:8px"><span class="lbl">Campo para las imágenes</span><select id="gpref">${files.map(f => `<option value="${esc(f.id)}">${esc(f.label || f.id)}</option>`).join('')}</select></label>` : ''}
+    <div class="stack" style="gap:8px">${basic.map(fld).join('')}</div>
+    ${adv.length ? `<details class="fold" style="margin-top:8px"><summary class="lbl">Ajustes avanzados</summary><div class="stack" style="gap:8px;padding-top:8px">${adv.map(fld).join('')}</div></details>` : ''}
+    ${m.provider === 'fal' ? `<details class="fold" style="margin-top:8px"><summary class="lbl">Más parámetros (JSON)</summary><div><textarea id="gpjson" placeholder='{"image_size": "portrait_4_3"}' style="min-height:70px"></textarea><p class="note">Los nombres los da la ficha del modelo en fal. Se mandan tal cual.</p></div></details>` : ''}
+    <details class="fold" style="margin-top:8px"><summary class="lbl">Prompt</summary><div class="promptbox">${esc(prompt)}</div></details>
+    <div class="row" style="margin-top:16px"><button class="btn wide" data-a="closeModal">Cancelar</button><button class="btn acc wide" id="gpgo">Generar y cobrar en ${esc(PNAME[m.provider])}</button></div>`);
+  sc.querySelector('#gpgo').onclick = async () => {
+    const params = {}; for (const el of sc.querySelectorAll('[data-gp]')) { const x = schema.find(s => s.id === el.dataset.gp); let v = el.value.trim(); if (v === '') { if (x && x.req) return toast('Falta: ' + (x.label || x.id)); continue; }
+      if (v === 'true' || v === 'false') v = v === 'true'; else if (x && /range|float|number|int/.test(x.type) && isFinite(+v)) v = +v; params[el.dataset.gp] = v; }
+    if (m.provider === 'pollo') for (const f of m.fields || []) if (f.num && typeof params[f.id] === 'string' && isFinite(+params[f.id])) params[f.id] = +params[f.id];
+    const js = sc.querySelector('#gpjson'); if (js && js.value.trim()) { let o; try { o = JSON.parse(js.value); } catch (e) { return toast('El JSON de parámetros no es válido'); } if (!isObj(o)) return toast('El JSON debe ser un objeto { … }'); Object.assign(params, o); }
+    if (promptId) params[promptId] = prompt;
+    const pub = Object.assign({}, params); delete pub[promptId];
+    const tier = det.price && det.price.tiers && det.price.tiers.find(t => Object.entries(t.in).every(([k, v]) => String(params[k]) === String(v)));
+    const job = { id: 'j' + uid() + uid(), acc: ACC.id, provider: m.provider, pid: m.pid, mkey: m.key, mname: m.name, family: m.family, ver: m.ver, kind, char: S.active, prompt, params, pub, schema, refParam: (sc.querySelector('#gpref') || {}).value || '',
+      pst: tier ? 'known' : (det.price || m.price || {}).st || 'unk', status: 'submitting', t: now(), u: now(), tries: 0 };
+    closeModal();
+    const a = jobsGet(); a.unshift(job); if (!jobsSet(a)) return toast('No hay espacio en este dispositivo para guardar el trabajo', 4500);
+    paintJobs(); toast('Enviando a ' + PNAME[m.provider] + '…');
+    const g = ACC.gen;
+    try {
+      const blobs = []; if (canRefs) for (const r of R) { const b = await refBlob(r.ref); if (b) blobs.push({ blob: b }); }
+      const sent = await ADAPTERS[m.provider].submit(c, m, job, blobs);
+      if (!alive(g)) return;
+      jobUpd(job.id, j => { j.task = sent.task; j.token = sent.token || ''; j.status = 'queued'; j.next = now() + 4000; delete j.schema; });
+      toast(`En marcha en ${PNAME[m.provider]}. Te aviso cuando esté (puedes seguir trabajando).`, 4000); jobKick(4000);
+    } catch (e) { if (!alive(g)) return; jobUpd(job.id, j => { j.status = 'failed'; j.err = errCode(e); j.detail = e.detail || ''; delete j.schema; }); toast(ERRS[errCode(e)] + (e.detail ? ' (' + e.detail + ')' : ''), 6000); }
+  };
+}
+/* ---------- probar conexión (gratis: nunca genera) ---------- */
+async function provTest(id) {
+  const c = credOf(id); if (!c) return; const A = ADAPTERS[id]; toast('Probando ' + PNAME[id] + '…');
+  let ok = false, msg;
+  try { msg = await A.test(c); ok = true; } catch (e) { msg = ERRS[errCode(e)] + (e.detail ? ' (' + e.detail + ')' : ''); if (errCode(e) === 'NETWORK_ERROR') msg += ' Si tu conexión va bien, este servicio no deja usarse desde una web: sigue con el modo manual.'; }
+  if (ACC.stopped) return;
+  const P = provGet(); if (!isObj(P[id]) || P[id].key !== c.key) return;
+  P[id] = Object.assign({}, P[id], { ok: ok ? now() : 0, test: { t: now(), ok, msg: String(msg).slice(0, 300) } }); provSet(P);
+  toast(ok ? PNAME[id] + ': ' + msg : PNAME[id] + ': no funciona', 4000); renderHeader();
+  if (ok) catLoad(id, true);
+}
 /* para la sesión de esta cuenta: guarda lo pendiente, corta peticiones y temporizadores, suelta fotos en memoria (después siempre se recarga la página) */
 function accStop() {
   if (ACC.stopped) return; flushSave(); closeModal(); closeMenu();
   ACC.stopped = true; ACC.gen++; try { ACC.ctrl.abort(); } catch (e) {}
-  clearTimeout(saveT); clearTimeout(GD.pushT); clearTimeout(GD.retryT);
+  clearTimeout(saveT); clearTimeout(GD.pushT); clearTimeout(GD.retryT); clearTimeout(jobTimer);
   try { db && db.close(); } catch (e) {} db = null;
   for (const k in urls) { URL.revokeObjectURL(urls[k]); delete urls[k]; }
   GD.token = ''; GD.exp = 0;
@@ -3096,7 +3608,7 @@ async function accRemove() {
   const who = ACC.rec.name || 'esta cuenta';
   if (!(await ask(`¿Quitar a ${who} de este dispositivo?\n\nSe borran de ESTE dispositivo sus datos, fotos, vídeos, claves y puntos de recuperación. Tu Google Drive no se toca.\n\nSi no tienes una copia, cancela y haz antes «Guardar copia completa».`, { title: 'Quitar la cuenta de este dispositivo', yes: 'Quitar de este dispositivo', no: 'Cancelar' }))) return;
   if (!(await ask('No se puede deshacer en este dispositivo.', { title: '¿Seguro del todo?', yes: 'Sí, quitar', no: 'Cancelar' }))) return;
-  const dbName = ST.db; accStop();
+  const dbName = ST.db; const accId = ACC.id; accStop(); await catDrop(accId);
   for (const k of [ST.state, ST.gc, GD.TK, GD.META, PROV_KEY, akey('saga-jobs')]) try { localStorage.removeItem(k); } catch (e) {}
   await new Promise(r => { const q = indexedDB.deleteDatabase(dbName); q.onsuccess = q.onerror = () => r(); q.onblocked = () => { alert('Cierra las otras pestañas de Saga Studio para terminar de borrar las fotos de esta cuenta.'); r(); }; });
   if (ACC.rec.store) DEV.legacy = { status: 'removed', at: Date.now() };
@@ -3198,6 +3710,7 @@ async function gateSignIn(pref) {
   autoVestidor();
   if (legacyPending() && !ACC.rec.store && wsEmpty(S)) bar('legacy', 'En este dispositivo hay un espacio de Saga Studio de antes, sin cuenta.', [['Asociarlo a esta cuenta', legacyBindCurrent]]);
   if (gdOn()) { gdSet(gdOk() ? 'sync' : 'need'); gdSync({ full: true }); }
+  jobKick(1500);
   setTimeout(() => mediaGC().catch(e => console.warn('limpieza', e)), 20000);
 })();
 })();</script>
