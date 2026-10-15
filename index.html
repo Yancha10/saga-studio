@@ -1117,6 +1117,7 @@ body.gated>header,body.gated>main,body.gated>#mnav,body.gated>#mtabs,body.gated 
 .mvd{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:13px}.mvd dt{color:var(--mut)}.mvd dd{margin:0;font-weight:600}
 .detimg{position:relative}.detimg .mvbig{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
 @media (max-width:820px){.mvw{grid-template-columns:1fr;height:auto;max-height:92vh;overflow:auto}.mvl{height:62vh}.mvr{border-left:0}}
+.platrow .opts{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}.platrow .opts .plat{min-width:0;padding:8px 10px}.platrow .opts .plat em{display:block;font-size:10.5px}.platrow .note{margin:2px 0 0}.platvar{width:100%;margin-top:4px}
 </style></head>
 <body>
 <header>
@@ -1280,18 +1281,18 @@ const TILE_ICON = { prenda:'hanger', peinado:'hair', expresion:'face', efecto:'c
 
 /* ---------- modelos (lista y para qué sirve cada uno) ---------- */
 const IMG_MODELS = [
-  { top:1, id:'seedream', nsfw:true, usd:{std:0.045,high:0.09},  n:'Seedream 5.0 Pro',  p:'Higgsfield · fal · WaveSpeed', refs:10, tag:'El de todos los días', info:'El más equilibrado: mantiene muy bien la cara y el cuerpo y admite hasta 10 referencias. Si dudas, este.' },
-  { top:1, id:'seedflash', usd:{std:0.027,high:0.027}, n:'Seedream 5.0 Flash', p:'WaveSpeed', refs:10, tag:'El más barato', info:'Muy bien cuando sale ella sola: retratos, ropa, peinados, expresiones. Con más gente puede repetir su cara.' },
-  { top:1, id:'gptimg', usd:{std:0.039,high:0.165},    n:'GPT Image 2.5',     p:'fal · WaveSpeed', refs:8, tag:'El mejor para «Misma foto»', info:'Cambia a la persona de una foto sin tocar la escena y separa bien a varias personas.' },
-  { top:1, id:'nbp', usd:{std:0.14,high:0.14},       n:'Nano Banana Pro',   p:'Higgsfield · fal · Magnific', refs:14, tag:'Máximo detalle', info:'El más fino y el mejor con texto en la imagen. También el más caro. Hasta 14 referencias.' },
-  { top:1, id:'nblite', usd:{std:0.04,high:0.04}, n:'Nano Banana 2 Lite', p:'WaveSpeed', refs:4, tag:'Rápido', info:'Rápido y barato, hasta 4 referencias. Solo 1K.' },
-  { top:1, id:'nb21', usd:{std:0.04,high:0.06},      n:'Nano Banana 2.1',   p:'fal · WaveSpeed', refs:10, tag:'Rápido y fiel', info:'Buena relación calidad/velocidad para escenas cotidianas.' },
-  { top:1, id:'qwen', usd:{std:0.03,high:0.03},      n:'Qwen Image 3',      p:'Higgsfield · WaveSpeed', refs:3, tag:'Retoques fieles', info:'Cambios pequeños sobre una imagen con 1 a 3 referencias.' },
-  { top:1, id:'mstudio',   n:'Marketing Studio Image 2.0', p:'Higgsfield', refs:16, tag:'Ropa y combinaciones', info:'El que mejor combina muchas prendas y objetos a la vez (hasta 16 referencias).' },
-  { top:1, id:'grok',      n:'Grok Image 2.0',    p:'Higgsfield', refs:10, tag:'Acabado de revista', info:'Deja la imagen algo más retocada, tipo editorial.' },
-  { top:1, id:'ideogram', usd:{std:0.06,high:0.22},  n:'Ideogram 4.5',      p:'fal', refs:4, tag:'Texto y tipografía', info:'Cuando la imagen lleva letras: carteles, portadas, camisetas.' },
-  { top:1, id:'klingimg', usd:{std:0.028,high:0.028},  n:'Kling Image O3',    p:'fal', refs:4, tag:'Cine', info:'Look cinematográfico y luz dramática.' },
-  { top:1, id:'flux', usd:{std:0.05,high:0.12},      n:'FLUX 3',            p:'fal', refs:4, tag:'Fotorrealismo', info:'Piel y texturas muy reales; describe en positivo (no le gustan los «no…»).' },
+  { top:1, id:'seedream', nsfw:true, usd:{std:0.045,high:0.09},  n:'Seedream 5.0 Pro',  p:'Higgsfield · fal · WaveSpeed · Wiro · Magnific', refs:10, tag:'El de todos los días', info:'El más equilibrado: mantiene muy bien la cara y el cuerpo y admite hasta 10 referencias. Si dudas, este.' },
+  { top:1, id:'seedflash', usd:{std:0.027,high:0.027}, n:'Seedream 5.0 Flash', p:'Higgsfield · fal · WaveSpeed', refs:10, tag:'El más barato', info:'Muy bien cuando sale ella sola: retratos, ropa, peinados, expresiones. Con más gente puede repetir su cara.' },
+  { top:1, id:'gptimg', usd:{std:0.039,high:0.165},    n:'GPT Image 2.5',     p:'Higgsfield · fal · WaveSpeed · Wiro', refs:8, tag:'El mejor para «Misma foto»', info:'Cambia a la persona de una foto sin tocar la escena y separa bien a varias personas.' },
+  { top:1, id:'nbp', usd:{std:0.14,high:0.14},       n:'Nano Banana Pro',   p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo · Magnific', refs:14, tag:'Máximo detalle', info:'El más fino y el mejor con texto en la imagen. También el más caro. Hasta 14 referencias.' },
+  { top:1, id:'nblite', usd:{std:0.04,high:0.04}, n:'Nano Banana 2 Lite', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:4, tag:'Rápido', info:'Rápido y barato, hasta 4 referencias. Solo 1K.' },
+  { top:1, id:'nb21', usd:{std:0.04,high:0.06},      n:'Nano Banana 2.1',   p:'Higgsfield · fal · WaveSpeed · Wiro', refs:10, tag:'Rápido y fiel', info:'Buena relación calidad/velocidad para escenas cotidianas.' },
+  { top:1, id:'qwen', usd:{std:0.03,high:0.03},      n:'Qwen Image 3',      p:'Higgsfield · fal · WaveSpeed · Wiro', refs:3, tag:'Retoques fieles', info:'Cambios pequeños sobre una imagen con 1 a 3 referencias.' },
+  { top:1, id:'mstudio',   n:'Marketing Studio Image 2.0', p:'Solo Higgsfield', refs:16, tag:'Ropa y combinaciones', info:'El que mejor combina muchas prendas y objetos a la vez (hasta 16 referencias).' },
+  { top:1, id:'grok',      n:'Grok Image 2.0',    p:'Higgsfield · fal · WaveSpeed · Wiro', refs:10, tag:'Acabado de revista', info:'Deja la imagen algo más retocada, tipo editorial.' },
+  { top:1, id:'ideogram', usd:{std:0.06,high:0.22},  n:'Ideogram 4.5',      p:'Higgsfield · fal · WaveSpeed', refs:4, tag:'Texto y tipografía', info:'Cuando la imagen lleva letras: carteles, portadas, camisetas.' },
+  { top:1, id:'klingimg', usd:{std:0.028,high:0.028},  n:'Kling Image O3',    p:'fal · WaveSpeed · Pollo', refs:4, tag:'Cine', info:'Look cinematográfico y luz dramática.' },
+  { top:1, id:'flux', usd:{std:0.05,high:0.12},      n:'FLUX 3',            p:'Higgsfield · WaveSpeed', refs:4, tag:'Fotorrealismo', info:'Piel y texturas muy reales; describe en positivo (no le gustan los «no…»).' },
   { id:'soul2',    n:'Higgsfield Soul 2.0', p:'Solo Higgsfield', refs:1, tag:'UGC y moda', info:'Fotos tipo redes y editorial de moda, muy naturales. Admite tu Soul ID.' },
   { id:'cs25',     n:'Cinema Studio Image 2.5', p:'Solo Higgsfield', refs:4, tag:'Fotograma de cine', info:'Fotogramas cinematográficos hasta 4K.' },
   { id:'gptimg2',  n:'GPT Image 2', p:'Higgsfield · fal · WaveSpeed · Pollo', refs:16, tag:'Texto y edición', info:'Edita muy bien y escribe texto limpio. Hasta 4K.' },
@@ -1312,10 +1313,10 @@ const mShow = (L, cur, k) => mAll(k) ? L : L.filter(m => m.top || m.id === cur);
 const mMore = (L, k) => { const n = L.filter(m => !m.top).length; return n ? `<button class="opt mmore" data-a="modelsAll" data-k="${k}">${mAll(k) ? 'Ver menos ▴' : `Ver todos los modelos (${L.length}) ▾`}<span>${mAll(k) ? '' : n + ' más: Wan, Kling, Veo, Grok, FLUX…'}</span></button>` : ''; };
 const imgUsd = (m, q) => m.usd ? m.usd[q === '2k' ? 'high' : 'std'] : 0;
 const VID_MODELS = [
-  { top:1, id:'sd20', nsfw:true,  n:'Seedance 2.0', p:'Higgsfield · WaveSpeed', refs:9, tarifa:'desde $0.0985/s (tu consola)', info:'El más completo: referencias, voz y ambiente.' },
-  { top:1, id:'sd25', nsfw:true,  n:'Seedance 2.5', p:'Higgsfield', refs:9, tarifa:'desde $0.144/s (tu consola)', info:'Más definición y movimiento más natural.' },
-  { top:1, id:'k3o',   n:'Kling 3.0 Omni', p:'WaveSpeed · fal', refs:7, tarifa:'', info:'Admite hasta 7 imágenes de referencia.' },
-  { top:1, id:'veo31', n:'Veo 3.1', p:'fal', refs:3, tarifa:'', info:'El de más calidad (y el más caro).' },
+  { top:1, id:'sd20', nsfw:true,  n:'Seedance 2.0', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:9, tarifa:'desde $0.0985/s (tu consola)', info:'El más completo: referencias, voz y ambiente.' },
+  { top:1, id:'sd25', nsfw:true,  n:'Seedance 2.5', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:9, tarifa:'desde $0.144/s (tu consola)', info:'Más definición y movimiento más natural.' },
+  { top:1, id:'k3o',   n:'Kling 3.0 Omni', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:7, tarifa:'', info:'Admite hasta 7 imágenes de referencia.' },
+  { top:1, id:'veo31', n:'Veo 3.1', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:3, tarifa:'', info:'El de más calidad (y el más caro).' },
   { top:1, id:'h3',    n:'Minimax H3 Max', p:'Higgsfield · fal', refs:2, tarifa:'', info:'Muy expresivo en caras y gestos.' },
   { top:1, id:'k25',   n:'Kling 2.5', p:'WaveSpeed', refs:1, tarifa:'', info:'Imagen a vídeo barato y estable.' },
   { id:'wan30',  n:'Wan 3.0', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:10, tarifa:'fal: $0.05–0.20/s', info:'Hasta 30 s, audio nativo, primer/último fotograma y hasta 10 referencias (imagen, vídeo y audio).' },
@@ -1929,7 +1930,7 @@ R.crear = () => {
     <div class="mrow3">${pro ? '' : `<button class="bar" data-a="toPro"><span class="lbl">Ajustes</span><span class="mut">${model.n} · ${S.img.quality} · ${S.img.ratio} ▸</span></button>`}
     <div class="between mcnt"><span class="lbl">Imágenes</span><div class="row" style="gap:10px"><div class="stepper"><button data-a="cnt-">−</button><b>${S.img.count}</b><button data-a="cnt+">＋</button></div></div></div>
     ${nsfwRow('Solo Seedream 5.0 Pro · sin vestidor')}</div>
-    ${genRow('img')}
+    ${platformRow('img')}
     <div class="sticky-gen">${viaModel('img') ? `<button class="btn acc big" data-a="genImg">Generar con ${esc(PNAME[viaModel('img').provider])}</button>
     <p class="note" style="text-align:center;margin-top:8px">${esc(viaModel('img').name)} · se cobra en tu cuenta del servicio. Lo verás en Creaciones al terminar.</p>` : `<button class="btn acc big" data-a="genImg">${S.nsfw ? '🔥 ' : ''}Generar · ${model.usd ? money(imgUsd(model, S.img.quality) * S.img.count) : S.img.count}</button>
     <p class="note" style="text-align:center;margin-top:8px">Copia el prompt y sus referencias, genera en ${esc(model.n)} e importa aquí el resultado.</p>`}</div>`;
@@ -1994,7 +1995,7 @@ R.video = () => {
       <p class="note">${esc(vm.n)}: ${esc(vm.info)}${vm.tarifa ? ' · ' + esc(vm.tarifa) : ''}</p>`)}
       ${secOpen('vprompt', 'Prompt montado', 'se actualiza solo', `<textarea class="prompt" readonly style="min-height:240px">${esc(buildVidPrompt())}</textarea><button class="btn sm" data-copy="${esc(buildVidPrompt())}">Copiar prompt</button>`)}
       ${nsfwRow(vm.nsfw ? 'Solo con Seedance 2.0 y 2.5' : 'Elige Seedance para usarlo')}
-      ${genRow('vid')}
+      ${platformRow('vid')}
       <div class="sticky-gen"><button class="btn acc big" data-a="genVid">${viaModel('vid') ? 'Generar con ' + esc(PNAME[viaModel('vid').provider]) : (S.nsfw && vm.nsfw ? '🔥 ' : '') + 'Generar vídeo'}</button></div>`;
   }
   const items = S.creaciones.filter(x => x.kind === 'vid' && !x.trash);
@@ -3148,10 +3149,10 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-tile]'))) return pickerModal(el.dataset.tile);
   if ((el = d('[data-choose]'))) { const [k, id] = el.dataset.choose.split('|'); S.sel[k] = id; S.receta = ''; S.img.prompt = ''; save(); closeModal(); return render(); }
   if ((el = d('[data-mv]'))) { S.mv = S.mv || {}; S.mv[S.section] = +el.dataset.mv; save(); renderMTabs(); try { window.scrollTo(0, 0); } catch (x) {} return; }
-  if ((el = d('[data-imgmodel]'))) { S.img.model = el.dataset.imgmodel; S.img.prompt = ''; save(); if (el.dataset.close) closeModal(); return render(); }
+  if ((el = d('[data-imgmodel]'))) { S.img.model = el.dataset.imgmodel; S.img.prompt = ''; platReset('img'); save(); if (el.dataset.close) closeModal(); return render(); }
   if ((el = d('[data-imgq]'))) { S.img.quality = el.dataset.imgq; save(); return render(); }
   if ((el = d('[data-ratio]'))) { S.img.ratio = el.dataset.ratio; S.img.prompt = ''; save(); return render(); }
-  if ((el = d('[data-vidmodel]'))) { S.vid.model = el.dataset.vidmodel; save(); if (el.dataset.close) closeModal(); return render(); }
+  if ((el = d('[data-vidmodel]'))) { S.vid.model = el.dataset.vidmodel; platReset('vid'); save(); if (el.dataset.close) closeModal(); return render(); }
   if ((el = d('[data-vmotor]'))) { S.vid.motor = el.dataset.vmotor; save(); return render(); }
   if ((el = d('[data-vq]'))) { S.vid.quality = el.dataset.vq; save(); return render(); }
   if ((el = d('[data-vcam]'))) { S.vid.cam = el.dataset.vcam; save(); return render(); }
@@ -3168,6 +3169,7 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-favref]'))) { e.stopPropagation(); const [k, id] = el.dataset.favref.split('|'); const x = S[k].find(y => y.id === id); x.fav = !x.fav; save(); return render(); }
   if ((el = d('[data-recreate2]'))) { e.stopPropagation(); const [k, id] = el.dataset.recreate2.split('|'); S.picked[k] = id; return k === 'fototeca' ? A.useCopy() : A.useMotion(); }
   if ((el = d('[data-recreate]'))) { S.picked.filmoteca = el.dataset.recreate; return A.useMotion(); }
+  if ((el = d('[data-plat]'))) { const [k, p] = el.dataset.plat.split('|'); return setPlat(k, p); }
   if ((el = d('[data-mview]'))) { const [k, id] = el.dataset.mview.split('|'); return mediaViewer(k, id); }
   if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); if ((S.picked[kk] === id || isMob()) && !el.dataset.gol && LIBS[kk]) { S.picked[kk] = id; save(); return libViewer(kk, id); }
     if ((S.picked[kk] === id || isMob()) && (kk === 'filmoteca' || kk === 'fototeca')) { S.picked[kk] = id; save(); render(); return mediaViewer(kk, id); } S.picked[kk] = id; if (isMob() && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
@@ -3218,6 +3220,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('scroll', e => { if (e.target.matches && e.target.matches('[data-imgprompt]')) syncHl(e.target); }, true);
 document.addEventListener('change', e => {
+  if (e.target.dataset && e.target.dataset.platvar) { chooseModel(e.target.dataset.platvar, e.target.value); save(); return render(); }
   const t = e.target;
   if (t.dataset.refcat) { const k = t.dataset.refcat; const p = S[k].find(x => x.id === S.picked[k]); if (p) { p.cat = t.value; save(); render(); } }
   if (t.dataset.refesc) { const k = t.dataset.refesc; const p = S[k].find(x => x.id === S.picked[k]); if (p) { p.escena = t.value; save(); } }
@@ -3534,6 +3537,33 @@ const famOf = kind => kind === 'img' ? S.img.model : kind === 'vid' ? S.vid.mode
 const genKind = () => S.section === 'video' ? (S.vid.que === 'recrear' ? 'motion' : 'vid') : 'img';
 const directReady = m => !!m && m.provider !== 'manual' && provOk(m.provider);
 
+/* ---------- primero el modelo, luego la plataforma: dónde lo generas (aquí con tu API o fuera copiando el prompt) ---------- */
+const PLAT_ID = { higgsfield: 'Higgsfield', fal: 'fal', wavespeed: 'WaveSpeed', wiro: 'Wiro', pollo: 'Pollo', magnific: 'Magnific', flow: 'Google Flow' };
+function platsOf(m) { const t = String(m.p || '').replace(/^Solo\s+/i, ''); if (/^Manual$/i.test(t)) return m.id === 'flow' ? ['flow'] : []; return t.split('·').map(x => x.trim().toLowerCase()).map(x => Object.keys(PLAT_ID).find(k => k === x || PLAT_ID[k].toLowerCase() === x)).filter(Boolean); }
+const famKeys = (id, p) => famEndpoints(id).filter(k => k.startsWith(p + ':'));
+function curPlat(kind) { const id = famOf(kind); const k = viaKey(kind); if (k && famEndpoints(id).includes(k)) return k.split(':')[0]; const L = platsOf((kind === 'img' ? IMG_MODELS : VID_MODELS).find(m => m.id === id) || {}); const sv = (S.gen.plat || {})[kind + ':' + id]; return L.includes(sv) ? sv : L[0] || ''; }
+function platformRow(kind) {
+  const L0 = kind === 'img' ? IMG_MODELS : VID_MODELS; const id = famOf(kind); const m = L0.find(x => x.id === id) || L0[0]; const plats = platsOf(m); const cur = curPlat(kind);
+  const vk = viaKey(kind); const vm = vk && !famEndpoints(id).includes(vk) ? viaModel(kind) : null; // modelo elegido a mano en «Otro modelo…»
+  const chip = p => { const direct = ADAPTERS[p] && famKeys(id, p).length; const ok = direct && provOk(p); const on = !vm && p === cur;
+    return `<button class="opt plat ${on ? 'on' : ''}" data-plat="${kind}|${p}"><span>${esc(PLAT_ID[p])}<em>${direct ? (ok ? 'genera aquí' : 'conéctalo en Mis APIs') : 'copias el prompt'}</em></span></button>`; };
+  const vars = !vm && ADAPTERS[cur] && provOk(cur) && famKeys(id, cur).length > 1 ? `<select class="platvar" data-platvar="${kind}">${famKeys(id, cur).map(k => { const mm = findModel(k); return `<option value="${esc(k)}" ${k === vk ? 'selected' : ''}>${esc(mm ? mm.name : k.split(':').slice(1).join(':'))}</option>`; }).join('')}</select>` : '';
+  const now_ = vm ? `Con «Otro modelo»: <b>${esc(PNAME[vm.provider])} · ${esc(vm.name)}</b> <a class="lnk" data-plat="${kind}|${cur}">volver a ${esc(m.n)}</a>`
+    : !cur ? 'Este modelo no tiene plataforma apuntada: copias el prompt y lo generas donde quieras.'
+    : ADAPTERS[cur] && famKeys(id, cur).length ? (provOk(cur) ? `Se genera aquí con tu cuenta de ${esc(PLAT_ID[cur])} y se cobra en tu saldo de ${esc(PLAT_ID[cur])}.` : `Para generar aquí con ${esc(PLAT_ID[cur])}, conéctalo y pulsa «Probar» en Mis APIs. Mientras, se copia el prompt.`)
+    : `Se copia el prompt y lo generas en ${esc(PLAT_ID[cur])}; luego importas el resultado.`;
+  return `<div class="stack platrow"><div class="between"><span class="lbl">Plataforma · ${esc(m.n)}</span><a class="lnk" data-a="pickModel" data-kind="${kind}">Otro modelo…</a></div>
+    ${plats.length ? `<div class="opts">${plats.map(chip).join('')}</div>` : ''}${vars}<p class="note">${now_}</p></div>`;
+}
+function platReset(kind) { const k = viaKey(kind); if (k && !famEndpoints(famOf(kind)).includes(k)) { S.gen.via = Object.assign({}, S.gen.via, { [kind]: '' }); } const sv = (S.gen.plat || {})[kind + ':' + famOf(kind)]; if (sv && ADAPTERS[sv] && provOk(sv)) { const ks = famKeys(famOf(kind), sv); const kk = ks.find(x => findModel(x)); if (kk) chooseModel(kind, kk); } }
+async function setPlat(kind, p) {
+  const id = famOf(kind); S.gen.plat = Object.assign({}, S.gen.plat, { [kind + ':' + id]: p }); S.gen.via = Object.assign({}, S.gen.via, { [kind]: '' });
+  const ks = ADAPTERS[p] ? famKeys(id, p) : [];
+  if (ks.length && provOk(p)) { if (!MCAT.models[p]) { toast('Cargando ' + PLAT_ID[p] + '…'); await catLoad(p).catch(() => {}); }
+    const k = ks.find(x => findModel(x)); if (k) chooseModel(kind, k); else toast('No encuentro ese modelo en ' + PLAT_ID[p] + ' ahora mismo: se copiará el prompt', 4500); }
+  else if (ks.length) toast(`Conecta ${PLAT_ID[p]} y pulsa «Probar» en Mis APIs para generar aquí. Mientras, se copia el prompt.`, 5000);
+  save(); render();
+}
 /* ---------- elegir modelo: buscador para catálogos grandes ---------- */
 function genRow(kind) {
   const m = viaModel(kind); const k = viaKey(kind);
