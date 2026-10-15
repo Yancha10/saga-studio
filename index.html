@@ -2275,7 +2275,7 @@ function renderLib(lib) {
     <div class="stack fold" style="padding-top:14px"><span class="lbl">Crea ${un} ${L.one}</span>
       <div class="dz" data-a="addLib" data-drop="libitem:${lib}"><span class="ic">＋</span><div><b>Arrastra aquí la foto</b><p>o haz clic para subirla · se crea su ficha</p></div></div>
       <button class="btn wide" data-a="newLibText">✍ Crear desde una descripción</button>
-      ${lib === 'vestidor' && !S.vestidorWeb ? '<button class="btn wide" data-a="loadVestidorPack">⇩ Añadir el vestidor de ejemplo de Saga (261 prendas)</button>' : ''}${lib === 'vestidor' ? '<button class="btn acc wide" data-a="importVestidorPack">⇩ Importar mi vestidor de Notion</button><a class="lnk" data-a="importNotionFolder">o desde una carpeta exportada de Notion</a>' : ''}
+      ${lib === 'vestidor' && !S.vestidorWeb ? '<button class="btn wide" data-a="loadVestidorPack">⇩ Añadir el vestidor de ejemplo de Saga (261 prendas)</button>' : ''}${lib === 'vestidor' ? '<button class="btn acc wide" data-a="importVestidorPack">⇩ Importar mi vestidor de Notion</button><button class="btn wide" data-a="dedupPrendas">Quitar prendas duplicadas</button><a class="lnk" data-a="importNotionFolder">o desde una carpeta exportada de Notion</a>' : ''}
       <button class="btn wide" data-a="importLibJson">⇩ Importar JSON</button></div>`;
   const nNot = list.filter(x => x.notion).length; const filters = [['Todos', null], ...(nNot ? [['Mi Notion', nNot]] : []), ...L.cats.map(c => [c, list.filter(x => x.cat === c || (x.tags || []).includes(c)).length]), ...(withImg > 0 && withImg < list.length ? [['Con imagen', withImg], ['Sin imagen', list.length - withImg]] : [])];
   const stage = `${galleryHead(`${L.t} · ${list.length}`, filters, lib)}
@@ -3225,6 +3225,23 @@ A.importVestidorPack = async () => {
   if (!Array.isArray(pack) && pack.kind === 'saga-prendas') return importPrendas(L);
   await importPack(L);
 };
+/* quita duplicados del vestidor: copias «Notion» creadas con id nNNN (paquete importado por el botón equivocado) y fichas repetidas por nombre; se queda la que tiene foto */
+function dedupPrendas(quiet) {
+  const V = S.libs.vestidor; let del = 0, fix = 0; const drop = new Set();
+  for (const x of V) {
+    if (!(x.notion && /^n\d+$/.test(x.notionId || ''))) continue;
+    const c = V.find(y => y !== x && y.id === x.notionId && !y.notion);
+    if (c) { if (!c.img && x.img) { c.img = x.img; c.cat = x.cat; c.name = x.name; if (x.desc) c.desc = x.desc; c.tags = (x.tags || []).filter(t => t !== 'Notion'); fix++; } drop.add(x); }
+    else { x.id = x.notionId; x.notion = false; delete x.notionId; x.tags = (x.tags || []).filter(t => t !== 'Notion'); fix++; }
+  }
+  const seen = new Map();
+  for (const x of V) { if (drop.has(x) || x.notion) continue; const k = (x.name || '').toLowerCase(); if (!k || /^prenda nº/.test(k)) continue; const o = seen.get(k); if (!o) { seen.set(k, x); continue; }
+    if (!o.img && x.img) { drop.add(o); seen.set(k, x); } else drop.add(x); }
+  if (drop.size) { S.libs.vestidor = V.filter(x => !drop.has(x)); del = drop.size; }
+  if (del || fix) save(); if (!quiet) { render(); toast(del || fix ? `${del} duplicadas quitadas, ${fix} arregladas` : 'No hay prendas duplicadas'); }
+  return del;
+}
+A.dedupPrendas = () => dedupPrendas();
 /* paquete de prendas sueltas (kind «saga-prendas»): cada prenda va a su ficha «Prenda Nº…» por id, con su foto, su categoría y su tipo de ropa; no toca tus prendas de Notion */
 async function importPrendas(L) {
   L = L.filter(o => isObj(o) && o.id); if (!L.length) return toast('El paquete no tiene prendas válidas');
@@ -3239,7 +3256,7 @@ async function importPrendas(L) {
     if (isNew) { S.libs.vestidor.push(it); n++; } else upd++;
     const pe = $('#nprog'); if (pe) { pe.textContent = `${k + 1} de ${L.length}`; $('#nbar').style.width = ((k + 1) / L.length * 100) + '%'; }
   }
-  save(); closeModal(); render(); toast(`${upd} prendas con foto, ${n} nuevas`);
+  dedupPrendas(true); save(); closeModal(); render(); toast(`${upd} prendas con foto, ${n} nuevas`);
 }
 /* el vestidor publicado junto a la web (vestidor/index.json): la primera vez entra entero; si después se publica una versión nueva,
    solo se añaden las prendas nuevas (las que ya tienes, con tus cambios, no se tocan) */
