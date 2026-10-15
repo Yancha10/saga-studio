@@ -1196,6 +1196,15 @@ select{-webkit-appearance:none;appearance:none;height:auto!important;min-height:
 .pd small{font:700 10px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}.pd b{font-size:13.5px}.pd.tagd{background:transparent}
 .pbio{padding:14px 16px;border-radius:16px;background:var(--panel2);border:1px solid var(--line);font-size:14px;line-height:1.5;white-space:pre-wrap}
 @media (max-width:720px){.pj>.row.pact{flex-wrap:wrap!important;overflow:visible!important}.pj>.row.pact .btn{flex:1 1 auto;min-width:0;padding-left:12px;padding-right:12px}.psheet{grid-template-columns:1fr}.pscol{grid-template-columns:1fr 1fr;grid-template-rows:none}.pslot{min-height:150px}.pslot.main{min-height:200px}.phname{font-size:30px}.pspr{opacity:1}.pfi>a{opacity:1}}
+
+.nsfwtag{font-style:normal;color:#ff7a59;text-transform:none;letter-spacing:0;font-size:11px;margin-left:4px}
+.platrow .plrow{margin-bottom:4px}
+.msheet{max-width:640px!important}
+.mslist{display:flex;flex-direction:column;gap:6px;max-height:min(60vh,520px);overflow:auto;padding-right:2px}
+.msi{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--panel2)}
+.msi.on{border-color:transparent;background:linear-gradient(var(--panel2),var(--panel2)) padding-box,var(--grad) border-box;border:1.5px solid transparent}
+.msi .msn{display:flex;gap:6px;align-items:center}.msi .msn i{font-style:normal}.msi small{color:var(--mut);font-size:12px}
+@media (max-width:720px){.msheet .mslist{max-height:52vh}.platrow .plrow{margin:0 -16px;padding:0 16px 2px}}
 </style></head>
 <body>
 <header>
@@ -2261,7 +2270,8 @@ function renderLib(lib) {
       <details class="fold"><summary class="lbl">Prompt para crear su imagen</summary><div><div class="promptbox">${esc(thumbPrompt(lib, p))}</div><button class="btn wide" style="margin-top:8px" data-copy="${esc(thumbPrompt(lib, p))}">Copiar prompt</button></div></details>
       <button class="btn ghost wide" data-a="delLib">Borrar ${L.one}</button>`
     : `<div class="stack"><span class="lbl">${L.base}</span><p class="note">Elige ${un} ${L.one} para ver su ficha y usarl${L.g === 'f' ? 'a' : 'o'} en Crear imagen o Vídeo. Las fichas sin imagen llevan una lámina provisional: súbele su imagen cuando la generes.</p>
-      <div class="progress"><i style="width:${list.length ? withImg / list.length * 100 : 0}%"></i></div><span class="note">${withImg} de ${list.length} con imagen</span></div>`}
+      <div class="progress"><i style="width:${list.length ? withImg / list.length * 100 : 0}%"></i></div><span class="note">${withImg} de ${list.length} con imagen</span>
+      ${lib === 'vestidor' && withImg < list.length ? `<button class="btn acc wide" data-a="vestAssign" style="margin-top:8px">🧩 Poner sus fotos de golpe</button><p class="note">Elige tus imágenes de outfits (de iCloud, Drive o donde estén): cada una va sola a su ficha por el nombre del archivo que tienes apuntado en Notion.</p>` : ''}</div>`}
     <div class="stack fold" style="padding-top:14px"><span class="lbl">Crea ${un} ${L.one}</span>
       <div class="dz" data-a="addLib" data-drop="libitem:${lib}"><span class="ic">＋</span><div><b>Arrastra aquí la foto</b><p>o haz clic para subirla · se crea su ficha</p></div></div>
       <button class="btn wide" data-a="newLibText">✍ Crear desde una descripción</button>
@@ -2946,6 +2956,7 @@ const A = {
   async genImg() { const p = S.imgMode === 'pro' ? S.img.prompt : buildImgPrompt(); if (viaKey('img')) return directGen('img', p, refList()); await copy(p); importResultModal('img', p, refList()); },
   async genVid() { const p = buildVidPrompt(); const c = char(); const R = [S.vid.useSheet && { tag: 'ficha', what: 'ficha', ref: c.sheet.main }, S.vid.startRef && { tag: 'inicio', what: 'imagen inicial', ref: S.vid.startRef }, S.vid.endRef && { tag: 'final', what: 'imagen final', ref: S.vid.endRef }].filter(Boolean); if (viaKey('vid')) return directGen('vid', p, R); await copy(p); importResultModal('vid', p, [S.vid.useSheet && { tag: 'ficha', what: 'ficha', ref: c.sheet.main }, S.vid.startRef && { tag: 'inicio', what: 'imagen inicial', ref: S.vid.startRef }, S.vid.endRef && { tag: 'final', what: 'imagen final', ref: S.vid.endRef }].filter(Boolean)); },
   async genMotion() { if (!S.vid.motionRef) return toast('Primero sube el vídeo a recrear'); const p = buildMotionPrompt(); const R = [{ tag: 'image_1', what: 'ficha', ref: char().sheet.main }, S.vid.imgRef && { tag: 'image_2', what: 'referencia', ref: S.vid.imgRef }].filter(Boolean); if (viaKey('motion')) return directGen('motion', p, R); await copy(p); importResultModal('vid', p, R); },
+  modelSheet(e) { modelSheet(e.target.closest('[data-kind]')?.dataset.kind || genKind()); },
   pickModel(e) { modelPicker(e.target.closest('[data-kind]')?.dataset.kind || genKind()); }, jobs: jobsModal,
   vidSheet() { S.vid.useSheet = !S.vid.useSheet; save(); render(); },
   importResult(e) { importResultModal(e.target.closest('[data-kind]')?.dataset.kind || (S.section === 'video' ? 'vid' : 'img')); },
@@ -2971,6 +2982,7 @@ const A = {
   toWardrobe() { const p = S.fototeca.find(x => x.id === S.picked.fototeca); if (!p) return; const n = S.libs.vestidor.length + 1; const it = { id: uid(), name: 'Prenda Nº ' + n, cat: 'De Vestir', tags: ['De Vestir', 'Nueva'], img: p.media, desc: '' }; S.libs.vestidor.unshift(it); S.picked.vestidor = it.id; save(); go('lib:vestidor'); },
   delRef(e) { const k = e.target.dataset.key; const it = S[k].find(x => x.id === S.picked[k]); if (it) toTrash('ref', { key: k, item: it }, it.cat || k, k === 'fototeca' ? it.media : ''); S[k] = S[k].filter(x => x.id !== S.picked[k]); S.picked[k] = ''; save(); render(); },
   async libImg() { const [lib, p] = curLib(); if (!p) return; const [f] = await pickFiles(); if (!f) return; p.img = await putMedia(f); save(); render(); },
+  vestAssign() { return vestAssign(); },
   async addLib() { const lib = S.section.slice(4); await addToLib(lib, await pickFiles('image/*', true)); },
   async newLibText() { const lib = S.section.slice(4); const L = LIBS[lib]; const o = await textModal(`Nuev${L.g === 'f' ? 'a' : 'o'} ${L.one}`, [['name','Nombre',''], ...(L.cats.length ? [['cat','Categoría', L.cats.join(' · ')]] : []), ['desc','Descripción para el prompt (en inglés)','', true]]); if (!o || !o.name) return; const it = { id: uid(), name: o.name, cat: L.cats.find(c => c.toLowerCase() === (o.cat || '').toLowerCase()) || L.cats[0] || '', tags: [], desc: o.desc, img: '' }; S.libs[lib].unshift(it); S.picked[lib] = it.id; save(); render(); },
   async importLibJson() {
@@ -3214,6 +3226,24 @@ A.importVestidorPack = async () => {
 };
 /* el vestidor publicado junto a la web (vestidor/index.json): la primera vez entra entero; si después se publica una versión nueva,
    solo se añaden las prendas nuevas (las que ya tienes, con tus cambios, no se tocan) */
+/* ---------- poner las fotos del vestidor de golpe: cada archivo va a su ficha por el nombre apuntado en Notion («Pendiente de adjuntar») ---------- */
+const nfn = s => String(s || '').normalize('NFC').toLowerCase().replace(/\.[a-z0-9]{2,5}$/, '').replace(/[\s_\-.,]+/g, ' ').trim();
+async function vestAssign() {
+  let P = null; try { const r = await fetch('vestidor/pendientes.json', { cache: 'no-cache' }); if (r.ok) P = await r.json(); } catch (e) {}
+  const V = S.libs.vestidor || []; const byFile = new Map();
+  if (P && Array.isArray(P.items)) for (const it of P.items) { const x = V.find(v => v.notionId === it.id || String(v.name || '').toLowerCase() === String(it.name || '').toLowerCase()); if (x) for (const fn of it.files || []) byFile.set(nfn(fn), x); }
+  for (const x of V) if (!x.img && x.name) byFile.set(nfn(x.name), byFile.get(nfn(x.name)) || x); // también si el archivo se llama como la prenda
+  const fs = await pickFiles('image/*', true); if (!fs.length) return;
+  let ok = 0; const miss = [], dup = [];
+  toast(`Asignando ${fs.length} imágenes…`);
+  for (const f of fs) { const x = byFile.get(nfn(f.name)); if (!x) { miss.push(f.name); continue; } if (x.img && x._vaDone) { dup.push(f.name); continue; }
+    try { x.img = await putMedia(f); x._vaDone = 1; ok++; } catch (e) { miss.push(f.name + ' (' + e.message + ')'); } }
+  V.forEach(x => delete x._vaDone); save(); render();
+  const left = V.filter(x => !x.img).length;
+  modal(`<h2>Fotos del vestidor</h2><p class="note" style="margin:8px 0 12px"><b>${ok}</b> puestas en su ficha · quedan <b>${left}</b> fichas sin foto.</p>
+    ${miss.length ? `<p class="note">Estas no encajan con ninguna ficha (${miss.length}). Ábrelas y súbelas a mano en su ficha:</p><div class="pbio" style="max-height:220px;overflow:auto;font-size:12.5px">${miss.map(esc).join('<br>')}</div>` : '<p class="note">✓ Todas las imágenes encontraron su ficha.</p>'}
+    ${dup.length ? `<p class="note" style="margin-top:8px">${dup.length} repetidas no se usaron.</p>` : ''}<div class="row" style="margin-top:14px"><button class="btn acc wide" data-a="closeModal">Listo</button></div>`);
+}
 async function autoVestidor(force) {
   if (!/^https?:/.test(location.protocol) || RECOVERY || !(force || S.vestidorWeb)) return;
   try { const r = await fetch('vestidor/index.json', { cache: 'no-cache' }); if (!r.ok) return; const txt = await r.text(); const h = hash(txt); if (S.vestidorWeb && S.vestidorWebH === h) return;
@@ -3709,35 +3739,80 @@ function vidAjustes(v, vm) {
 function modelCard(kind) {
   const L0 = kind === 'img' ? IMG_MODELS : VID_MODELS; const id = famOf(kind); const m = L0.find(x => x.id === id) || L0[0]; const vm = viaModel(kind);
   const sp = kind === 'vid' ? vspec() : null; const facts = kind === 'vid' ? [Object.keys(sp.res).slice(-1)[0].toUpperCase() + ' máx.', 'hasta ' + vidMax() + ' s', m.refs ? m.refs + ' refs' : ''] : [ires().slice(-1)[0].toUpperCase() + ' máx.', m.refs ? 'hasta ' + m.refs + ' refs' : 'sin referencias'];
-  return `<button class="mcard" data-a="pickModel" data-kind="${kind}"><span class="mcic">${ic(kind === 'img' ? 'image' : 'video', 'width="18" height="18"')}</span>
+  return `<button class="mcard" data-a="modelSheet" data-kind="${kind}"><span class="mcic">${ic(kind === 'img' ? 'image' : 'video', 'width="18" height="18"')}</span>
     <span class="mct"><small>${kind === 'img' ? 'Modelo de imagen' : 'Modelo de vídeo'}</small><b>${esc(vm && !famEndpoints(id).includes(viaKey(kind)) ? vm.name : m.n)}</b><em>${esc(m.tag || m.info || '')}</em><span class="mcf">${facts.filter(Boolean).map(x => `<i>${esc(x)}</i>`).join('')}</span></span><span class="mcgo">Cambiar ▾</span></button>`;
 }
 /* ---------- primero el modelo, luego la plataforma: dónde lo generas (aquí con tu API o fuera copiando el prompt) ---------- */
 const PLAT_ID = { higgsfield: 'Higgsfield', fal: 'fal', wavespeed: 'WaveSpeed', wiro: 'Wiro', pollo: 'Pollo', magnific: 'Magnific', flow: 'Google Flow' };
 function platsOf(m) { const t = String(m.p || '').replace(/^Solo\s+/i, ''); if (/^Manual$/i.test(t)) return m.id === 'flow' ? ['flow'] : []; return t.split('·').map(x => x.trim().toLowerCase()).map(x => Object.keys(PLAT_ID).find(k => k === x || PLAT_ID[k].toLowerCase() === x)).filter(Boolean); }
 const famKeys = (id, p) => famEndpoints(id).filter(k => k.startsWith(p + ':'));
-function curPlat(kind) { const id = famOf(kind); const k = viaKey(kind); if (k && famEndpoints(id).includes(k)) return k.split(':')[0]; const L = platsOf((kind === 'img' ? IMG_MODELS : VID_MODELS).find(m => m.id === id) || {}); const sv = (S.gen.plat || {})[kind + ':' + id]; return L.includes(sv) ? sv : L[0] || ''; }
+/* ---------- plataforma primero, luego sus modelos (y con 🔥 solo lo que lo admite) ---------- */
+const PLAT_ORDER = ['higgsfield', 'fal', 'wavespeed', 'wiro', 'pollo', 'magnific', 'flow'];
+const mList = kind => kind === 'img' ? IMG_MODELS : VID_MODELS;
+const modelsOn = (kind, p) => mList(kind).filter(m => platsOf(m).includes(p) && (!S.nsfw || m.nsfw));
+const platsFor = kind => PLAT_ORDER.filter(p => modelsOn(kind, p).length);
+function curPlat(kind) {
+  const id = famOf(kind); const k = viaKey(kind); if (k && famEndpoints(id).includes(k)) return k.split(':')[0];
+  const m = mList(kind).find(x => x.id === id) || {}; const L = platsOf(m); const pf = (S.gen.pf || {})[kind];
+  return L.includes(pf) ? pf : L[0] || '';
+}
+const platState = p => ADAPTERS[p] ? (provOk(p) ? 'live' : 'key') : 'man';
+function platWhy(kind, p, id) {
+  const n = esc(PLAT_ID[p] || p);
+  if (ADAPTERS[p] && famKeys(id, p).length) return provOk(p) ? `✓ Se genera aquí con tu API de ${n} y se cobra en tu saldo de ${n}.` : `Conecta tu API de ${n} en Mis APIs (botón «Probar») y se generará aquí. Mientras, se copia el prompt.`;
+  if (ADAPTERS[p]) return `Este modelo todavía no está enlazado con ${n}: se copia el prompt para lanzarlo allí.`;
+  if (p === 'higgsfield') return 'Higgsfield no deja que una web use su API, así que la app prepara el prompt y las referencias y lo lanzas en Higgsfield. El resultado se importa aquí.';
+  if (p === 'wavespeed') return 'WaveSpeed aún no genera desde la app: se copia el prompt para lanzarlo en WaveSpeed.';
+  if (p === 'magnific') return 'Magnific no deja que una web use su API: se copia el prompt para lanzarlo allí.';
+  return `Se copia el prompt y lo generas en ${n}; luego importas el resultado.`;
+}
 function platformRow(kind) {
-  const L0 = kind === 'img' ? IMG_MODELS : VID_MODELS; const id = famOf(kind); const m = L0.find(x => x.id === id) || L0[0]; const plats = platsOf(m); const cur = curPlat(kind);
-  const vk = viaKey(kind); const vm = vk && !famEndpoints(id).includes(vk) ? viaModel(kind) : null; // modelo elegido a mano en «Otro modelo…»
-  const chip = p => { const direct = ADAPTERS[p] && famKeys(id, p).length; const ok = direct && provOk(p); const on = !vm && p === cur;
-    return `<button class="pl ${on ? 'on' : ''} ${direct ? (ok ? 'live' : 'key') : 'man'}" data-plat="${kind}|${p}"><span class="pld"></span><b>${esc(PLAT_ID[p])}</b><small>${direct ? (ok ? 'genera aquí' : 'falta conectar') : 'copias el prompt'}</small></button>`; };
+  const id = famOf(kind); const m = mList(kind).find(x => x.id === id) || mList(kind)[0]; const cur = curPlat(kind);
+  const vk = viaKey(kind); const vm = vk && !famEndpoints(id).includes(vk) ? viaModel(kind) : null;
+  const P = platsFor(kind);
+  const chips = P.map(p => `<button class="pl ${!vm && p === cur ? 'on' : ''} ${platState(p)}" data-plat="${kind}|${p}"><span class="pld"></span><b>${esc(PLAT_ID[p])}</b><small>${platState(p) === 'live' ? 'API lista' : platState(p) === 'key' ? 'falta tu API' : 'manual'} · ${modelsOn(kind, p).length}</small></button>`).join('');
   const vars = !vm && ADAPTERS[cur] && provOk(cur) && famKeys(id, cur).length > 1 ? `<select class="platvar" data-platvar="${kind}">${famKeys(id, cur).map(k => { const mm = findModel(k); return `<option value="${esc(k)}" ${k === vk ? 'selected' : ''}>${esc(mm ? mm.name : k.split(':').slice(1).join(':'))}</option>`; }).join('')}</select>` : '';
-  const now_ = vm ? `Con «Otro modelo»: <b>${esc(PNAME[vm.provider])} · ${esc(vm.name)}</b> <a class="lnk" data-plat="${kind}|${cur}">volver a ${esc(m.n)}</a>`
-    : !cur ? 'Este modelo no tiene plataforma apuntada: copias el prompt y lo generas donde quieras.'
-    : ADAPTERS[cur] && famKeys(id, cur).length ? (provOk(cur) ? `Se genera aquí con tu cuenta de ${esc(PLAT_ID[cur])} y se cobra en tu saldo de ${esc(PLAT_ID[cur])}.` : `Para generar aquí con ${esc(PLAT_ID[cur])}, conéctalo y pulsa «Probar» en Mis APIs. Mientras, se copia el prompt.`)
-    : `Se copia el prompt y lo generas en ${esc(PLAT_ID[cur])}; luego importas el resultado.`;
-  return `<div class="stack platrow">${modelCard(kind)}<span class="lbl" style="margin-top:4px">Dónde lo generas</span>
-    ${plats.length ? `<div class="plrow">${plats.map(chip).join('')}</div>` : ''}${vars}<p class="note plnote">${now_}</p></div>`;
+  const why = vm ? `Con un modelo del buscador: <b>${esc(PNAME[vm.provider])} · ${esc(vm.name)}</b> <a class="lnk" data-plat="${kind}|${cur}">volver</a>` : platWhy(kind, cur, id);
+  return `<div class="stack platrow"><div class="between"><span class="lbl">1 · Plataforma${S.nsfw ? ' <i class="nsfwtag">🔥 solo las que lo admiten</i>' : ''}</span><a class="lnk" data-a="apis">Mis APIs</a></div>
+    <div class="plrow">${chips}</div>
+    <div class="between"><span class="lbl">2 · Modelo en ${esc(PLAT_ID[cur] || '—')}</span></div>${modelCard(kind)}${vars}<p class="note plnote">${why}</p></div>`;
+}
+/* hoja para elegir modelo: arriba las plataformas, debajo solo los modelos de la elegida */
+function modelSheet(kind, p0) {
+  let p = p0 || curPlat(kind), q = '';
+  const sc = modal(`<h2>Elige modelo</h2><div class="plrow" id="msp"></div><input id="msq" class="search" placeholder="Buscar modelo…" style="width:100%;margin:10px 0"><div id="msl" class="mslist"></div>
+    <div class="row" style="margin-top:12px;gap:6px"><button class="btn sm" id="msall">Buscar en todos los catálogos…</button></div>`, null, 'wide msheet');
+  const draw = () => {
+    const P = platsFor(kind); if (!P.includes(p)) p = P[0];
+    sc.querySelector('#msp').innerHTML = P.map(x => `<button class="pl ${x === p ? 'on' : ''} ${platState(x)}" data-msp="${x}"><span class="pld"></span><b>${esc(PLAT_ID[x])}</b><small>${modelsOn(kind, x).length} modelos</small></button>`).join('');
+    const t = q.trim().toLowerCase(); const cur = famOf(kind);
+    const L = modelsOn(kind, p).filter(m => !t || (m.n + ' ' + (m.tag || '') + ' ' + (m.info || '')).toLowerCase().includes(t));
+    const extra = ADAPTERS[p] ? (MCAT.models[p] || []).filter(m => m.kind === kind && !m.family && (!t || m.name.toLowerCase().includes(t)) && !S.nsfw).slice(0, 40) : [];
+    sc.querySelector('#msl').innerHTML = (L.map(m => { const sp = kind === 'vid' ? (VSPEC[m.id] || null) : null; const res = kind === 'vid' ? (sp ? Object.keys(sp.res).slice(-1)[0] : '') : (IRES[m.id] || []).slice(-1)[0] || '';
+      const dur = sp ? (sp.d ? sp.d[sp.d.length - 1] : sp.dur[1]) + ' s' : ''; const direct = ADAPTERS[p] && famKeys(m.id, p).length;
+      return `<button class="msi ${m.id === cur ? 'on' : ''}" data-msm="${m.id}"><span class="msn"><b>${esc(m.n)}</b>${m.nsfw ? '<i>🔥</i>' : ''}</span><small>${esc(m.tag || m.info || '')}</small>
+        <span class="mcf">${[res && res.toUpperCase(), dur, m.refs ? m.refs + ' refs' : '', direct ? (provOk(p) ? 'genera aquí' : 'con tu API') : 'manual'].filter(Boolean).map(x => `<i>${esc(x)}</i>`).join('')}</span></button>`; }).join('')
+      || '<p class="note">Ningún modelo con eso.</p>') + (extra.length ? `<div class="lbl" style="margin:12px 0 6px">Más de ${esc(PLAT_ID[p])}</div>` + extra.map(m => `<button class="msi" data-msk="${esc(m.key)}"><span class="msn"><b>${esc(m.name)}</b></span><small>${esc(m.pid)}</small></button>`).join('') : '');
+  };
+  draw(); if (ADAPTERS[p] && !MCAT.models[p]) catLoad(p).then(() => sc.isConnected && draw()).catch(() => {});
+  sc.querySelector('#msq').oninput = e => { q = e.target.value; draw(); };
+  sc.querySelector('#msall').onclick = () => modelPicker(kind);
+  sc.querySelector('#msp').onclick = e => { const b = e.target.closest('[data-msp]'); if (!b) return; p = b.dataset.msp; draw(); if (ADAPTERS[p] && !MCAT.models[p]) catLoad(p).then(() => sc.isConnected && draw()).catch(() => {}); };
+  sc.querySelector('#msl').onclick = async e => { const b = e.target.closest('[data-msm],[data-msk]'); if (!b) return;
+    if (b.dataset.msk) { chooseModel(kind, b.dataset.msk); closeModal(); return render(); }
+    closeModal(); await pickModelOn(kind, b.dataset.msm, p); };
+}
+async function pickModelOn(kind, id, p) {
+  chooseModel(kind, 'manual:' + id); S.gen.pf = Object.assign({}, S.gen.pf, { [kind]: p }); S.gen.plat = Object.assign({}, S.gen.plat, { [kind + ':' + id]: p });
+  const ks = ADAPTERS[p] ? famKeys(id, p) : [];
+  if (ks.length && provOk(p)) { if (!MCAT.models[p]) await catLoad(p).catch(() => {}); const k = ks.find(x => findModel(x)); if (k) chooseModel(kind, k); }
+  save(); render();
 }
 function platReset(kind) { const k = viaKey(kind); if (k && !famEndpoints(famOf(kind)).includes(k)) { S.gen.via = Object.assign({}, S.gen.via, { [kind]: '' }); } const sv = (S.gen.plat || {})[kind + ':' + famOf(kind)]; if (sv && ADAPTERS[sv] && provOk(sv)) { const ks = famKeys(famOf(kind), sv); const kk = ks.find(x => findModel(x)); if (kk) chooseModel(kind, kk); } }
 async function setPlat(kind, p) {
-  const id = famOf(kind); S.gen.plat = Object.assign({}, S.gen.plat, { [kind + ':' + id]: p }); S.gen.via = Object.assign({}, S.gen.via, { [kind]: '' });
-  const ks = ADAPTERS[p] ? famKeys(id, p) : [];
-  if (ks.length && provOk(p)) { if (!MCAT.models[p]) { toast('Cargando ' + PLAT_ID[p] + '…'); await catLoad(p).catch(() => {}); }
-    const k = ks.find(x => findModel(x)); if (k) chooseModel(kind, k); else toast('No encuentro ese modelo en ' + PLAT_ID[p] + ' ahora mismo: se copiará el prompt', 4500); }
-  else if (ks.length) toast(`Conecta ${PLAT_ID[p]} y pulsa «Probar» en Mis APIs para generar aquí. Mientras, se copia el prompt.`, 5000);
-  save(); render();
+  const id = famOf(kind); const L = modelsOn(kind, p); if (!L.length) return;
+  const keep = L.find(m => m.id === id); await pickModelOn(kind, keep ? id : L[0].id, p);
+  if (!keep) toast(`${(mList(kind).find(m => m.id === id) || {}).n || 'Ese modelo'} no está en ${PLAT_ID[p]}: te pongo ${L[0].n}`, 4000);
 }
 /* ---------- elegir modelo: buscador para catálogos grandes ---------- */
 function genRow(kind) {
