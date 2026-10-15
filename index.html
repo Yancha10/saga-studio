@@ -3424,11 +3424,12 @@ async function applyPromptsEn() {
 async function applyExpresiones() {
   if (!/^https?:/.test(location.protocol) || RECOVERY) return;
   try { const r = await fetch('expresiones/index.json', { cache: 'no-cache' }); if (!r.ok) return; const txt = await r.text(); const h = hash(txt); if (S.expresH === h) return;
-    const P = JSON.parse(txt); let nd = 0, ni = 0, bad = 0;
+    const P = JSON.parse(txt); let nd = 0, ni = 0, nq = 0, bad = 0;
     for (const o of P.items || []) { const x = (S.libs.expresiones || []).find(v => v.id === o.id); if (!x) continue;
       if (o.desc && x.desc !== o.desc && (!x.desc || x.desc === o.es)) { x.desc = o.desc; nd++; }
-      if (o.tpl && !x.img) { try { const ir = await fetch(o.tpl); if (!ir.ok) throw 0; x.img = await putMedia(await ir.blob()); ni++; } catch (e) { bad++; } } }
-    if (!bad) S.expresH = h; save(); if (nd || ni) { render(); toast(`Expresiones: ${ni} fotos nuevas y ${nd} descripciones en inglés`, 4000); } } catch (e) { console.warn('expresiones', e); }
+      if (o.quitar) { S.expresClr = S.expresClr || {}; if (!S.expresClr[o.id]) { S.expresClr[o.id] = 1; if (x.img) { x.img = ''; nq++; } } }
+      else if (o.tpl && !x.img) { try { const ir = await fetch(o.tpl); if (!ir.ok) throw 0; x.img = await putMedia(await ir.blob()); ni++; } catch (e) { bad++; } } }
+    if (!bad) S.expresH = h; save(); if (nd || ni || nq) { render(); toast(`Expresiones: ${ni} fotos nuevas, ${nq} quitadas y ${nd} descripciones en inglés`, 4000); } } catch (e) { console.warn('expresiones', e); }
 }
 async function autoVestidor(force) {
   if (!/^https?:/.test(location.protocol) || RECOVERY || !(force || S.vestidorWeb)) return;
