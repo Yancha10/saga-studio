@@ -3222,8 +3222,25 @@ A.importVestidorPack = async () => {
   const [f] = await pickFiles('application/json,.json'); if (!f) return;
   let pack; try { pack = JSON.parse(await f.text()); } catch (e) { return toast('Ese archivo no es un paquete válido'); }
   const L = Array.isArray(pack) ? pack : pack.items || []; if (!L.length) return toast('El paquete está vacío');
+  if (!Array.isArray(pack) && pack.kind === 'saga-prendas') return importPrendas(L);
   await importPack(L);
 };
+/* paquete de prendas sueltas (kind «saga-prendas»): cada prenda va a su ficha «Prenda Nº…» por id, con su foto, su categoría y su tipo de ropa; no toca tus prendas de Notion */
+async function importPrendas(L) {
+  L = L.filter(o => isObj(o) && o.id); if (!L.length) return toast('El paquete no tiene prendas válidas');
+  modal(`<h2>Importando prendas</h2><p class="note" id="nprog">0 de ${L.length}</p><div class="progress" style="margin-top:12px"><i id="nbar" style="width:0%"></i></div>`);
+  let n = 0, upd = 0;
+  for (const [k, o] of L.entries()) {
+    let it = S.libs.vestidor.find(x => x.id === o.id && !x.notion);
+    const isNew = !it; if (isNew) it = { id: o.id, name: o.name || o.id, desc: '' };
+    const cat = o.cat || 'De Vestir';
+    Object.assign(it, { cat, tags: [cat, ...(o.tags || [])] }); if (o.name) it.name = o.name; if (o.desc) it.desc = o.desc;
+    if (o.tpl) it.img = o.tpl.startsWith('data:') ? await putMedia(dataToBlob(o.tpl)) : o.tpl;
+    if (isNew) { S.libs.vestidor.push(it); n++; } else upd++;
+    const pe = $('#nprog'); if (pe) { pe.textContent = `${k + 1} de ${L.length}`; $('#nbar').style.width = ((k + 1) / L.length * 100) + '%'; }
+  }
+  save(); closeModal(); render(); toast(`${upd} prendas con foto, ${n} nuevas`);
+}
 /* el vestidor publicado junto a la web (vestidor/index.json): la primera vez entra entero; si después se publica una versión nueva,
    solo se añaden las prendas nuevas (las que ya tienes, con tus cambios, no se tocan) */
 /* ---------- poner las fotos del vestidor de golpe: cada archivo va a su ficha por el nombre apuntado en Notion («Pendiente de adjuntar») ---------- */
