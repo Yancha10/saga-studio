@@ -3278,6 +3278,14 @@ async function vestAssign() {
     ${miss.length ? `<p class="note">Estas no encajan con ninguna ficha (${miss.length}). Ábrelas y súbelas a mano en su ficha:</p><div class="pbio" style="max-height:220px;overflow:auto;font-size:12.5px">${miss.map(esc).join('<br>')}</div>` : '<p class="note">✓ Todas las imágenes encontraron su ficha.</p>'}
     ${dup.length ? `<p class="note" style="margin-top:8px">${dup.length} repetidas no se usaron.</p>` : ''}<div class="row" style="margin-top:14px"><button class="btn acc wide" data-a="closeModal">Listo</button></div>`);
 }
+/* textos de prompt en inglés de las prendas antiguas de Notion (vestidor/prompts-en.json {notionId: texto}): se aplican una vez por versión del archivo, sin pisar después tus cambios */
+async function applyPromptsEn() {
+  if (!/^https?:/.test(location.protocol) || RECOVERY) return;
+  try { const r = await fetch('vestidor/prompts-en.json', { cache: 'no-cache' }); if (!r.ok) return; const txt = await r.text(); const h = hash(txt); if (S.promptsEnH === h) return;
+    const M = JSON.parse(txt); let n = 0;
+    for (const x of S.libs.vestidor || []) if (x.notion && x.notionId && typeof M[x.notionId] === 'string' && M[x.notionId] && x.desc !== M[x.notionId]) { x.desc = M[x.notionId]; n++; }
+    S.promptsEnH = h; save(); if (n) { render(); toast(`${n} descripciones de prendas pasadas a inglés`, 3500); } } catch (e) { console.warn('promptsEn', e); }
+}
 async function autoVestidor(force) {
   if (!/^https?:/.test(location.protocol) || RECOVERY || !(force || S.vestidorWeb)) return;
   try { const r = await fetch('vestidor/index.json', { cache: 'no-cache' }); if (!r.ok) return; const txt = await r.text(); const h = hash(txt); if (S.vestidorWeb && S.vestidorWebH === h) return;
@@ -4210,7 +4218,7 @@ async function gateSignIn(pref) {
   paintFb(); save();
   if (RECOVERY) { bar('recovery', 'Modo recuperación: tus datos no se pudieron leer y no se guarda nada hasta que decidas qué hacer.', [['Ver opciones', recoveryModal]]); recoveryModal(); return; }
   if (!S.bienvenidaVista) setTimeout(bienvenidaModal, 400);
-  autoVestidor();
+  autoVestidor().then(applyPromptsEn);
   if (legacyPending() && !ACC.rec.store && wsEmpty(S)) bar('legacy', 'En este dispositivo hay un espacio de Saga Studio de antes, sin cuenta.', [['Asociarlo a esta cuenta', legacyBindCurrent]]);
   if (gdOn()) { gdSet(gdOk() ? 'sync' : 'need'); gdSync({ full: true }); }
   jobKick(1500);
