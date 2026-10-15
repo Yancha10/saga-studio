@@ -2384,8 +2384,9 @@ function apisModal() {
     <div class="stack" style="gap:6px">${API_ORDER.map(id => { const D = PROV_UI.find(x => x[0] === id); if (D) { const [, n, d, f, tip] = D; const c = P[id] || {}; const on = !!c.key; const T = isObj(c.test) ? c.test : null;
       return `<div class="prov"><span class="dot ${c.ok ? 'on' : ''}"></span><div><b>${n} <span class="ptag gen">Genera aquí</span></b><p>${d}${on ? ' · ' + f.map(([k, l]) => l + ' ' + mask(c[k])).join(' · ') : ''}</p>${on ? `<p>${c.ok ? '✓ Conexión comprobada el ' + new Date(c.ok).toLocaleDateString() + ': generación directa activada' : T ? '✗ ' + esc(T.msg) : 'Pulsa «Probar» para activar la generación directa (no gasta saldo)'}</p>` : `<p>${esc(tip)}</p>`}</div>
         <span class="row" style="gap:6px;flex:none">${on ? `<button class="btn sm ${c.ok ? '' : 'acc'}" data-provtest="${id}">Probar</button>` : ''}<button class="btn sm ${on ? '' : 'acc'}" data-${on ? 'provdel' : 'provset'}="${id}">${on ? 'Quitar' : 'Conectar'}</button></span></div>`; }
-      const R = PROVIDERS.find(x => x[0] === id); if (!R) return ''; const [, n, d] = R; const on = O[id] && O[id].key;
-      return `<div class="prov"><span class="dot ${on ? 'on' : ''}"></span><div><b>${n} <span class="ptag">Recordatorio</span></b><p>${d}${on ? ' · clave ' + mask(on) : ' · de momento generas fuera y la clave solo queda apuntada'}</p></div><button class="btn sm" data-${on ? 'provdel' : 'provset'}="otros:${id}">${on ? 'Quitar' : 'Guardar'}</button></div>`; }).join('')}
+      const R = PROVIDERS.find(x => x[0] === id); if (!R) return ''; const [, n, d] = R; const oc = O[id] || {}; const on = oc.key; const T = isObj(oc.test) ? oc.test : null;
+      return `<div class="prov"><span class="dot ${oc.ok ? 'on' : ''}"></span><div><b>${n} <span class="ptag">Recordatorio</span></b><p>${d}${on ? ' · clave ' + mask(on) : ' · de momento generas fuera y la clave solo queda apuntada'}</p>${on ? `<p>${OTHER_TEST[id] ? (oc.ok ? '✓ ' + esc(T && T.msg || 'Clave comprobada') : T ? '✗ ' + esc(T.msg) : 'Pulsa «Probar» para comprobar la clave (no gasta saldo)') : esc(NO_TEST[id] || '')}</p>` : ''}</div>
+        <span class="row" style="gap:6px;flex:none">${on && OTHER_TEST[id] ? `<button class="btn sm ${oc.ok ? '' : 'acc'}" data-provtest2="${id}">Probar</button>` : ''}<button class="btn sm" data-${on ? 'provdel' : 'provset'}="otros:${id}">${on ? 'Quitar' : 'Guardar'}</button></span></div>`; }).join('')}
     <p class="note" style="margin:4px 0 10px">«Genera aquí»: la app genera directamente con tu cuenta; «Probar» hace una llamada gratuita y cada generación te pide confirmación antes de gastar. «Recordatorio»: aún no tienen conexión directa, el flujo manual va igual.</p>
     <div class="prov"><span class="dot"></span><div><b>¿Usas otra API?</b><p>Apúntala en el feedback y la añadimos</p></div><button class="btn sm" data-a="feedback">Pedirla</button></div></div>
     <div class="card" style="margin-top:14px"><b>🔌 MCP</b><p class="note" style="margin-top:6px">Más adelante podrás pedir imágenes a Saga Studio desde Claude o ChatGPT. Todavía no está disponible.</p></div>
@@ -3328,6 +3329,7 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-provset]'))) { const id = el.dataset.provset; const [grp, oid] = id.split(':'); const ui = PROV_UI.find(p => p[0] === id); const fields = ui ? ui[3] : [['key', 'Clave de API']];
     const o = await textModal('Conectar ' + (ui ? ui[1] : oid), fields.map(([k, l]) => [k, l, 'pega aquí tu ' + l.toLowerCase()])); if (!o || fields.some(([k]) => !o[k])) return apisModal();
     const P = provGet(); if (oid) { P.otros = Object.assign({}, P.otros, { [oid]: { key: o.key } }); } else P[id] = o; provSet(P); renderHeader(); toast(gdOn() ? 'Clave guardada · llega sola a tus otros dispositivos por tu Drive' : 'Clave guardada en este dispositivo (conecta Drive para tenerla en todos)', 4000); return apisModal(); }
+  if ((el = d('[data-provtest2]'))) { await provTestOther(el.dataset.provtest2); return $('#scrim') && apisModal(); }
   if ((el = d('[data-provtest]'))) { await provTest(el.dataset.provtest); return $('#scrim') && apisModal(); }
   if ((el = d('[data-provdel]'))) { const id = el.dataset.provdel; const [grp, oid] = id.split(':'); if (!(await ask(gdOn() ? '¿Quitar esta clave? Se quitará también en tus otros dispositivos.' : '¿Quitar esta clave de este dispositivo?'))) return apisModal(); const P = provGet(); if (oid) { if (P.otros) delete P.otros[oid]; } else delete P[id]; provSet(P); renderHeader(); return apisModal(); }
   if ((el = d('[data-amode]'))) { S.aud.modo = el.dataset.amode; save(); return render(); }
@@ -3954,10 +3956,26 @@ async function directGen(kind, prompt, refs) {
   };
 }
 /* ---------- probar conexión (gratis: nunca genera) ---------- */
+/* «Probar» también en las cuentas sin generación directa: una llamada gratuita que solo comprueba la clave (y el saldo si el servicio lo dice).
+   Higgsfield y Magnific no contestan a llamadas desde una web, así que esas no se pueden comprobar aquí. */
+const OTHER_TEST = {
+  wavespeed: async k => { const r = await pfetch('https://api.wavespeed.ai/api/v3/balance', { headers: { Authorization: 'Bearer ' + k } }); const d = await jread(r); if (!r.ok) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status); const b = d && d.data && d.data.balance; return 'La clave funciona' + (b != null ? ' · saldo $' + (+b).toFixed(2) : '') + '.'; },
+  elevenlabs: async k => { const r = await pfetch('https://api.elevenlabs.io/v1/user/subscription', { headers: { 'xi-api-key': k } }); const d = await jread(r); if (!r.ok) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status); return 'La clave funciona' + (d && d.character_limit ? ` · ${Math.max(0, d.character_limit - (d.character_count || 0)).toLocaleString('es-ES')} letras disponibles` : '') + '.'; },
+  openai: async k => { const r = await pfetch('https://api.openai.com/v1/models', { headers: { Authorization: 'Bearer ' + k } }); const d = await jread(r); if (!r.ok) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status); return 'La clave funciona.'; },
+  claude: async k => { const r = await pfetch('https://api.anthropic.com/v1/models', { headers: { 'x-api-key': k, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' } }); const d = await jread(r); if (!r.ok) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status); return 'La clave funciona.'; },
+};
+const NO_TEST = { higgsfield: 'Higgsfield no deja comprobar claves desde una web: se usa en modo manual.', magnific: 'Magnific no deja comprobar claves desde una web: se usa en modo manual.' };
+async function provTestOther(id) {
+  const P0 = provGet(); const k = P0.otros && P0.otros[id] && P0.otros[id].key; if (!k || !OTHER_TEST[id]) return; toast('Probando ' + (PROVIDERS.find(x => x[0] === id) || [, id])[1] + '…');
+  let ok = false, msg; try { msg = await OTHER_TEST[id](k); ok = true; } catch (e) { if (errCode(e) === 'INSUFFICIENT_BALANCE') { ok = true; msg = 'La clave es correcta, pero la cuenta no tiene saldo.'; } else msg = ERRS[errCode(e)] + (e.detail ? ' (' + e.detail + ')' : ''); }
+  const P = provGet(); if (!P.otros || !P.otros[id] || P.otros[id].key !== k) return;
+  P.otros[id] = Object.assign({}, P.otros[id], { ok: ok ? now() : 0, test: { t: now(), ok, msg: String(msg).slice(0, 300) } }); provSet(P);
+  toast((PROVIDERS.find(x => x[0] === id) || [, id])[1] + ': ' + (ok ? msg : 'no funciona · ' + String(msg).slice(0, 180)), ok ? 4000 : 9000);
+}
 async function provTest(id) {
   const c = credOf(id); if (!c) return; const A = ADAPTERS[id]; toast('Probando ' + PNAME[id] + '…');
   let ok = false, msg;
-  try { msg = await A.test(c); ok = true; } catch (e) { msg = ERRS[errCode(e)] + (e.detail ? ' (' + e.detail + ')' : ''); if (errCode(e) === 'NETWORK_ERROR') msg += id === 'wiro' ? ' Wiro no contesta a la web cuando la firma falla: revisa que la API key y el API secret sean del mismo proyecto y que el proyecto use «Signature-Based». Si están bien y sigue igual, Wiro no deja usarse desde una web.' : ' Si tu conexión va bien, este servicio no deja usarse desde una web: sigue con el modo manual.'; }
+  try { msg = await A.test(c); ok = true; } catch (e) { if (errCode(e) === 'INSUFFICIENT_BALANCE') { ok = true; msg = 'La clave es correcta, pero la cuenta no tiene saldo: recarga para generar.'; } else msg = ERRS[errCode(e)] + (e.detail ? ' (' + e.detail + ')' : ''); if (errCode(e) === 'NETWORK_ERROR') msg += id === 'wiro' ? ' Wiro no contesta a la web cuando la firma falla: revisa que la API key y el API secret sean del mismo proyecto y que el proyecto use «Signature-Based». Si están bien y sigue igual, Wiro no deja usarse desde una web.' : ' Si tu conexión va bien, este servicio no deja usarse desde una web: sigue con el modo manual.'; }
   if (ACC.stopped) return;
   const P = provGet(); if (!isObj(P[id]) || P[id].key !== c.key) return;
   P[id] = Object.assign({}, P[id], { ok: ok ? now() : 0, test: { t: now(), ok, msg: String(msg).slice(0, 300) } }); provSet(P);
