@@ -3570,6 +3570,7 @@ const ADAPTERS = {
   fal: {
     n: 'fal', creds: ['key'],
     async test(c) { // gratis: pide permiso para subir un archivo (no se sube nada ni se genera nada)
+      if (!/^[\w-]+:[\w-]+$/.test(String(c.key || '').trim())) throw gErr('INVALID_CREDENTIALS', 'la clave de fal tiene dos partes separadas por dos puntos (id:secreto); cópiala entera desde fal.ai/dashboard/keys');
       const r = await pfetch('https://rest.fal.ai/storage/upload/initiate?storage_type=fal-cdn-v3', { method: 'POST', headers: { Authorization: 'Key ' + c.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ content_type: 'text/plain', file_name: 'saga-test.txt' }) });
       const d = await jread(r); if (!r.ok) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status);
       return 'La clave funciona.';
@@ -3618,7 +3619,7 @@ const ADAPTERS = {
       if (!r.ok || !d || (d.code !== undefined && d.code !== 0 && d.code !== 200 && d.code !== 'SUCCESS' && !d.data)) throw Object.assign(gErr(classify(r.ok ? 'PROVIDER_ERROR' : httpCode(r.status), m), m || 'HTTP ' + r.status), { http: r.status });
       return isObj(d.data) ? d.data : d;
     },
-    async test(c) { const d = await this.call(c, '/credit/balance'); const n = +(d.availableCredits ?? d.available ?? NaN); return isFinite(n) ? 'La clave funciona · ' + n + ' créditos disponibles.' : 'La clave funciona.'; },
+    async test(c) { let d; try { d = await this.call(c, '/v1/credit/balance'); } catch (e) { if (e.http !== 404) throw e; d = await this.call(c, '/credit/balance'); } const n = +(d.availableCredits ?? d.available ?? NaN); return isFinite(n) ? 'La clave funciona · ' + n + ' créditos disponibles.' : 'La clave funciona.'; },
     async catalog() { const M = await manifest('pollo'); return M ? M.models.map(x => Object.assign({ provider: 'pollo' }, x)) : []; },
     async detail(c, m) { return { params: m.fields || [], price: { st: 'unk', note: 'se cobra en créditos de Pollo' } }; },
     async submit(c, m, job, refs) {
@@ -3627,8 +3628,8 @@ const ADAPTERS = {
       const id = d.taskId || d.id; if (!id) throw gErr('PROVIDER_ERROR', 'Sin número de tarea'); return { task: String(id) };
     },
     async status(c, job) { // la documentación da dos rutas para el estado; se prueba la segunda solo si la primera no existe
-      let d; try { d = await this.call(c, '/generation/' + encodeURIComponent(job.task) + '/status'); }
-      catch (e) { if (e.http !== 404) throw e; try { d = await this.call(c, '/v1/generation/' + encodeURIComponent(job.task) + '/status'); } catch (x) { if (x.http === 404) return { st: 'lost' }; throw x; } }
+      let d; try { d = await this.call(c, '/v1/generation/' + encodeURIComponent(job.task) + '/status'); }
+      catch (e) { if (e.http !== 404) throw e; try { d = await this.call(c, '/generation/' + encodeURIComponent(job.task) + '/status'); } catch (x) { if (x.http === 404) return { st: 'lost' }; throw x; } }
       const G = Array.isArray(d.generations) ? d.generations.filter(isObj) : []; const s = String(d.status || (G[0] && G[0].status) || '').toLowerCase();
       if (/^(succeed|succeeded|success|completed)$/.test(s)) { const urls = G.map(g => okUrl(g.url)).filter(Boolean); return urls.length ? { st: 'done', urls } : { st: 'failed', err: 'TASK_FAILED', detail: 'sin resultado' }; }
       if (/fail|error/.test(s)) { const m = String((G[0] && (G[0].failMsg || G[0].message)) || d.failMsg || d.message || ''); return { st: 'failed', err: classify('TASK_FAILED', m), detail: m }; }
@@ -3956,11 +3957,11 @@ async function directGen(kind, prompt, refs) {
 async function provTest(id) {
   const c = credOf(id); if (!c) return; const A = ADAPTERS[id]; toast('Probando ' + PNAME[id] + '…');
   let ok = false, msg;
-  try { msg = await A.test(c); ok = true; } catch (e) { msg = ERRS[errCode(e)] + (e.detail ? ' (' + e.detail + ')' : ''); if (errCode(e) === 'NETWORK_ERROR') msg += ' Si tu conexión va bien, este servicio no deja usarse desde una web: sigue con el modo manual.'; }
+  try { msg = await A.test(c); ok = true; } catch (e) { msg = ERRS[errCode(e)] + (e.detail ? ' (' + e.detail + ')' : ''); if (errCode(e) === 'NETWORK_ERROR') msg += id === 'wiro' ? ' Wiro no contesta a la web cuando la firma falla: revisa que la API key y el API secret sean del mismo proyecto y que el proyecto use «Signature-Based». Si están bien y sigue igual, Wiro no deja usarse desde una web.' : ' Si tu conexión va bien, este servicio no deja usarse desde una web: sigue con el modo manual.'; }
   if (ACC.stopped) return;
   const P = provGet(); if (!isObj(P[id]) || P[id].key !== c.key) return;
   P[id] = Object.assign({}, P[id], { ok: ok ? now() : 0, test: { t: now(), ok, msg: String(msg).slice(0, 300) } }); provSet(P);
-  toast(ok ? PNAME[id] + ': ' + msg : PNAME[id] + ': no funciona', 4000); renderHeader();
+  toast(PNAME[id] + ': ' + (ok ? msg : 'no funciona · ' + String(msg).slice(0, 180)), ok ? 4000 : 9000); renderHeader();
   if (ok) catLoad(id, true);
 }
 /* para la sesión de esta cuenta: guarda lo pendiente, corta peticiones y temporizadores, suelta fotos en memoria (después siempre se recarga la página) */
