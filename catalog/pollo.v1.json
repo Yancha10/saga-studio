@@ -1,39 +1,346 @@
 {
-  "v": 1,
-  "provider": "pollo",
-  "reviewed": "2026-10-13",
-  "source": "https://docs.pollo.ai (páginas de cada modelo). Pollo no publica una lista de modelos por API: este archivo se mantiene a mano. Ver catalog/README.md.",
-  "notes": "Solo campos vistos en la documentación oficial. Las imágenes (image, imageTail) no se envían desde Saga Studio: Pollo solo las acepta por enlace público.",
-  "models": [
-    { "pid": "kling-ai/kling-v2-1", "kind": "vid", "name": "Kling 2.1", "family": "", "ver": "2.1", "src": "https://docs.pollo.ai/m/kling-ai/kling-v2-1",
-      "fields": [
-        { "id": "negativePrompt", "type": "text", "label": "Prompt negativo" },
-        { "id": "strength", "type": "float", "label": "Strength", "num": true, "adv": true },
-        { "id": "length", "type": "int", "label": "Duración (s)", "num": true },
-        { "id": "mode", "type": "text", "label": "Modo", "adv": true }
-      ] },
-    { "pid": "kling-ai/kling-v2-6", "kind": "vid", "name": "Kling 2.6", "family": "", "ver": "2.6", "src": "https://docs.pollo.ai/m/kling-ai/kling-v2-6",
-      "fields": [
-        { "id": "negativePrompt", "type": "text", "label": "Prompt negativo" },
-        { "id": "length", "type": "int", "label": "Duración (s)", "num": true },
-        { "id": "generateAudio", "type": "bool", "label": "Generar audio" }
-      ] },
-    { "pid": "bytedance/seedance", "kind": "vid", "name": "Seedance (Pollo)", "family": "", "ver": "", "src": "https://docs.pollo.ai/m/bytedance/seedance",
-      "fields": [
-        { "id": "resolution", "type": "text", "label": "Resolución" },
-        { "id": "length", "type": "int", "label": "Duración (s)", "num": true },
-        { "id": "seed", "type": "int", "label": "Semilla", "num": true, "adv": true },
-        { "id": "cameraFixed", "type": "bool", "label": "Cámara fija", "adv": true }
-      ] },
-    { "pid": "bytedance/seedance-2-5", "kind": "vid", "name": "Seedance 2.5", "family": "sd25", "ver": "2.5", "src": "https://docs.pollo.ai/m/bytedance/seedance-2-5",
-      "fields": [
-        { "id": "resolution", "type": "text", "label": "Resolución" },
-        { "id": "aspectRatio", "type": "text", "label": "Formato" },
-        { "id": "length", "type": "int", "label": "Duración (s)", "num": true },
-        { "id": "generateAudio", "type": "bool", "label": "Generar audio" },
-        { "id": "seed", "type": "int", "label": "Semilla", "num": true, "adv": true },
-        { "id": "cameraFixed", "type": "bool", "label": "Cámara fija", "adv": true },
-        { "id": "webSearch", "type": "bool", "label": "Búsqueda web", "adv": true }
-      ] }
-  ]
+ "v": 1,
+ "provider": "pollo",
+ "reviewed": "2026-10-15",
+ "source": "https://docs.pollo.ai (páginas de cada modelo). Pollo no publica una lista de modelos por API: este archivo se mantiene a mano. Ver catalog/README.md.",
+ "notes": "Solo campos vistos en la documentación oficial. Las imágenes (image, imageTail) no se envían desde Saga Studio: Pollo solo las acepta por enlace público.",
+ "models": [
+  {
+   "pid": "kling-ai/kling-v2-1",
+   "kind": "vid",
+   "name": "Kling 2.1",
+   "family": "",
+   "ver": "2.1",
+   "src": "https://docs.pollo.ai/m/kling-ai/kling-v2-1",
+   "fields": [
+    {
+     "id": "negativePrompt",
+     "type": "text",
+     "label": "Prompt negativo"
+    },
+    {
+     "id": "strength",
+     "type": "float",
+     "label": "Strength",
+     "num": true,
+     "adv": true
+    },
+    {
+     "id": "length",
+     "type": "int",
+     "label": "Duración (s)",
+     "num": true
+    },
+    {
+     "id": "mode",
+     "type": "text",
+     "label": "Modo",
+     "adv": true
+    }
+   ]
+  },
+  {
+   "pid": "kling-ai/kling-v2-6",
+   "kind": "vid",
+   "name": "Kling 2.6",
+   "family": "",
+   "ver": "2.6",
+   "src": "https://docs.pollo.ai/m/kling-ai/kling-v2-6",
+   "fields": [
+    {
+     "id": "negativePrompt",
+     "type": "text",
+     "label": "Prompt negativo"
+    },
+    {
+     "id": "length",
+     "type": "int",
+     "label": "Duración (s)",
+     "num": true
+    },
+    {
+     "id": "generateAudio",
+     "type": "bool",
+     "label": "Generar audio"
+    }
+   ]
+  },
+  {
+   "pid": "bytedance/seedance",
+   "kind": "vid",
+   "name": "Seedance (Pollo)",
+   "family": "",
+   "ver": "",
+   "src": "https://docs.pollo.ai/m/bytedance/seedance",
+   "fields": [
+    {
+     "id": "resolution",
+     "type": "text",
+     "label": "Resolución"
+    },
+    {
+     "id": "length",
+     "type": "int",
+     "label": "Duración (s)",
+     "num": true
+    },
+    {
+     "id": "seed",
+     "type": "int",
+     "label": "Semilla",
+     "num": true,
+     "adv": true
+    },
+    {
+     "id": "cameraFixed",
+     "type": "bool",
+     "label": "Cámara fija",
+     "adv": true
+    }
+   ]
+  },
+  {
+   "pid": "bytedance/seedance-2-5",
+   "kind": "vid",
+   "name": "Seedance 2.5",
+   "family": "sd25",
+   "ver": "2.5",
+   "src": "https://docs.pollo.ai/m/bytedance/seedance-2-5",
+   "fields": [
+    {
+     "id": "resolution",
+     "type": "text",
+     "label": "Resolución"
+    },
+    {
+     "id": "aspectRatio",
+     "type": "text",
+     "label": "Formato"
+    },
+    {
+     "id": "length",
+     "type": "int",
+     "label": "Duración (s)",
+     "num": true
+    },
+    {
+     "id": "generateAudio",
+     "type": "bool",
+     "label": "Generar audio"
+    },
+    {
+     "id": "seed",
+     "type": "int",
+     "label": "Semilla",
+     "num": true,
+     "adv": true
+    },
+    {
+     "id": "cameraFixed",
+     "type": "bool",
+     "label": "Cámara fija",
+     "adv": true
+    },
+    {
+     "id": "webSearch",
+     "type": "bool",
+     "label": "Búsqueda web",
+     "adv": true
+    }
+   ]
+  },
+  {
+   "pid": "google/veo3",
+   "kind": "vid",
+   "name": "Veo 3",
+   "family": "veo3",
+   "ver": "3",
+   "src": "https://docs.pollo.ai/m/google/veo3",
+   "fields": [
+    {
+     "id": "negativePrompt",
+     "type": "text",
+     "label": "Prompt negativo"
+    },
+    {
+     "id": "length",
+     "type": "int",
+     "label": "Duración (4, 6 u 8 s)",
+     "num": true
+    },
+    {
+     "id": "aspectRatio",
+     "type": "text",
+     "label": "Formato"
+    },
+    {
+     "id": "resolution",
+     "type": "text",
+     "label": "Resolución (720p/1080p)"
+    },
+    {
+     "id": "generateAudio",
+     "type": "bool",
+     "label": "Generar audio"
+    }
+   ]
+  },
+  {
+   "pid": "google/veo3-1",
+   "kind": "vid",
+   "name": "Veo 3.1",
+   "family": "veo31",
+   "ver": "3.1",
+   "src": "https://docs.pollo.ai/m/google/veo3-1",
+   "fields": [
+    {
+     "id": "length",
+     "type": "int",
+     "label": "Duración (4, 6 u 8 s)",
+     "num": true
+    },
+    {
+     "id": "aspectRatio",
+     "type": "text",
+     "label": "Formato"
+    },
+    {
+     "id": "resolution",
+     "type": "text",
+     "label": "Resolución (720p/1080p/4k)"
+    },
+    {
+     "id": "generateAudio",
+     "type": "bool",
+     "label": "Generar audio"
+    }
+   ]
+  },
+  {
+   "pid": "minimax/minimax-h3",
+   "kind": "vid",
+   "name": "MiniMax H3",
+   "family": "h3s",
+   "ver": "H3",
+   "src": "https://docs.pollo.ai/m/hailuo/minimax-h3",
+   "fields": [
+    {
+     "id": "resolution",
+     "type": "text",
+     "label": "Resolución (480P/768P/2K)"
+    },
+    {
+     "id": "length",
+     "type": "int",
+     "label": "Duración (4–15 s)",
+     "num": true
+    }
+   ]
+  },
+  {
+   "pid": "minimax/hailuo-2-3",
+   "kind": "vid",
+   "name": "Hailuo 2.3",
+   "family": "hl23",
+   "ver": "2.3",
+   "src": "https://docs.pollo.ai/m/hailuo/hailuo-2-3",
+   "fields": [
+    {
+     "id": "resolution",
+     "type": "text",
+     "label": "Resolución (768P/1080P)"
+    },
+    {
+     "id": "length",
+     "type": "int",
+     "label": "Duración (6 o 10 s)",
+     "num": true
+    },
+    {
+     "id": "promptOptimizer",
+     "type": "bool",
+     "label": "Mejorar prompt"
+    }
+   ]
+  },
+  {
+   "pid": "openai/gpt-image-2-0/image",
+   "kind": "img",
+   "name": "GPT Image 2",
+   "family": "gptimg2",
+   "ver": "2",
+   "src": "https://docs.pollo.ai/m/gpt-image/gpt-image-2-0",
+   "fields": [
+    {
+     "id": "aspectRatio",
+     "type": "text",
+     "label": "Formato"
+    },
+    {
+     "id": "resolution",
+     "type": "text",
+     "label": "Resolución"
+    },
+    {
+     "id": "quality",
+     "type": "text",
+     "label": "Calidad"
+    }
+   ]
+  },
+  {
+   "pid": "google/nano-banana/image",
+   "kind": "img",
+   "name": "Nano Banana",
+   "family": "nb",
+   "ver": "1",
+   "src": "https://docs.pollo.ai/m/google/nano-banana",
+   "fields": []
+  },
+  {
+   "pid": "google/nano-banana-2/image",
+   "kind": "img",
+   "name": "Nano Banana 2",
+   "family": "nb2",
+   "ver": "2",
+   "src": "https://docs.pollo.ai/m/google/nano-banana-2",
+   "fields": [
+    {
+     "id": "aspectRatio",
+     "type": "text",
+     "label": "Formato"
+    },
+    {
+     "id": "resolution",
+     "type": "text",
+     "label": "Resolución"
+    },
+    {
+     "id": "thinkingLevel",
+     "type": "text",
+     "label": "Nivel de razonamiento"
+    }
+   ]
+  },
+  {
+   "pid": "google/nano-banana-pro/image",
+   "kind": "img",
+   "name": "Nano Banana Pro",
+   "family": "nbp",
+   "ver": "Pro",
+   "src": "https://docs.pollo.ai/m/google/nano-banana-pro",
+   "fields": [
+    {
+     "id": "aspectRatio",
+     "type": "text",
+     "label": "Formato"
+    },
+    {
+     "id": "resolution",
+     "type": "text",
+     "label": "Resolución"
+    }
+   ]
+  }
+ ]
 }

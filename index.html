@@ -1266,28 +1266,67 @@ const TILE_ICON = { prenda:'hanger', peinado:'hair', expresion:'face', efecto:'c
 
 /* ---------- modelos (lista y para qué sirve cada uno) ---------- */
 const IMG_MODELS = [
-  { id:'seedream', nsfw:true, usd:{std:0.045,high:0.09},  n:'Seedream 5.0 Pro',  p:'Higgsfield · fal · WaveSpeed', refs:10, tag:'El de todos los días', info:'El más equilibrado: mantiene muy bien la cara y el cuerpo y admite hasta 10 referencias. Si dudas, este.' },
-  { id:'seedflash', usd:{std:0.027,high:0.027}, n:'Seedream 5.0 Flash', p:'WaveSpeed', refs:10, tag:'El más barato', info:'Muy bien cuando sale ella sola: retratos, ropa, peinados, expresiones. Con más gente puede repetir su cara.' },
-  { id:'gptimg', usd:{std:0.039,high:0.165},    n:'GPT Image 2.5',     p:'fal · WaveSpeed', refs:8, tag:'El mejor para «Misma foto»', info:'Cambia a la persona de una foto sin tocar la escena y separa bien a varias personas.' },
-  { id:'nbp', usd:{std:0.14,high:0.14},       n:'Nano Banana Pro',   p:'Higgsfield · fal · Magnific', refs:14, tag:'Máximo detalle', info:'El más fino y el mejor con texto en la imagen. También el más caro. Hasta 14 referencias.' },
-  { id:'nblite', usd:{std:0.04,high:0.04}, n:'Nano Banana 2 Lite', p:'WaveSpeed', refs:4, tag:'Rápido', info:'Rápido y barato, hasta 4 referencias. Solo 1K.' },
-  { id:'nb21', usd:{std:0.04,high:0.06},      n:'Nano Banana 2.1',   p:'fal · WaveSpeed', refs:10, tag:'Rápido y fiel', info:'Buena relación calidad/velocidad para escenas cotidianas.' },
-  { id:'qwen', usd:{std:0.03,high:0.03},      n:'Qwen Image 3',      p:'Higgsfield · WaveSpeed', refs:3, tag:'Retoques fieles', info:'Cambios pequeños sobre una imagen con 1 a 3 referencias.' },
-  { id:'mstudio',   n:'Marketing Studio Image 2.0', p:'Higgsfield', refs:16, tag:'Ropa y combinaciones', info:'El que mejor combina muchas prendas y objetos a la vez (hasta 16 referencias).' },
-  { id:'grok',      n:'Grok Image 2.0',    p:'Higgsfield', refs:10, tag:'Acabado de revista', info:'Deja la imagen algo más retocada, tipo editorial.' },
-  { id:'ideogram', usd:{std:0.06,high:0.22},  n:'Ideogram 4.5',      p:'fal', refs:4, tag:'Texto y tipografía', info:'Cuando la imagen lleva letras: carteles, portadas, camisetas.' },
-  { id:'klingimg', usd:{std:0.028,high:0.028},  n:'Kling Image O3',    p:'fal', refs:4, tag:'Cine', info:'Look cinematográfico y luz dramática.' },
-  { id:'flux', usd:{std:0.05,high:0.12},      n:'FLUX 3',            p:'fal', refs:4, tag:'Fotorrealismo', info:'Piel y texturas muy reales; describe en positivo (no le gustan los «no…»).' },
-  { id:'flow',      n:'Google Flow',       p:'Manual', refs:3, tag:'Tu laboratorio', info:'Generas fuera, en Flow, e importas aquí el resultado.' },
+  { top:1, id:'seedream', nsfw:true, usd:{std:0.045,high:0.09},  n:'Seedream 5.0 Pro',  p:'Higgsfield · fal · WaveSpeed', refs:10, tag:'El de todos los días', info:'El más equilibrado: mantiene muy bien la cara y el cuerpo y admite hasta 10 referencias. Si dudas, este.' },
+  { top:1, id:'seedflash', usd:{std:0.027,high:0.027}, n:'Seedream 5.0 Flash', p:'WaveSpeed', refs:10, tag:'El más barato', info:'Muy bien cuando sale ella sola: retratos, ropa, peinados, expresiones. Con más gente puede repetir su cara.' },
+  { top:1, id:'gptimg', usd:{std:0.039,high:0.165},    n:'GPT Image 2.5',     p:'fal · WaveSpeed', refs:8, tag:'El mejor para «Misma foto»', info:'Cambia a la persona de una foto sin tocar la escena y separa bien a varias personas.' },
+  { top:1, id:'nbp', usd:{std:0.14,high:0.14},       n:'Nano Banana Pro',   p:'Higgsfield · fal · Magnific', refs:14, tag:'Máximo detalle', info:'El más fino y el mejor con texto en la imagen. También el más caro. Hasta 14 referencias.' },
+  { top:1, id:'nblite', usd:{std:0.04,high:0.04}, n:'Nano Banana 2 Lite', p:'WaveSpeed', refs:4, tag:'Rápido', info:'Rápido y barato, hasta 4 referencias. Solo 1K.' },
+  { top:1, id:'nb21', usd:{std:0.04,high:0.06},      n:'Nano Banana 2.1',   p:'fal · WaveSpeed', refs:10, tag:'Rápido y fiel', info:'Buena relación calidad/velocidad para escenas cotidianas.' },
+  { top:1, id:'qwen', usd:{std:0.03,high:0.03},      n:'Qwen Image 3',      p:'Higgsfield · WaveSpeed', refs:3, tag:'Retoques fieles', info:'Cambios pequeños sobre una imagen con 1 a 3 referencias.' },
+  { top:1, id:'mstudio',   n:'Marketing Studio Image 2.0', p:'Higgsfield', refs:16, tag:'Ropa y combinaciones', info:'El que mejor combina muchas prendas y objetos a la vez (hasta 16 referencias).' },
+  { top:1, id:'grok',      n:'Grok Image 2.0',    p:'Higgsfield', refs:10, tag:'Acabado de revista', info:'Deja la imagen algo más retocada, tipo editorial.' },
+  { top:1, id:'ideogram', usd:{std:0.06,high:0.22},  n:'Ideogram 4.5',      p:'fal', refs:4, tag:'Texto y tipografía', info:'Cuando la imagen lleva letras: carteles, portadas, camisetas.' },
+  { top:1, id:'klingimg', usd:{std:0.028,high:0.028},  n:'Kling Image O3',    p:'fal', refs:4, tag:'Cine', info:'Look cinematográfico y luz dramática.' },
+  { top:1, id:'flux', usd:{std:0.05,high:0.12},      n:'FLUX 3',            p:'fal', refs:4, tag:'Fotorrealismo', info:'Piel y texturas muy reales; describe en positivo (no le gustan los «no…»).' },
+  { id:'soul2',    n:'Higgsfield Soul 2.0', p:'Solo Higgsfield', refs:1, tag:'UGC y moda', info:'Fotos tipo redes y editorial de moda, muy naturales. Admite tu Soul ID.' },
+  { id:'cs25',     n:'Cinema Studio Image 2.5', p:'Solo Higgsfield', refs:4, tag:'Fotograma de cine', info:'Fotogramas cinematográficos hasta 4K.' },
+  { id:'gptimg2',  n:'GPT Image 2', p:'Higgsfield · fal · WaveSpeed · Pollo', refs:16, tag:'Texto y edición', info:'Edita muy bien y escribe texto limpio. Hasta 4K.' },
+  { id:'nb',       n:'Nano Banana', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:8, tag:'Barato y realista', info:'El Nano Banana original: realista y económico.' },
+  { id:'nb2',      n:'Nano Banana 2', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:14, tag:'Rápido, hasta 4K', info:'Rápido y de mucha calidad, hasta 14 referencias.' },
+  { id:'sd45',     n:'Seedream 4.5', p:'Higgsfield · fal · WaveSpeed', refs:10, tag:'4K preciso', info:'Salida 4K y transformaciones precisas.' },
+  { id:'seedlite', n:'Seedream 5.0 Lite', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:10, tag:'Edición por instrucciones', info:'Entiende bien instrucciones de edición; más barato que el Pro.' },
+  { id:'flux2',    n:'FLUX.2 (pro · flex · max)', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:4, tag:'Sigue el prompt al pie de la letra', info:'Muy fiel a lo que escribes. Max es el de más calidad.' },
+  { id:'kontext',  n:'FLUX Kontext', p:'Higgsfield · fal · WaveSpeed', refs:1, tag:'Editar una foto', info:'Cambios sobre una imagen respetando el resto: ropa, fondo, estilo.' },
+  { id:'klingo1',  n:'Kling O1 Image', p:'Higgsfield · fal · WaveSpeed', refs:10, tag:'Fotorrealista', info:'Versátil y realista, admite formatos panorámicos.' },
+  { id:'grok1',    n:'Grok Image', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:3, tag:'Contraste fuerte', info:'Expresivo y con mucho contraste.' },
+  { id:'recraft',  n:'Recraft V4.1', p:'Higgsfield · fal', refs:0, tag:'Logos y gráficos', info:'Logos, iconos, vectores y maquetas de producto. Sin referencias.' },
+  { id:'zimage',   n:'Z Image Turbo', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:0, tag:'Rapidísimo y barato', info:'Pruebas rápidas de idea, estilizado. Sin referencias.' },
+  { top:1, id:'flow',      n:'Google Flow',       p:'Manual', refs:3, tag:'Tu laboratorio', info:'Generas fuera, en Flow, e importas aquí el resultado.' },
 ];
+const mAll = k => !!(S.mall && S.mall[k]);
+const mShow = (L, cur, k) => mAll(k) ? L : L.filter(m => m.top || m.id === cur);
+const mMore = (L, k) => { const n = L.filter(m => !m.top).length; return n ? `<button class="opt mmore" data-a="modelsAll" data-k="${k}">${mAll(k) ? 'Ver menos ▴' : `Ver todos los modelos (${L.length}) ▾`}<span>${mAll(k) ? '' : n + ' más: Wan, Kling, Veo, Grok, FLUX…'}</span></button>` : ''; };
 const imgUsd = (m, q) => m.usd ? m.usd[q === '2k' ? 'high' : 'std'] : 0;
 const VID_MODELS = [
-  { id:'sd20', nsfw:true,  n:'Seedance 2.0', p:'Higgsfield · WaveSpeed', refs:9, tarifa:'desde $0.0985/s (tu consola)', info:'El más completo: referencias, voz y ambiente.' },
-  { id:'sd25', nsfw:true,  n:'Seedance 2.5', p:'Higgsfield', refs:9, tarifa:'desde $0.144/s (tu consola)', info:'Más definición y movimiento más natural.' },
-  { id:'k3o',   n:'Kling 3.0 Omni', p:'WaveSpeed · fal', refs:7, tarifa:'', info:'Admite hasta 7 imágenes de referencia.' },
-  { id:'veo31', n:'Veo 3.1', p:'fal', refs:3, tarifa:'', info:'El de más calidad (y el más caro).' },
-  { id:'h3',    n:'Minimax H3 Max', p:'WaveSpeed', refs:2, tarifa:'', info:'Muy expresivo en caras y gestos.' },
-  { id:'k25',   n:'Kling 2.5', p:'WaveSpeed', refs:1, tarifa:'', info:'Imagen a vídeo barato y estable.' },
+  { top:1, id:'sd20', nsfw:true,  n:'Seedance 2.0', p:'Higgsfield · WaveSpeed', refs:9, tarifa:'desde $0.0985/s (tu consola)', info:'El más completo: referencias, voz y ambiente.' },
+  { top:1, id:'sd25', nsfw:true,  n:'Seedance 2.5', p:'Higgsfield', refs:9, tarifa:'desde $0.144/s (tu consola)', info:'Más definición y movimiento más natural.' },
+  { top:1, id:'k3o',   n:'Kling 3.0 Omni', p:'WaveSpeed · fal', refs:7, tarifa:'', info:'Admite hasta 7 imágenes de referencia.' },
+  { top:1, id:'veo31', n:'Veo 3.1', p:'fal', refs:3, tarifa:'', info:'El de más calidad (y el más caro).' },
+  { top:1, id:'h3',    n:'Minimax H3 Max', p:'Higgsfield · fal', refs:2, tarifa:'', info:'Muy expresivo en caras y gestos.' },
+  { top:1, id:'k25',   n:'Kling 2.5', p:'WaveSpeed', refs:1, tarifa:'', info:'Imagen a vídeo barato y estable.' },
+  { id:'wan30',  n:'Wan 3.0', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:10, tarifa:'fal: $0.05–0.20/s', info:'Hasta 30 s, audio nativo, primer/último fotograma y hasta 10 referencias (imagen, vídeo y audio).' },
+  { id:'wan30p', n:'Wan 3.0 Prime', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:10, tarifa:'fal: $0.068–0.28/s', info:'La versión top de Wan 3.0: más calidad y fidelidad. Hasta 30 s con audio.' },
+  { id:'wan27',  n:'Wan 2.7', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:2, tarifa:'fal: $0.10–0.15/s', info:'Imagen a vídeo con primer y último fotograma, hasta 15 s.' },
+  { id:'wan26',  n:'Wan 2.6', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:1, tarifa:'fal: $0.10–0.15/s', info:'Imagen a vídeo estable, con audio.' },
+  { id:'sd15',   n:'Seedance 1.5 Pro', p:'Higgsfield · fal · WaveSpeed', refs:2, tarifa:'', info:'El Seedance anterior, con audio; más barato.' },
+  { id:'sd20m',  n:'Seedance 2.0 Mini', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:9, tarifa:'fal: $0.072–0.155/s', info:'Seedance 2.0 en barato, hasta 9 referencias.' },
+  { id:'k26',    n:'Kling 2.6', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:2, tarifa:'fal: $0.07/s', info:'Imagen a vídeo con audio opcional.' },
+  { id:'k30',    n:'Kling 3.0', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:2, tarifa:'fal: $0.112/s', info:'Hasta 15 s, multiplano y audio.' },
+  { id:'k30t',   n:'Kling 3.0 Turbo', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:1, tarifa:'fal: $0.14/s', info:'Kling 3.0 más rápido.' },
+  { id:'veo3',   n:'Veo 3', p:'Higgsfield · fal · WaveSpeed · Pollo', refs:1, tarifa:'fal: $0.20–0.40/s', info:'Google Veo 3 con audio.' },
+  { id:'veo31l', n:'Veo 3.1 Lite', p:'Higgsfield · fal · WaveSpeed', refs:2, tarifa:'fal: $0.03–0.08/s', info:'Veo 3.1 barato, para pruebas.' },
+  { id:'hl02',   n:'Hailuo 02', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:2, tarifa:'fal: $0.08/s', info:'MiniMax Hailuo: física y movimiento muy creíbles.' },
+  { id:'hl23',   n:'Hailuo 2.3', p:'fal · WaveSpeed · Wiro · Pollo', refs:1, tarifa:'', info:'Hailuo más nuevo, 6 o 10 s.' },
+  { id:'h3s',    n:'MiniMax H3', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:2, tarifa:'fal: $0.05–0.16/s', info:'Muy expresivo; hasta 15 s.' },
+  { id:'grokv',  n:'Grok Imagine Video', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:1, tarifa:'fal: $0.05–0.07/s', info:'Imagen a vídeo de xAI.' },
+  { id:'grok15', n:'Grok Imagine Video 1.5', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:1, tarifa:'fal: $0.08–0.25/s', info:'Nueva versión, más calidad.' },
+  { id:'grok15l',n:'Grok Imagine Video 1.5 Lite', p:'Higgsfield · fal', refs:1, tarifa:'fal: $0.02–0.14/s', info:'La versión barata de Grok 1.5.' },
+  { id:'flux3v', n:'FLUX 3 Video', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:2, tarifa:'fal: $0.17–0.29/s', info:'Vídeo de Black Forest Labs: primer/último fotograma y extender vídeo.' },
+  { id:'gomni',  n:'Gemini Omni Flash', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:3, tarifa:'', info:'De Google: imagen, referencias o editar un vídeo.' },
+  { id:'gomni11',n:'Gemini Omni Flash 1.1', p:'Higgsfield · fal', refs:2, tarifa:'fal: $0.03–0.30/s', info:'Versión nueva con primer y último fotograma.' },
+  { id:'hhorse', n:'Happy Horse', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:1, tarifa:'fal: $0.14–0.18/s', info:'De Alibaba; imagen a vídeo en 720p/1080p.' },
+  { id:'cs30',   n:'Cinema Studio Video 3.0', p:'Solo Higgsfield', refs:3, tarifa:'', info:'El modo cine de Higgsfield, hasta 4K y 15 s, con género (acción, drama…).' },
+  { id:'cs40',   n:'Cinema Studio 4.0', p:'Solo Higgsfield', refs:3, tarifa:'', info:'La versión más nueva del modo cine de Higgsfield.' },
 ];
 const MOTION_MODELS = [
   { id:'mc-sd20', nsfw:true, n:'Seedance 2.0', tarifa:'$0.135/s a 480p' }, { id:'mc-sd25', nsfw:true, n:'Seedance 2.5', tarifa:'$0.20/s a 480p' },
@@ -1866,7 +1905,7 @@ R.crear = () => {
         ${R_.map(r => `<div class="ref" title="${esc(r.what)}"><div>${src(r.ref) ? `<img src="${src(r.ref)}">` : '—'}</div>${r.tag}</div>`).join('')}
         <button class="ref" data-a="addRef"><div>＋</div>añadir</button></div>
         <p class="note">${R_.length} de ${model.refs} referencias que admite ${esc(model.n)}.</p></div>
-      <div class="stack"><div class="between"><span class="lbl">Modelo de imagen</span><a class="lnk" data-a="modelInfo">¿Cuál elijo?</a></div><div class="opts">${IMG_MODELS.map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === S.img.model ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-imgmodel="${m.id}"`}><span>${m.n}<em>${off ? 'no admite 🔥' : esc(m.tag)}</em></span><span>${m.usd ? money(imgUsd(m, S.img.quality)) + ' · ' : ''}${m.p}</span></button>`; }).join('')}</div></div>
+      <div class="stack"><div class="between"><span class="lbl">Modelo de imagen</span><a class="lnk" data-a="modelInfo">¿Cuál elijo?</a></div><div class="opts">${mShow(IMG_MODELS, S.img.model, 'img').map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === S.img.model ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-imgmodel="${m.id}"`}><span>${m.n}<em>${off ? 'no admite 🔥' : esc(m.tag)}</em></span><span>${m.usd ? money(imgUsd(m, S.img.quality)) + ' · ' : ''}${m.p}</span></button>`; }).join('')}${mMore(IMG_MODELS, 'img')}</div></div>
       <div class="stack"><span class="lbl">Calidad</span><div class="chips">${[['1.5k','Estándar · 1.5k'],['2k','Alta · 2k']].map(([q, t]) => `<button class="chip ${S.img.quality === q ? 'on' : ''}" data-imgq="${q}">${t}${model.usd ? ' · ' + money(imgUsd(model, q)) : ''}</button>`).join('')}</div></div>
       <div class="stack"><span class="lbl">Formato</span><div class="ratios">${['3:4','1:1','4:3','9:16','16:9','2:3','3:2'].map(r => { const [w, h] = r.split(':').map(Number); const k = 16 / Math.max(w, h); return `<button class="ratio ${S.img.ratio === r ? 'on' : ''}" data-ratio="${r}"><i style="width:${w * k}px;height:${h * k}px"></i>${r}</button>`; }).join('')}</div></div>
       <div class="stack"><div class="between"><span class="lbl">Prompt</span><a class="lnk" data-a="rebuildPrompt">↺ rehacer</a></div>
@@ -1933,7 +1972,7 @@ R.video = () => {
         <div class="stack"><span class="lbl">Cámara rápida</span><div class="chips">${CAMERAS.map(([k, t, d]) => `<button class="chip ${v.cam === k ? 'on' : ''}" data-vcam="${k}" title="${esc(d)}">${t}</button>`).join('')}</div></div>
         <div class="stack"><span class="lbl">Estilo</span><div class="chips">${VSTYLES.map(([k, t]) => `<button class="chip ${v.style === k ? 'on' : ''}" data-vstyle="${k}">${t}</button>`).join('')}</div>${tile('look').replace('class="tile', 'class="tile wide')}</div>`)}
       ${secOpen('vajustes', 'Ajustes', `${vm.n} · ${v.quality} · ${v.dur}s · ${v.ratio === 'auto' ? 'como la imagen' : v.ratio}`, `
-      <div class="stack"><div class="between"><span class="lbl">Modelo</span><span class="row" style="gap:10px"><a class="lnk" data-a="vModelInfo">¿Cuál elijo?</a></span></div><div class="opts">${VID_MODELS.map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === v.model ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-vidmodel="${m.id}"`}>${m.n}<span>${off ? 'no admite 🔥' : m.p}</span></button>`; }).join('')}</div></div>
+      <div class="stack"><div class="between"><span class="lbl">Modelo</span><span class="row" style="gap:10px"><a class="lnk" data-a="vModelInfo">¿Cuál elijo?</a></span></div><div class="opts">${mShow(VID_MODELS, v.model, 'vid').map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === v.model ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-vidmodel="${m.id}"`}>${m.n}<span>${off ? 'no admite 🔥' : m.p}</span></button>`; }).join('')}${mMore(VID_MODELS, 'vid')}</div></div>
       <div class="between"><div class="stack"><span class="lbl">Calidad</span><div class="chips">${['480p','720p','1080p'].map(q => `<button class="chip ${v.quality === q ? 'on' : ''}" data-vq="${q}">${q}</button>`).join('')}</div></div>
         <div class="stack"><span class="lbl">Duración</span><div class="stepper"><button data-a="dur-">−</button><b>${v.dur}s</b><button data-a="dur+">＋</button></div></div></div>
       <div class="stack"><span class="lbl">Formato</span><div class="chips">${['auto','9:16','3:4','1:1','16:9'].map(r => `<button class="chip ${v.ratio === r ? 'on' : ''}" data-vratio="${r}">${r === 'auto' ? 'Como la imagen' : r}</button>`).join('')}</div></div>
@@ -2367,7 +2406,7 @@ const GD = {
   status: 'off', msg: '', busy: false, client: null, wantGesture: false, lastHash: '', pushT: 0,
 };
 /* lo propio de cada dispositivo (pantalla, filtros, selección, tus claves…): no viaja al Drive ni a las copias, ni cuenta como «cambio» */
-const DEVICE_KEYS = ['section', 'selMode', 'selected', '_libLimit', 'theme', 'ui', 'size', 'open', 'drive', 'apis', 'picked', 'filter', 'q', 'creFolder', 'mv', 'lastLib', 'perfilTab'];
+const DEVICE_KEYS = ['section', 'selMode', 'selected', '_libLimit', 'theme', 'ui', 'size', 'open', 'drive', 'apis', 'picked', 'filter', 'q', 'creFolder', 'mv', 'lastLib', 'perfilTab', 'mall'];
 const DEVICE_KEYS_V1 = ['section', 'selMode', 'selected', '_libLimit', 'theme', 'ui', 'size', 'open', 'drive'];
 const gdOn = () => !!(S.drive && S.drive.on);
 const gdOk = () => GD.token && Date.now() < GD.exp - 60000;
@@ -2699,6 +2738,7 @@ const A = {
   async copyRef() { const [f] = await pickFiles(); if (!f) return; S.copyRef = await putMedia(f); S.img.prompt = ''; save(); render(); },
   clearCopy(e) { e.stopPropagation(); S.copyRef = ''; S.img.prompt = ''; save(); render(); },
   async addRef() { const fs = await pickFiles('image/*', true); for (const f of fs) S.refs.push(await putMedia(f)); S.img.prompt = ''; save(); render(); },
+  modelsAll(e) { const k = e.target.closest('[data-k]').dataset.k; S.mall = Object.assign({}, S.mall); S.mall[k] = !S.mall[k]; save(); render(); },
   modelInfo: () => modelInfoModal(false), vModelInfo: () => modelInfoModal(true),
   async genImg() { const p = S.imgMode === 'pro' ? S.img.prompt : buildImgPrompt(); if (viaKey('img')) return directGen('img', p, refList()); await copy(p); importResultModal('img', p, refList()); },
   async genVid() { const p = buildVidPrompt(); const c = char(); const R = [S.vid.useSheet && { tag: 'ficha', what: 'ficha', ref: c.sheet.main }, S.vid.startRef && { tag: 'inicio', what: 'imagen inicial', ref: S.vid.startRef }, S.vid.endRef && { tag: 'final', what: 'imagen final', ref: S.vid.endRef }].filter(Boolean); if (viaKey('vid')) return directGen('vid', p, R); await copy(p); importResultModal('vid', p, [S.vid.useSheet && { tag: 'ficha', what: 'ficha', ref: c.sheet.main }, S.vid.startRef && { tag: 'inicio', what: 'imagen inicial', ref: S.vid.startRef }, S.vid.endRef && { tag: 'final', what: 'imagen final', ref: S.vid.endRef }].filter(Boolean)); },
@@ -3325,7 +3365,7 @@ const ADAPTERS = {
       const d = await jread(r); if (!r.ok) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status);
       return 'La clave funciona.';
     },
-    async catalog() { return []; }, // fal no publica (de forma verificada) una lista de modelos para el navegador: los añades tú por su id
+    async catalog() { const M = await manifest('fal'); return M ? M.models.map(x => Object.assign({ provider: 'fal' }, x)) : []; }, // lista comprobada a mano (catalog/fal.v1.json); además puedes añadir cualquiera por su id
     async detail(c, m) { return { params: [{ id: 'prompt', type: 'textarea', label: 'Prompt', req: true }], price: { st: 'unk', note: 'mira el precio en la ficha del modelo en fal' } }; },
     async upload(c, blob) {
       const r = await pfetch('https://rest.fal.ai/storage/upload/initiate?storage_type=fal-cdn-v3', { method: 'POST', headers: { Authorization: 'Key ' + c.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ content_type: blob.type || 'application/octet-stream', file_name: 'ref.' + extOf(blob.type) }) });

@@ -1,8 +1,767 @@
 {
-  "v": 1,
-  "reviewed": "2026-10-13",
-  "notes": "Qué modelos de cada servicio son el mismo modelo que uno de la lista de Saga Studio. Solo entradas comprobadas en la documentación oficial del servicio; en la duda, no se añade. Saga Studio nunca elige el servicio por ti: esto solo los marca como «Recomendados» en el buscador.",
-  "families": {
-    "sd25": { "name": "Seedance 2.5", "endpoints": [ { "provider": "pollo", "id": "bytedance/seedance-2-5", "source": "https://docs.pollo.ai/m/bytedance/seedance-2-5" } ] }
+ "v": 1,
+ "reviewed": "2026-10-15",
+ "notes": "Qué modelos de cada servicio son el mismo modelo que uno de la lista de Saga Studio. Solo entradas comprobadas en la documentación oficial del servicio; en la duda, no se añade. Saga Studio nunca elige el servicio por ti: esto solo los marca como «Recomendados» en el buscador.",
+ "families": {
+  "wan30": {
+   "name": "Wan 3.0",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "alibaba/wan-3.0/image-to-video",
+     "source": "https://fal.ai/models/alibaba/wan-3.0/image-to-video"
+    },
+    {
+     "provider": "fal",
+     "id": "alibaba/wan-3.0/reference-to-video",
+     "source": "https://fal.ai/models/alibaba/wan-3.0/reference-to-video"
+    },
+    {
+     "provider": "fal",
+     "id": "alibaba/wan-3.0/text-to-video",
+     "source": "https://fal.ai/models/alibaba/wan-3.0/text-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "alibaba/wan-3-0",
+     "source": "https://wiro.ai/models/alibaba/wan-3-0"
+    },
+    {
+     "provider": "wiro",
+     "id": "alibaba/wan-3-0-r2v",
+     "source": "https://wiro.ai/models/alibaba/wan-3-0-r2v"
+    }
+   ]
+  },
+  "wan30p": {
+   "name": "Wan 3.0 Prime",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "alibaba/wan-3.0-prime/image-to-video",
+     "source": "https://fal.ai/models/alibaba/wan-3.0-prime/image-to-video"
+    },
+    {
+     "provider": "fal",
+     "id": "alibaba/wan-3.0-prime/text-to-video",
+     "source": "https://fal.ai/models/alibaba/wan-3.0-prime/text-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "alibaba/wan-3-0-prime",
+     "source": "https://wiro.ai/models/alibaba/wan-3-0-prime"
+    },
+    {
+     "provider": "wiro",
+     "id": "alibaba/wan-3-0-prime-r2v",
+     "source": "https://wiro.ai/models/alibaba/wan-3-0-prime-r2v"
+    }
+   ]
+  },
+  "wan27": {
+   "name": "Wan 2.7",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/wan/v2.7/image-to-video",
+     "source": "https://fal.ai/models/fal-ai/wan/v2.7/image-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "alibaba/wan-2-7",
+     "source": "https://wiro.ai/models/alibaba/wan-2-7"
+    }
+   ]
+  },
+  "wan26": {
+   "name": "Wan 2.6",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "wan/v2.6/image-to-video",
+     "source": "https://fal.ai/models/wan/v2.6/image-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "alibaba/wan-2-6",
+     "source": "https://wiro.ai/models/alibaba/wan-2-6"
+    }
+   ]
+  },
+  "sd15": {
+   "name": "Seedance 1.5 Pro",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/bytedance/seedance/v1.5/pro/image-to-video",
+     "source": "https://fal.ai/models/fal-ai/bytedance/seedance/v1.5/pro/image-to-video"
+    }
+   ]
+  },
+  "sd20": {
+   "name": "Seedance 2.0",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "bytedance/seedance-2.0/image-to-video",
+     "source": "https://fal.ai/models/bytedance/seedance-2.0/image-to-video"
+    },
+    {
+     "provider": "fal",
+     "id": "bytedance/seedance-2.0/fast/text-to-video",
+     "source": "https://fal.ai/models/bytedance/seedance-2.0/fast/text-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "bytedance/seedance-2-0",
+     "source": "https://wiro.ai/models/bytedance/seedance-2-0"
+    },
+    {
+     "provider": "wiro",
+     "id": "bytedance/seedance-2-0-reference",
+     "source": "https://wiro.ai/models/bytedance/seedance-2-0-reference"
+    }
+   ]
+  },
+  "sd20m": {
+   "name": "Seedance 2.0 Mini",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "bytedance/seedance-2.0/mini/reference-to-video",
+     "source": "https://fal.ai/models/bytedance/seedance-2.0/mini/reference-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "bytedance/seedance-2-0-mini",
+     "source": "https://wiro.ai/models/bytedance/seedance-2-0-mini"
+    }
+   ]
+  },
+  "sd25": {
+   "name": "Seedance 2.5",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "bytedance/seedance-2.5/image-to-video",
+     "source": "https://fal.ai/models/bytedance/seedance-2.5/image-to-video"
+    },
+    {
+     "provider": "pollo",
+     "id": "bytedance/seedance-2-5",
+     "source": "https://docs.pollo.ai/m/bytedance/seedance-2-5"
+    },
+    {
+     "provider": "wiro",
+     "id": "bytedance/seedance-2-5",
+     "source": "https://wiro.ai/models/bytedance/seedance-2-5"
+    },
+    {
+     "provider": "wiro",
+     "id": "bytedance/seedance-2-5-reference",
+     "source": "https://wiro.ai/models/bytedance/seedance-2-5-reference"
+    }
+   ]
+  },
+  "k26": {
+   "name": "Kling 2.6",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/kling-video/v2.6/pro/image-to-video",
+     "source": "https://fal.ai/models/fal-ai/kling-video/v2.6/pro/image-to-video"
+    },
+    {
+     "provider": "fal",
+     "id": "fal-ai/kling-video/v2.6/pro/text-to-video",
+     "source": "https://fal.ai/models/fal-ai/kling-video/v2.6/pro/text-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "klingai/kling-v2-6",
+     "source": "https://wiro.ai/models/klingai/kling-v2-6"
+    }
+   ]
+  },
+  "k30": {
+   "name": "Kling 3.0",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/kling-video/v3/pro/image-to-video",
+     "source": "https://fal.ai/models/fal-ai/kling-video/v3/pro/image-to-video"
+    },
+    {
+     "provider": "fal",
+     "id": "fal-ai/kling-video/v3/pro/text-to-video",
+     "source": "https://fal.ai/models/fal-ai/kling-video/v3/pro/text-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "klingai/kling-v3",
+     "source": "https://wiro.ai/models/klingai/kling-v3"
+    }
+   ]
+  },
+  "k30t": {
+   "name": "Kling 3.0 Turbo",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/kling-video/v3/turbo/pro/image-to-video",
+     "source": "https://fal.ai/models/fal-ai/kling-video/v3/turbo/pro/image-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "klingai/kling-v3-turbo",
+     "source": "https://wiro.ai/models/klingai/kling-v3-turbo"
+    }
+   ]
+  },
+  "k3o": {
+   "name": "Kling 3.0 Omni",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/kling-video/o3/pro/reference-to-video",
+     "source": "https://fal.ai/models/fal-ai/kling-video/o3/pro/reference-to-video"
+    },
+    {
+     "provider": "fal",
+     "id": "fal-ai/kling-video/o3/pro/image-to-video",
+     "source": "https://fal.ai/models/fal-ai/kling-video/o3/pro/image-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "klingai/kling-v3-omni",
+     "source": "https://wiro.ai/models/klingai/kling-v3-omni"
+    }
+   ]
+  },
+  "veo3": {
+   "name": "Veo 3",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/veo3",
+     "source": "https://fal.ai/models/fal-ai/veo3"
+    },
+    {
+     "provider": "pollo",
+     "id": "google/veo3",
+     "source": "https://docs.pollo.ai/m/google/veo3"
+    }
+   ]
+  },
+  "veo31": {
+   "name": "Veo 3.1",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/veo3.1/image-to-video",
+     "source": "https://fal.ai/models/fal-ai/veo3.1/image-to-video"
+    },
+    {
+     "provider": "fal",
+     "id": "fal-ai/veo3.1",
+     "source": "https://fal.ai/models/fal-ai/veo3.1"
+    },
+    {
+     "provider": "pollo",
+     "id": "google/veo3-1",
+     "source": "https://docs.pollo.ai/m/google/veo3-1"
+    },
+    {
+     "provider": "wiro",
+     "id": "google/veo3-1",
+     "source": "https://wiro.ai/models/google/veo3-1"
+    }
+   ]
+  },
+  "veo31l": {
+   "name": "Veo 3.1 Lite",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/veo3.1/lite/image-to-video",
+     "source": "https://fal.ai/models/fal-ai/veo3.1/lite/image-to-video"
+    }
+   ]
+  },
+  "hl02": {
+   "name": "Hailuo 02",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/minimax/hailuo-02/pro/image-to-video",
+     "source": "https://fal.ai/models/fal-ai/minimax/hailuo-02/pro/image-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "minimax/image-to-video-hailuo-02",
+     "source": "https://wiro.ai/models/minimax/image-to-video-hailuo-02"
+    }
+   ]
+  },
+  "hl23": {
+   "name": "Hailuo 2.3",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/minimax/hailuo-2.3/pro/image-to-video",
+     "source": "https://fal.ai/models/fal-ai/minimax/hailuo-2.3/pro/image-to-video"
+    },
+    {
+     "provider": "pollo",
+     "id": "minimax/hailuo-2-3",
+     "source": "https://docs.pollo.ai/m/hailuo/hailuo-2-3"
+    },
+    {
+     "provider": "wiro",
+     "id": "minimax/hailuo-2-3",
+     "source": "https://wiro.ai/models/minimax/hailuo-2-3"
+    }
+   ]
+  },
+  "h3s": {
+   "name": "MiniMax H3",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "minimax/h3/image-to-video",
+     "source": "https://fal.ai/models/minimax/h3/image-to-video"
+    },
+    {
+     "provider": "pollo",
+     "id": "minimax/minimax-h3",
+     "source": "https://docs.pollo.ai/m/hailuo/minimax-h3"
+    },
+    {
+     "provider": "wiro",
+     "id": "minimax/h3",
+     "source": "https://wiro.ai/models/minimax/h3"
+    },
+    {
+     "provider": "wiro",
+     "id": "minimax/h3-r2v",
+     "source": "https://wiro.ai/models/minimax/h3-r2v"
+    }
+   ]
+  },
+  "h3": {
+   "name": "Minimax H3 Max",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "minimax/h3-max/director",
+     "source": "https://fal.ai/models/minimax/h3-max/director"
+    }
+   ]
+  },
+  "grokv": {
+   "name": "Grok Imagine Video",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "xai/grok-imagine-video/image-to-video",
+     "source": "https://fal.ai/models/xai/grok-imagine-video/image-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "xai/grok-imagine-video",
+     "source": "https://wiro.ai/models/xai/grok-imagine-video"
+    }
+   ]
+  },
+  "grok15": {
+   "name": "Grok Imagine Video 1.5",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "xai/grok-imagine-video/v1.5/image-to-video",
+     "source": "https://fal.ai/models/xai/grok-imagine-video/v1.5/image-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "xai/grok-imagine-video-1-5",
+     "source": "https://wiro.ai/models/xai/grok-imagine-video-1-5"
+    }
+   ]
+  },
+  "grok15l": {
+   "name": "Grok Imagine Video 1.5 Lite",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "xai/grok-imagine-video/v1.5/lite/image-to-video",
+     "source": "https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video"
+    }
+   ]
+  },
+  "flux3v": {
+   "name": "FLUX 3 Video",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "blackforestlabs/flux-3/image-to-video",
+     "source": "https://fal.ai/models/blackforestlabs/flux-3/image-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "blackforestlabs/flux-3",
+     "source": "https://wiro.ai/models/blackforestlabs/flux-3"
+    }
+   ]
+  },
+  "gomni": {
+   "name": "Gemini Omni Flash",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "google/gemini-omni-flash/image-to-video",
+     "source": "https://fal.ai/models/google/gemini-omni-flash/image-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "google/gemini-omni-flash",
+     "source": "https://wiro.ai/models/google/gemini-omni-flash"
+    },
+    {
+     "provider": "wiro",
+     "id": "google/gemini-omni-flash-r2v",
+     "source": "https://wiro.ai/models/google/gemini-omni-flash-r2v"
+    }
+   ]
+  },
+  "gomni11": {
+   "name": "Gemini Omni Flash 1.1",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "google/gemini-omni-flash/v1.1/image-to-video",
+     "source": "https://fal.ai/models/google/gemini-omni-flash/v1.1/image-to-video"
+    }
+   ]
+  },
+  "hhorse": {
+   "name": "Happy Horse",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "alibaba/happy-horse/v1.1/image-to-video",
+     "source": "https://fal.ai/models/alibaba/happy-horse/v1.1/image-to-video"
+    },
+    {
+     "provider": "wiro",
+     "id": "alibaba/happyhorse-1-1",
+     "source": "https://wiro.ai/models/alibaba/happyhorse-1-1"
+    }
+   ]
+  },
+  "gptimg2": {
+   "name": "GPT Image 2",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "openai/gpt-image-2/edit",
+     "source": "https://fal.ai/models/openai/gpt-image-2/edit"
+    },
+    {
+     "provider": "pollo",
+     "id": "openai/gpt-image-2-0/image",
+     "source": "https://docs.pollo.ai/m/gpt-image/gpt-image-2-0"
+    }
+   ]
+  },
+  "gptimg": {
+   "name": "GPT Image 2.5",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "openai/gpt-image-2.5/flare/edit",
+     "source": "https://fal.ai/models/openai/gpt-image-2.5/flare/edit"
+    },
+    {
+     "provider": "fal",
+     "id": "openai/gpt-image-2.5/sunburst/edit",
+     "source": "https://fal.ai/models/openai/gpt-image-2.5/sunburst/edit"
+    },
+    {
+     "provider": "wiro",
+     "id": "openai/gpt-image-2-5-flare",
+     "source": "https://wiro.ai/models/openai/gpt-image-2-5-flare"
+    },
+    {
+     "provider": "wiro",
+     "id": "openai/gpt-image-2-5-sunburst",
+     "source": "https://wiro.ai/models/openai/gpt-image-2-5-sunburst"
+    }
+   ]
+  },
+  "nb": {
+   "name": "Nano Banana",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/nano-banana/edit",
+     "source": "https://fal.ai/models/fal-ai/nano-banana/edit"
+    },
+    {
+     "provider": "pollo",
+     "id": "google/nano-banana/image",
+     "source": "https://docs.pollo.ai/m/google/nano-banana"
+    },
+    {
+     "provider": "wiro",
+     "id": "google/nano-banana",
+     "source": "https://wiro.ai/models/google/nano-banana"
+    }
+   ]
+  },
+  "nb2": {
+   "name": "Nano Banana 2",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/nano-banana-2/edit",
+     "source": "https://fal.ai/models/fal-ai/nano-banana-2/edit"
+    },
+    {
+     "provider": "pollo",
+     "id": "google/nano-banana-2/image",
+     "source": "https://docs.pollo.ai/m/google/nano-banana-2"
+    },
+    {
+     "provider": "wiro",
+     "id": "google/nano-banana-2",
+     "source": "https://wiro.ai/models/google/nano-banana-2"
+    }
+   ]
+  },
+  "nb21": {
+   "name": "Nano Banana 2.1",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "google/nano-banana-2.1/edit",
+     "source": "https://fal.ai/models/google/nano-banana-2.1/edit"
+    },
+    {
+     "provider": "wiro",
+     "id": "google/nano-banana-2-1",
+     "source": "https://wiro.ai/models/google/nano-banana-2-1"
+    }
+   ]
+  },
+  "nblite": {
+   "name": "Nano Banana 2 Lite",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "google/nano-banana-2-lite",
+     "source": "https://fal.ai/models/google/nano-banana-2-lite"
+    },
+    {
+     "provider": "wiro",
+     "id": "google/nano-banana-2-lite",
+     "source": "https://wiro.ai/models/google/nano-banana-2-lite"
+    }
+   ]
+  },
+  "nbp": {
+   "name": "Nano Banana Pro",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/nano-banana-pro/edit",
+     "source": "https://fal.ai/models/fal-ai/nano-banana-pro/edit"
+    },
+    {
+     "provider": "pollo",
+     "id": "google/nano-banana-pro/image",
+     "source": "https://docs.pollo.ai/m/google/nano-banana-pro"
+    },
+    {
+     "provider": "wiro",
+     "id": "google/nano-banana-pro",
+     "source": "https://wiro.ai/models/google/nano-banana-pro"
+    }
+   ]
+  },
+  "sd45": {
+   "name": "Seedream 4.5",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/bytedance/seedream/v4.5/edit",
+     "source": "https://fal.ai/models/fal-ai/bytedance/seedream/v4.5/edit"
+    }
+   ]
+  },
+  "seedlite": {
+   "name": "Seedream 5.0 Lite",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/bytedance/seedream/v5/lite/edit",
+     "source": "https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit"
+    },
+    {
+     "provider": "wiro",
+     "id": "bytedance/seedream-v5-lite",
+     "source": "https://wiro.ai/models/bytedance/seedream-v5-lite"
+    }
+   ]
+  },
+  "seedflash": {
+   "name": "Seedream 5.0 Flash",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "bytedance/seedream/v5/flash/edit",
+     "source": "https://fal.ai/models/bytedance/seedream/v5/flash/edit"
+    }
+   ]
+  },
+  "seedream": {
+   "name": "Seedream 5.0 Pro",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "bytedance/seedream/v5/pro/edit",
+     "source": "https://fal.ai/models/bytedance/seedream/v5/pro/edit"
+    },
+    {
+     "provider": "wiro",
+     "id": "bytedance/seedream-v5-pro",
+     "source": "https://wiro.ai/models/bytedance/seedream-v5-pro"
+    }
+   ]
+  },
+  "flux2": {
+   "name": "FLUX.2 (pro · flex · max)",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/flux-2-pro/edit",
+     "source": "https://fal.ai/models/fal-ai/flux-2-pro/edit"
+    },
+    {
+     "provider": "fal",
+     "id": "fal-ai/flux-2-max/edit",
+     "source": "https://fal.ai/models/fal-ai/flux-2-max/edit"
+    },
+    {
+     "provider": "wiro",
+     "id": "black-forest-labs/flux-2-pro",
+     "source": "https://wiro.ai/models/black-forest-labs/flux-2-pro"
+    },
+    {
+     "provider": "wiro",
+     "id": "black-forest-labs/flux-2-flex",
+     "source": "https://wiro.ai/models/black-forest-labs/flux-2-flex"
+    }
+   ]
+  },
+  "kontext": {
+   "name": "FLUX Kontext",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/flux-pro/kontext",
+     "source": "https://fal.ai/models/fal-ai/flux-pro/kontext"
+    }
+   ]
+  },
+  "klingimg": {
+   "name": "Kling Image O3",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/kling-image/o3/image-to-image",
+     "source": "https://fal.ai/models/fal-ai/kling-image/o3/image-to-image"
+    }
+   ]
+  },
+  "grok1": {
+   "name": "Grok Image",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "xai/grok-imagine-image/edit",
+     "source": "https://fal.ai/models/xai/grok-imagine-image/edit"
+    },
+    {
+     "provider": "wiro",
+     "id": "xai/grok-imagine-image",
+     "source": "https://wiro.ai/models/xai/grok-imagine-image"
+    }
+   ]
+  },
+  "grok": {
+   "name": "Grok Image 2.0",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "xai/grok-imagine-image/v2.0/edit",
+     "source": "https://fal.ai/models/xai/grok-imagine-image/v2.0/edit"
+    },
+    {
+     "provider": "wiro",
+     "id": "xai/grok-imagine-image-v2",
+     "source": "https://wiro.ai/models/xai/grok-imagine-image-v2"
+    }
+   ]
+  },
+  "ideogram": {
+   "name": "Ideogram 4.5",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "ideogram/v4.5",
+     "source": "https://fal.ai/models/ideogram/v4.5"
+    }
+   ]
+  },
+  "recraft": {
+   "name": "Recraft V4.1",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/recraft/v4.1/text-to-image",
+     "source": "https://fal.ai/models/fal-ai/recraft/v4.1/text-to-image"
+    }
+   ]
+  },
+  "zimage": {
+   "name": "Z Image Turbo",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/z-image/turbo",
+     "source": "https://fal.ai/models/fal-ai/z-image/turbo"
+    },
+    {
+     "provider": "wiro",
+     "id": "tongyi-mai/z-image-turbo",
+     "source": "https://wiro.ai/models/tongyi-mai/z-image-turbo"
+    }
+   ]
+  },
+  "qwen": {
+   "name": "Qwen Image 3",
+   "endpoints": [
+    {
+     "provider": "fal",
+     "id": "fal-ai/qwen-image-edit-2511",
+     "source": "https://fal.ai/models/fal-ai/qwen-image-edit-2511"
+    },
+    {
+     "provider": "wiro",
+     "id": "alibaba/qwen-image-3-0",
+     "source": "https://wiro.ai/models/alibaba/qwen-image-3-0"
+    }
+   ]
   }
+ }
 }

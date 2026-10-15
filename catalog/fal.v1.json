@@ -1,0 +1,568 @@
+{
+ "v": 1,
+ "provider": "fal",
+ "reviewed": "2026-10-15",
+ "source": "Fichas oficiales https://fal.ai/models/<id> (esquema en /llms.txt). Solo ids y campos de imagen comprobados.",
+ "models": [
+  {
+   "pid": "alibaba/wan-3.0/image-to-video",
+   "kind": "vid",
+   "name": "Wan 3.0 · imagen a vídeo",
+   "family": "wan30",
+   "ver": "",
+   "imgField": "start_image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/alibaba/wan-3.0/image-to-video"
+  },
+  {
+   "pid": "alibaba/wan-3.0/reference-to-video",
+   "kind": "vid",
+   "name": "Wan 3.0 · referencias",
+   "family": "wan30",
+   "ver": "",
+   "imgField": "reference_image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/alibaba/wan-3.0/reference-to-video"
+  },
+  {
+   "pid": "alibaba/wan-3.0/text-to-video",
+   "kind": "vid",
+   "name": "Wan 3.0 · texto a vídeo",
+   "family": "wan30",
+   "ver": "",
+   "imgField": "",
+   "desc": "",
+   "src": "https://fal.ai/models/alibaba/wan-3.0/text-to-video"
+  },
+  {
+   "pid": "alibaba/wan-3.0-prime/image-to-video",
+   "kind": "vid",
+   "name": "Wan 3.0 Prime · imagen a vídeo",
+   "family": "wan30p",
+   "ver": "",
+   "imgField": "start_image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/alibaba/wan-3.0-prime/image-to-video"
+  },
+  {
+   "pid": "alibaba/wan-3.0-prime/text-to-video",
+   "kind": "vid",
+   "name": "Wan 3.0 Prime · texto a vídeo",
+   "family": "wan30p",
+   "ver": "",
+   "imgField": "",
+   "desc": "",
+   "src": "https://fal.ai/models/alibaba/wan-3.0-prime/text-to-video"
+  },
+  {
+   "pid": "fal-ai/wan/v2.7/image-to-video",
+   "kind": "vid",
+   "name": "Wan 2.7 · imagen a vídeo",
+   "family": "wan27",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/wan/v2.7/image-to-video"
+  },
+  {
+   "pid": "wan/v2.6/image-to-video",
+   "kind": "vid",
+   "name": "Wan 2.6 · imagen a vídeo",
+   "family": "wan26",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/wan/v2.6/image-to-video"
+  },
+  {
+   "pid": "fal-ai/bytedance/seedance/v1.5/pro/image-to-video",
+   "kind": "vid",
+   "name": "Seedance 1.5 Pro",
+   "family": "sd15",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/bytedance/seedance/v1.5/pro/image-to-video"
+  },
+  {
+   "pid": "bytedance/seedance-2.0/image-to-video",
+   "kind": "vid",
+   "name": "Seedance 2.0 · imagen a vídeo",
+   "family": "sd20",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/bytedance/seedance-2.0/image-to-video"
+  },
+  {
+   "pid": "bytedance/seedance-2.0/fast/text-to-video",
+   "kind": "vid",
+   "name": "Seedance 2.0 Fast · texto a vídeo",
+   "family": "sd20",
+   "ver": "",
+   "imgField": "",
+   "desc": "",
+   "src": "https://fal.ai/models/bytedance/seedance-2.0/fast/text-to-video"
+  },
+  {
+   "pid": "bytedance/seedance-2.0/mini/reference-to-video",
+   "kind": "vid",
+   "name": "Seedance 2.0 Mini · referencias",
+   "family": "sd20m",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/bytedance/seedance-2.0/mini/reference-to-video"
+  },
+  {
+   "pid": "bytedance/seedance-2.5/image-to-video",
+   "kind": "vid",
+   "name": "Seedance 2.5 · imagen a vídeo",
+   "family": "sd25",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/bytedance/seedance-2.5/image-to-video"
+  },
+  {
+   "pid": "fal-ai/kling-video/v2.6/pro/image-to-video",
+   "kind": "vid",
+   "name": "Kling 2.6 Pro · imagen a vídeo",
+   "family": "k26",
+   "ver": "",
+   "imgField": "start_image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/kling-video/v2.6/pro/image-to-video"
+  },
+  {
+   "pid": "fal-ai/kling-video/v2.6/pro/text-to-video",
+   "kind": "vid",
+   "name": "Kling 2.6 Pro · texto a vídeo",
+   "family": "k26",
+   "ver": "",
+   "imgField": "",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/kling-video/v2.6/pro/text-to-video"
+  },
+  {
+   "pid": "fal-ai/kling-video/v3/pro/image-to-video",
+   "kind": "vid",
+   "name": "Kling 3.0 Pro · imagen a vídeo",
+   "family": "k30",
+   "ver": "",
+   "imgField": "start_image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/kling-video/v3/pro/image-to-video"
+  },
+  {
+   "pid": "fal-ai/kling-video/v3/pro/text-to-video",
+   "kind": "vid",
+   "name": "Kling 3.0 Pro · texto a vídeo",
+   "family": "k30",
+   "ver": "",
+   "imgField": "",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/kling-video/v3/pro/text-to-video"
+  },
+  {
+   "pid": "fal-ai/kling-video/v3/turbo/pro/image-to-video",
+   "kind": "vid",
+   "name": "Kling 3.0 Turbo · imagen a vídeo",
+   "family": "k30t",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/kling-video/v3/turbo/pro/image-to-video"
+  },
+  {
+   "pid": "fal-ai/kling-video/o3/pro/reference-to-video",
+   "kind": "vid",
+   "name": "Kling O3 (3.0 Omni) · referencias",
+   "family": "k3o",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/kling-video/o3/pro/reference-to-video"
+  },
+  {
+   "pid": "fal-ai/kling-video/o3/pro/image-to-video",
+   "kind": "vid",
+   "name": "Kling O3 (3.0 Omni) · imagen a vídeo",
+   "family": "k3o",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/kling-video/o3/pro/image-to-video"
+  },
+  {
+   "pid": "fal-ai/veo3",
+   "kind": "vid",
+   "name": "Veo 3 · texto a vídeo",
+   "family": "veo3",
+   "ver": "",
+   "imgField": "",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/veo3"
+  },
+  {
+   "pid": "fal-ai/veo3.1/image-to-video",
+   "kind": "vid",
+   "name": "Veo 3.1 · imagen a vídeo",
+   "family": "veo31",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/veo3.1/image-to-video"
+  },
+  {
+   "pid": "fal-ai/veo3.1",
+   "kind": "vid",
+   "name": "Veo 3.1 · texto a vídeo",
+   "family": "veo31",
+   "ver": "",
+   "imgField": "",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/veo3.1"
+  },
+  {
+   "pid": "fal-ai/veo3.1/lite/image-to-video",
+   "kind": "vid",
+   "name": "Veo 3.1 Lite · imagen a vídeo",
+   "family": "veo31l",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/veo3.1/lite/image-to-video"
+  },
+  {
+   "pid": "fal-ai/minimax/hailuo-02/pro/image-to-video",
+   "kind": "vid",
+   "name": "Hailuo 02 Pro",
+   "family": "hl02",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/minimax/hailuo-02/pro/image-to-video"
+  },
+  {
+   "pid": "fal-ai/minimax/hailuo-2.3/pro/image-to-video",
+   "kind": "vid",
+   "name": "Hailuo 2.3 Pro",
+   "family": "hl23",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/minimax/hailuo-2.3/pro/image-to-video"
+  },
+  {
+   "pid": "minimax/h3/image-to-video",
+   "kind": "vid",
+   "name": "MiniMax H3 · imagen a vídeo",
+   "family": "h3s",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/minimax/h3/image-to-video"
+  },
+  {
+   "pid": "minimax/h3-max/director",
+   "kind": "vid",
+   "name": "MiniMax H3 Max (director)",
+   "family": "h3",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "Ojo: fal cobra un mínimo de 60 s por sesión.",
+   "src": "https://fal.ai/models/minimax/h3-max/director"
+  },
+  {
+   "pid": "xai/grok-imagine-video/image-to-video",
+   "kind": "vid",
+   "name": "Grok Imagine Video",
+   "family": "grokv",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/xai/grok-imagine-video/image-to-video"
+  },
+  {
+   "pid": "xai/grok-imagine-video/v1.5/image-to-video",
+   "kind": "vid",
+   "name": "Grok Imagine Video 1.5",
+   "family": "grok15",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/xai/grok-imagine-video/v1.5/image-to-video"
+  },
+  {
+   "pid": "xai/grok-imagine-video/v1.5/lite/image-to-video",
+   "kind": "vid",
+   "name": "Grok Imagine Video 1.5 Lite",
+   "family": "grok15l",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video"
+  },
+  {
+   "pid": "blackforestlabs/flux-3/image-to-video",
+   "kind": "vid",
+   "name": "FLUX 3 Video · imagen a vídeo",
+   "family": "flux3v",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/blackforestlabs/flux-3/image-to-video"
+  },
+  {
+   "pid": "google/gemini-omni-flash/image-to-video",
+   "kind": "vid",
+   "name": "Gemini Omni Flash",
+   "family": "gomni",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/google/gemini-omni-flash/image-to-video"
+  },
+  {
+   "pid": "google/gemini-omni-flash/v1.1/image-to-video",
+   "kind": "vid",
+   "name": "Gemini Omni Flash 1.1",
+   "family": "gomni11",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/google/gemini-omni-flash/v1.1/image-to-video"
+  },
+  {
+   "pid": "alibaba/happy-horse/v1.1/image-to-video",
+   "kind": "vid",
+   "name": "Happy Horse 1.1",
+   "family": "hhorse",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/alibaba/happy-horse/v1.1/image-to-video"
+  },
+  {
+   "pid": "openai/gpt-image-2/edit",
+   "kind": "img",
+   "name": "GPT Image 2 · editar",
+   "family": "gptimg2",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/openai/gpt-image-2/edit"
+  },
+  {
+   "pid": "openai/gpt-image-2.5/flare/edit",
+   "kind": "img",
+   "name": "GPT Image 2.5 Flare · editar",
+   "family": "gptimg",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/openai/gpt-image-2.5/flare/edit"
+  },
+  {
+   "pid": "openai/gpt-image-2.5/sunburst/edit",
+   "kind": "img",
+   "name": "GPT Image 2.5 Sunburst · editar",
+   "family": "gptimg",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/openai/gpt-image-2.5/sunburst/edit"
+  },
+  {
+   "pid": "fal-ai/nano-banana/edit",
+   "kind": "img",
+   "name": "Nano Banana",
+   "family": "nb",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/nano-banana/edit"
+  },
+  {
+   "pid": "fal-ai/nano-banana-2/edit",
+   "kind": "img",
+   "name": "Nano Banana 2",
+   "family": "nb2",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/nano-banana-2/edit"
+  },
+  {
+   "pid": "google/nano-banana-2.1/edit",
+   "kind": "img",
+   "name": "Nano Banana 2.1",
+   "family": "nb21",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/google/nano-banana-2.1/edit"
+  },
+  {
+   "pid": "google/nano-banana-2-lite",
+   "kind": "img",
+   "name": "Nano Banana 2 Lite (sin referencias)",
+   "family": "nblite",
+   "ver": "",
+   "imgField": "",
+   "desc": "",
+   "src": "https://fal.ai/models/google/nano-banana-2-lite"
+  },
+  {
+   "pid": "fal-ai/nano-banana-pro/edit",
+   "kind": "img",
+   "name": "Nano Banana Pro",
+   "family": "nbp",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/nano-banana-pro/edit"
+  },
+  {
+   "pid": "fal-ai/bytedance/seedream/v4.5/edit",
+   "kind": "img",
+   "name": "Seedream 4.5",
+   "family": "sd45",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/bytedance/seedream/v4.5/edit"
+  },
+  {
+   "pid": "fal-ai/bytedance/seedream/v5/lite/edit",
+   "kind": "img",
+   "name": "Seedream 5.0 Lite",
+   "family": "seedlite",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit"
+  },
+  {
+   "pid": "bytedance/seedream/v5/flash/edit",
+   "kind": "img",
+   "name": "Seedream 5.0 Flash",
+   "family": "seedflash",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/bytedance/seedream/v5/flash/edit"
+  },
+  {
+   "pid": "bytedance/seedream/v5/pro/edit",
+   "kind": "img",
+   "name": "Seedream 5.0 Pro",
+   "family": "seedream",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/bytedance/seedream/v5/pro/edit"
+  },
+  {
+   "pid": "fal-ai/flux-2-pro/edit",
+   "kind": "img",
+   "name": "FLUX.2 Pro",
+   "family": "flux2",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/flux-2-pro/edit"
+  },
+  {
+   "pid": "fal-ai/flux-2-max/edit",
+   "kind": "img",
+   "name": "FLUX.2 Max",
+   "family": "flux2",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/flux-2-max/edit"
+  },
+  {
+   "pid": "fal-ai/flux-pro/kontext",
+   "kind": "img",
+   "name": "FLUX Kontext Pro",
+   "family": "kontext",
+   "ver": "",
+   "imgField": "image_url",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/flux-pro/kontext"
+  },
+  {
+   "pid": "fal-ai/kling-image/o3/image-to-image",
+   "kind": "img",
+   "name": "Kling Image O3",
+   "family": "klingimg",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/kling-image/o3/image-to-image"
+  },
+  {
+   "pid": "xai/grok-imagine-image/edit",
+   "kind": "img",
+   "name": "Grok Image",
+   "family": "grok1",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/xai/grok-imagine-image/edit"
+  },
+  {
+   "pid": "xai/grok-imagine-image/v2.0/edit",
+   "kind": "img",
+   "name": "Grok Image 2.0",
+   "family": "grok",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/xai/grok-imagine-image/v2.0/edit"
+  },
+  {
+   "pid": "ideogram/v4.5",
+   "kind": "img",
+   "name": "Ideogram 4.5 (sin referencias)",
+   "family": "ideogram",
+   "ver": "",
+   "imgField": "",
+   "desc": "",
+   "src": "https://fal.ai/models/ideogram/v4.5"
+  },
+  {
+   "pid": "fal-ai/recraft/v4.1/text-to-image",
+   "kind": "img",
+   "name": "Recraft V4.1",
+   "family": "recraft",
+   "ver": "",
+   "imgField": "",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/recraft/v4.1/text-to-image"
+  },
+  {
+   "pid": "fal-ai/z-image/turbo",
+   "kind": "img",
+   "name": "Z Image Turbo",
+   "family": "zimage",
+   "ver": "",
+   "imgField": "",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/z-image/turbo"
+  },
+  {
+   "pid": "fal-ai/qwen-image-edit-2511",
+   "kind": "img",
+   "name": "Qwen Image Edit",
+   "family": "qwen",
+   "ver": "",
+   "imgField": "image_urls",
+   "desc": "",
+   "src": "https://fal.ai/models/fal-ai/qwen-image-edit-2511"
+  }
+ ]
+}

@@ -5,9 +5,10 @@ Archivos que la app lee de la web (y guarda para usarlos sin conexión). Nunca l
 | Archivo | Qué es |
 |---|---|
 | `families.v1.json` | Qué modelo de cada servicio es el mismo que uno de la lista de Saga Studio (salen como «Recomendados»). |
+| `fal.v1.json` | Modelos de fal comprobados en sus fichas oficiales (id y campo que recibe las imágenes). Puedes añadir más a mano por su id. |
 | `pollo.v1.json` | Modelos de Pollo y sus campos. Pollo no tiene una API pública para listar modelos, así que se mantiene a mano. |
 
-Wiro se lista en vivo desde su API (`/Tool/List`, `/Tool/Detail`). fal no tiene una lista verificada para el navegador: cada persona añade los modelos de fal por su id.
+Wiro se lista en vivo desde su API (`/Tool/List`, `/Tool/Detail`). fal no publica una lista para el navegador: `fal.v1.json` se mantiene a mano desde `https://fal.ai/models/<id>/llms.txt`, y cada persona puede añadir otros por su id.
 
 ## Cómo se actualizan
 
