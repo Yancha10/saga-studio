@@ -1211,17 +1211,19 @@ async function putMedia(file) {
   if (!file) throw userErr('No hay archivo que guardar');
   if (!db) throw userErr('Este navegador no deja guardar fotos, vídeos ni audios aquí (¿navegación privada?). No se ha guardado.');
   const heic = /^image\/hei[cf]/.test(file.type) || /\.hei[cf]$/i.test(file.name || '');
+  const did = !heic && file._driveId; // de tu Drive: se usa el original, sin copiarlo
   // fotos muy grandes se reducen; HEIC se pasa a JPEG para que se vea en cualquier navegador
-  if (file && (heic || (/^image\/(jpeg|png|webp)/.test(file.type) && file.size > 2.5e6))) { try { const bmp = await createImageBitmap(file); const k = Math.min(1, 2400 / Math.max(bmp.width, bmp.height)); const cv = document.createElement('canvas'); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k); cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height); const b = await new Promise(r => cv.toBlob(r, 'image/jpeg', .9)); if (b && (heic || b.size < file.size)) file = b; } catch (e) { if (heic) toast('Foto HEIC: este navegador no la puede convertir; puede que no se vea en otros dispositivos', 4500); } }
+  if (file && !did && (heic || (/^image\/(jpeg|png|webp)/.test(file.type) && file.size > 2.5e6))) { try { const bmp = await createImageBitmap(file); const k = Math.min(1, 2400 / Math.max(bmp.width, bmp.height)); const cv = document.createElement('canvas'); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k); cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height); const b = await new Promise(r => cv.toBlob(r, 'image/jpeg', .9)); if (b && (heic || b.size < file.size)) file = b; } catch (e) { if (heic) toast('Foto HEIC: este navegador no la puede convertir; puede que no se vea en otros dispositivos', 4500); } }
   const id = 'm:' + uid();
   try { await idbPut(id, file); } catch (e) { throw userErr(isQuota(e) ? 'No queda espacio en este dispositivo para guardar el archivo. Vacía la papelera o libera espacio.' : 'No se pudo guardar el archivo (' + ((e && e.message) || e) + ')'); }
-  setUrl(id, file); return id;
+  if (did) { S.driveRefs = S.driveRefs || {}; S.driveRefs[id] = did; GD.remote[id] = did; gdMetaSave(); }
+  setUrl(id, file); cacheTouch(id, file.size); return id;
 }
 async function loadAllMedia() {
   if (!db) return;
   await new Promise(res => { const c = db.transaction('m').objectStore('m').openCursor(); c.onsuccess = () => { const cur = c.result; if (cur) { if (String(cur.key).startsWith('m:')) urls[cur.key] = URL.createObjectURL(cur.value); cur.continue(); } else res(); }; c.onerror = () => res(); });
 }
-const src = ref => !ref || typeof ref !== 'string' ? '' : ref.startsWith('m:') ? (urls[ref] || '') : /^\s*(javascript|vbscript|data:text\/html)/i.test(ref) ? '' : ref.replace(/["'<>`]/g, encodeURIComponent); // nunca un enlace que ejecute código ni que rompa el HTML
+const src = ref => !ref || typeof ref !== 'string' ? '' : ref.startsWith('m:') ? (urls[ref] ? (cacheTouch(ref), urls[ref]) : (gdWant(ref), '')) : /^\s*(javascript|vbscript|data:text\/html)/i.test(ref) ? '' : ref.replace(/["'<>`]/g, encodeURIComponent); // nunca un enlace que ejecute código ni que rompa el HTML
 /* solo entra lo que de verdad es una foto o un vídeo (o audio) y se puede abrir */
 const EXT_KIND = { jpg: 'image', jpeg: 'image', png: 'image', webp: 'image', gif: 'image', heic: 'image', heif: 'image', avif: 'image', mp4: 'video', mov: 'video', m4v: 'video', webm: 'video', mp3: 'audio', m4a: 'audio', wav: 'audio', aac: 'audio', ogg: 'audio' };
 const kindOf = f => (f.type || '').split('/')[0] || EXT_KIND[(String(f.name || '').split('.').pop() || '').toLowerCase()] || '';
@@ -1234,6 +1236,12 @@ async function okFiles(fs, kinds = ['image', 'video']) {
   return out;
 }
 function pickFiles(accept = 'image/*', multiple = false) {
+  if (gdOn() && /image|video|audio/.test(accept) && !/json/.test(accept)) return new Promise(res => {
+    menu(innerWidth / 2 - 130, innerHeight / 2 - 90, [{ head: 'Elegir ' + (multiple ? 'archivos' : 'archivo') }, { t: 'Desde Google Drive', sub: 'Sin descargar nada: se queda en tu Drive', icon: 'folder', fn: () => gdPick(accept, multiple).then(res, e => { toast(e.message); res([]); }) }, { t: 'Desde este dispositivo o iCloud', sub: 'Fotos, Archivos, iCloud Drive…', icon: 'photos', fn: () => pickLocal(accept, multiple).then(res) }]);
+  });
+  return pickLocal(accept, multiple);
+}
+function pickLocal(accept = 'image/*', multiple = false) {
   return new Promise(res => { const i = document.createElement('input'); i.type = 'file'; i.accept = accept; i.multiple = multiple; i.onchange = () => res([...i.files]); i.click(); });
 }
 
@@ -2484,16 +2492,17 @@ async function gdSync(opts = {}) {
     } else if (localChanged) push = true;
     // 2) archivos: subir los que falten en el Drive y bajar los que falten aquí (solo los que se usan)
     const used = mediaRefs(S); const keys = new Set(await idbKeys());
-    if (opts.full || [...used].some(k => !GD.remote[k] || !keys.has(k))) {
+    Object.assign(GD.remote, S.driveRefs || {});
+    if (opts.full || [...used].some(k => !GD.remote[k])) {
       const list = []; let page = '';
       do { const j = await gdJson(`${GD.API}/files?q=${gq(`'${GD.media}' in parents and trashed=false`)}&fields=nextPageToken,files(id,appProperties)&pageSize=1000${page ? '&pageToken=' + page : ''}`); list.push(...j.files); page = j.nextPageToken; } while (page);
-      GD.remote = {}; list.forEach(f => { const k = f.appProperties && f.appProperties.sagaId; if (k) GD.remote[k] = f.id; }); gdMetaSave();
+      GD.remote = Object.assign({}, S.driveRefs || {}); list.forEach(f => { const k = f.appProperties && f.appProperties.sagaId; if (k) GD.remote[k] = f.id; }); gdMetaSave();
     }
-    const up = [...used].filter(k => keys.has(k) && !GD.remote[k]); const down = [...used].filter(k => !keys.has(k) && GD.remote[k]);
+    const up = [...used].filter(k => keys.has(k) && !GD.remote[k]); const down = []; // solo nube: nada se baja en bloque; cada archivo llega cuando lo ves
     let n = 0; const tot = up.length + down.length;
     for (const k of up) { const b = await idbGet(k); if (!b) continue; gdSet('sync', `Subiendo ${++n} de ${tot}…`); const f = await gdUpload({ name: k.replace(':', '_') + '.' + extOf(b.type), parents: [GD.media], appProperties: { sagaId: k } }, b); GD.remote[k] = f.id; gdMetaSave(); }
     for (const k of down) { gdSet('sync', `Bajando ${++n} de ${tot}…`); const b = await (await gdFetch(`${GD.API}/files/${GD.remote[k]}?alt=media`)).blob(); if (!db) break; try { await idbPut(k, b); } catch (x) { throw userErr(isQuota(x) ? 'No queda espacio en este dispositivo para bajar tus archivos del Drive' : 'No se pudo guardar un archivo bajado del Drive'); } setUrl(k, b); }
-    if (down.length) render();
+    GW.fail.clear(); gwRender(); cacheTrim().catch(() => {});
     // 3) datos, después de los archivos: así el otro dispositivo nunca ve una ficha sin su foto
     if (push) await gdPushState(rt, tot > 0); // si hubo subidas/bajadas (tarda), se vuelve a mirar el Drive justo antes de guardar
     await gdTrashOrphans();
@@ -2540,8 +2549,73 @@ function gdMenu(e) {
   const r = rectOf(e);
   if (!gdOn()) return menu(r.left, r.bottom + 8, [{ head: 'Google Drive' }, { t: 'Conectar mi Google Drive', sub: 'Tus datos, fotos y vídeos iguales en el Mac y el móvil', icon: 'folder', fn: gdConnect }]);
   menu(r.left, r.bottom + 8, [{ head: 'Google Drive · ' + gdLabel() }, { t: GD.conflict ? 'Elegir qué versión conservar' : 'Sincronizar ahora', sub: GD.msg || '', icon: 'folder', fn: async () => { if (!gdOk()) { try { await gdAuth(); } catch (x) { return toast(x.message); } } GD.retryN = 0; gdSync({ toast: true, full: true }); } },
-    { t: 'Abrir la carpeta en Drive', icon: 'photos', fn: () => GD.folder ? window.open('https://drive.google.com/drive/folders/' + GD.folder, '_blank', 'noopener') : toast('Aún no hay carpeta') }, '-', { t: 'Desconectar en este dispositivo', icon: 'trash', fn: gdDisconnect }, { t: 'Retirar el permiso de Google', sub: 'En todos tus dispositivos', icon: 'key', fn: gdRevoke }]);
+    { t: 'Abrir la carpeta en Drive', icon: 'photos', fn: () => GD.folder ? window.open('https://drive.google.com/drive/folders/' + GD.folder, '_blank', 'noopener') : toast('Aún no hay carpeta') }, { t: 'Liberar espacio en este dispositivo', sub: 'Borra de aquí lo que ya está en tu Drive', icon: 'trash', fn: async () => { const r = await cacheTrim(0); toast(`Liberados ${(r.freed / 1048576).toFixed(0)} MB · todo sigue en tu Drive`); } },
+    { t: S.pickerKey ? 'Selector de Drive: activado' : 'Activar «Desde Google Drive»', icon: 'photos', fn: gdPickerSetup }, '-', { t: 'Desconectar en este dispositivo', icon: 'trash', fn: gdDisconnect }, { t: 'Retirar el permiso de Google', sub: 'En todos tus dispositivos', icon: 'key', fn: gdRevoke }]);
 }
+/* ============ modo «solo nube»: Drive es el sitio de verdad; aquí solo queda una caché pequeña ============
+   - lo que ya está en Drive no se baja entero al abrir la app: se trae cuando lo ves
+   - la caché del dispositivo se limita (lo menos usado se borra de aquí, nunca de Drive) */
+const CACHE_KEY = (ST ? ST.gc : 'saga') + ':cache', CACHE_MB = 300;
+const CM = (() => { try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch (e) { return {}; } })();
+let cmT = 0;
+function cacheTouch(k, size) { const o = CM[k] || (CM[k] = [0, 0]); const n = Date.now(); if (size) o[1] = size; if (n - o[0] < 60000 && !size) return; o[0] = n; clearTimeout(cmT); cmT = setTimeout(() => { try { localStorage.setItem(CACHE_KEY, JSON.stringify(CM)); } catch (e) {} }, 1500); }
+const driveIdOf = k => GD.remote[k] || (S.driveRefs || {})[k];
+const GW = { q: [], on: new Set(), fail: new Set(), act: 0, rt: 0 };
+function gdWant(k) {
+  if (!gdOn() || GW.on.has(k) || GW.fail.has(k) || !driveIdOf(k)) return;
+  if (!gdOk()) { if (GD.status !== 'need') { gdSet('need'); GD.wantGesture = true; } return; }
+  GW.on.add(k); GW.q.push(k); gwPump();
+}
+function gwPump() {
+  while (GW.act < 3 && GW.q.length) { const k = GW.q.shift(); GW.act++;
+    gdFetch(`${GD.API}/files/${driveIdOf(k)}?alt=media`).then(r => r.blob()).then(async b => { if (db) await idbPut(k, b).catch(() => {}); setUrl(k, b); cacheTouch(k, b.size); gwRender(); })
+      .catch(e => { if (e.need) { gdSet('need'); GD.wantGesture = true; GW.on.delete(k); } else GW.fail.add(k); })
+      .finally(() => { GW.act--; if (!GW.q.length && !GW.act) GW.on.clear(); gwPump(); }); }
+}
+/* repinta cuando llegan archivos, sin pisar lo que estés escribiendo */
+function gwRender() { clearTimeout(GW.rt); GW.rt = setTimeout(() => { const a = document.activeElement; if (a && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return gwRender(); render(); }, 350); }
+/* libera sitio en este dispositivo: solo borra copias que ya están a salvo en tu Drive */
+async function cacheTrim(limitMB = CACHE_MB) {
+  if (!db || !gdOn() || ACC.stopped) return { freed: 0, kept: 0 };
+  const items = await new Promise(res => { const L = []; const c = db.transaction('m').objectStore('m').openCursor(); c.onsuccess = () => { const cur = c.result; if (cur) { if (String(cur.key).startsWith('m:')) L.push([cur.key, (cur.value && cur.value.size) || 0]); cur.continue(); } else res(L); }; c.onerror = () => res(L); });
+  let total = items.reduce((a, x) => a + x[1], 0); const lim = limitMB * 1048576; let freed = 0;
+  const safe = items.filter(([k]) => driveIdOf(k)).sort((a, b) => ((CM[a[0]] || [0])[0]) - ((CM[b[0]] || [0])[0]));
+  for (const [k, sz] of safe) { if (total <= lim) break; await new Promise(res => { const t = db.transaction('m', 'readwrite'); t.objectStore('m').delete(k); t.oncomplete = res; t.onerror = res; }); if (urls[k]) { URL.revokeObjectURL(urls[k]); delete urls[k]; } delete CM[k]; total -= sz; freed += sz; }
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(CM)); } catch (e) {}
+  return { freed, kept: total };
+}
+/* ---------- elegir fotos/vídeos directamente de tu Google Drive (selector oficial de Google) ---------- */
+const PICK_MIME = { image: 'image/jpeg,image/png,image/webp,image/heic,image/heif,image/gif', video: 'video/mp4,video/quicktime,video/webm', audio: 'audio/mpeg,audio/mp4,audio/wav,audio/webm,audio/x-m4a' };
+function gdPickerLib() { return new Promise((res, rej) => { const done = () => window.gapi.load('picker', { callback: res, onerror: () => rej(new Error('No se pudo cargar el selector de Drive')) });
+  if (window.gapi) return done(); const s = document.createElement('script'); s.src = 'https://apis.google.com/js/api.js'; s.onload = done; s.onerror = () => rej(new Error('No se pudo cargar el selector de Drive (¿sin conexión?)')); document.head.appendChild(s); }); }
+async function gdPick(accept, multiple) {
+  const key = S.pickerKey; if (!key) { gdPickerSetup(); return []; }
+  if (!gdOk()) await gdAuth();
+  await gdPickerLib();
+  const mimes = Object.keys(PICK_MIME).filter(t => accept.includes(t) || accept === '*/*').map(t => PICK_MIME[t]).join(',');
+  return new Promise(res => {
+    const P = google.picker; const view = new P.DocsView(P.ViewId.DOCS).setIncludeFolders(true).setMode(P.DocsViewMode.GRID); if (mimes) view.setMimeTypes(mimes);
+    const b = new P.PickerBuilder().addView(view).addView(new P.DocsView(P.ViewId.RECENTLY_PICKED)).setOAuthToken(GD.token).setDeveloperKey(key).setAppId(GD.CLIENT.split('-')[0]).setLocale('es').setTitle('Elige de tu Google Drive')
+      .setCallback(async d => {
+        if (d.action === P.Action.CANCEL) return res([]); if (d.action !== P.Action.PICKED) return;
+        toast(`Trayendo ${d.docs.length} de tu Drive…`); const out = [];
+        for (const doc of d.docs) { try { const bl = await (await gdFetch(`${GD.API}/files/${doc.id}?alt=media`)).blob(); const f = new File([bl], doc.name || 'drive', { type: doc.mimeType || bl.type }); f._driveId = doc.id; out.push(f); } catch (e) { toast('No pude traer «' + (doc.name || '') + '»'); } }
+        res(out);
+      });
+    if (multiple) b.enableFeature(P.Feature.MULTISELECT_ENABLED);
+    b.build().setVisible(true);
+  });
+}
+function gdPickerSetup() {
+  modal(`<h2>Activar «Desde Google Drive»</h2><p class="note" style="margin:8px 0 12px">Una sola vez. Es la clave pública del selector de Google (no da acceso a nada por sí sola; la limitamos a tu web).</p>
+    <ol class="note" style="padding-left:18px;line-height:1.6;margin:0 0 14px"><li>Abre <a href="https://console.cloud.google.com/apis/library/picker.googleapis.com?project=dani-otero-photo-1701931854551" target="_blank" rel="noopener">Google Picker API</a> y pulsa <b>Habilitar</b>.</li>
+    <li>Ve a <a href="https://console.cloud.google.com/apis/credentials?project=dani-otero-photo-1701931854551" target="_blank" rel="noopener">Credenciales</a> → <b>Crear credenciales → Clave de API</b>.</li>
+    <li>En la clave: <b>Restricciones de aplicaciones → Sitios web</b> y añade <code>https://yancha10.github.io/*</code>. En <b>Restricciones de API</b> elige solo <b>Google Picker API</b>. Guarda.</li>
+    <li>Copia la clave y pégala aquí.</li></ol>
+    <input id="pkk" placeholder="AIza…" style="width:100%" value="${esc(S.pickerKey || '')}"><div class="row" style="margin-top:14px"><button class="btn wide" id="pkno">Cancelar</button><button class="btn acc wide" id="pkok">Guardar</button></div>`,
+  sc => { sc.querySelector('#pkno').onclick = closeModal; sc.querySelector('#pkok').onclick = () => { const v = sc.querySelector('#pkk').value.trim(); if (!/^AIza[\w-]{20,}$/.test(v)) return toast('Esa no parece una clave de Google (empieza por AIza…)'); S.pickerKey = v; save(); closeModal(); toast('Listo: ya puedes elegir desde tu Drive'); }; });
+}
+
 /* si el permiso caducó, el primer toque en la app lo renueva. Va en «click»: en pantallas táctiles es el único gesto que deja abrir la ventanita de Google */
 document.addEventListener('click', e => {
   if (!GD.wantGesture || !gdOn() || e.target.closest('#gdpill,#bars')) return; GD.wantGesture = false;
@@ -2850,7 +2924,7 @@ async function mediaGC(o = {}) { // o.now: sin esperar los 7 días (lo pides tú
 async function gdTrashOrphans() {
   const g = gcGet(); const L = Array.isArray(g.drive) ? g.drive : []; if (!L.length || gdPending()) return;
   const used = mediaRefs(S); const keep = [];
-  for (const k of L) { if (used.has(k)) continue; const id = GD.remote[k]; if (!id) continue;
+  for (const k of L) { if (used.has(k)) continue; if ((S.driveRefs || {})[k]) { delete S.driveRefs[k]; delete GD.remote[k]; continue; } /* tus originales de Drive nunca se tocan */ const id = GD.remote[k]; if (!id) continue;
     try { await gdFetch(`${GD.API}/files/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ trashed: true }) }); delete GD.remote[k]; } catch (e) { keep.push(k); if (e.need) break; } }
   g.drive = keep; gcSet(g); gdMetaSave();
 }
