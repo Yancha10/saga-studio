@@ -1103,6 +1103,20 @@ body.gated>header,body.gated>main,body.gated>#mnav,body.gated>#mtabs,body.gated 
 .fbseg button.on{background:var(--grad,#fff);color:#fff}
 .iata,.iaresp{width:100%;margin-top:10px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px;color:inherit;font:inherit;font-size:13px;resize:vertical}
 .iaresp{border-style:dashed}
+.ptag{font:600 9.5px var(--sans);letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid var(--line2);color:var(--mut);margin-left:6px;vertical-align:2px}.ptag.gen{border-color:transparent;background:var(--grad);color:#fff}
+.mvmodal{width:min(1240px,96vw)!important;max-width:none!important;padding:0!important;overflow:hidden}
+.mvw{display:grid;grid-template-columns:1fr 400px;height:min(88vh,860px)}
+.mvl{position:relative;background:#000;display:flex;align-items:center;justify-content:center;min-height:0}
+.mvl video,.mvl img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.mvl .mvc{position:absolute;top:14px;left:14px;padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.55);font-size:12px;z-index:2}
+.mvl .lbn{position:absolute;top:50%;transform:translateY(-50%);z-index:2}.mvl .mvp{left:14px}.mvl .mvn{right:14px}
+.mvwait{color:var(--mut);font-size:13px}
+.mvr{overflow:auto;padding:26px 24px;border-left:1px solid var(--line)}
+.mvr h2{margin:0}.mvs{padding:16px 0;border-top:1px solid var(--line);margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.mvpr{max-height:220px;overflow:auto;white-space:pre-wrap;font-size:13px}
+.mvd{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:13px}.mvd dt{color:var(--mut)}.mvd dd{margin:0;font-weight:600}
+.detimg{position:relative}.detimg .mvbig{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+@media (max-width:820px){.mvw{grid-template-columns:1fr;height:auto;max-height:92vh;overflow:auto}.mvl{height:62vh}.mvr{border-left:0}}
 </style></head>
 <body>
 <header>
@@ -1223,7 +1237,7 @@ async function loadAllMedia() {
   if (!db) return;
   await new Promise(res => { const c = db.transaction('m').objectStore('m').openCursor(); c.onsuccess = () => { const cur = c.result; if (cur) { if (String(cur.key).startsWith('m:')) urls[cur.key] = URL.createObjectURL(cur.value); cur.continue(); } else res(); }; c.onerror = () => res(); });
 }
-const src = ref => !ref || typeof ref !== 'string' ? '' : ref.startsWith('m:') ? (urls[ref] ? (cacheTouch(ref), urls[ref]) : (gdWant(ref), '')) : /^\s*(javascript|vbscript|data:text\/html)/i.test(ref) ? '' : ref.replace(/["'<>`]/g, encodeURIComponent); // nunca un enlace que ejecute código ni que rompa el HTML
+const src = ref => !ref || typeof ref !== 'string' ? '' : ref.startsWith('m:') ? (urls[ref] ? (cacheTouch(ref), urls[ref]) : (streamUrl(ref) || (gdWant(ref), ''))) : /^\s*(javascript|vbscript|data:text\/html)/i.test(ref) ? '' : ref.replace(/["'<>`]/g, encodeURIComponent); // nunca un enlace que ejecute código ni que rompa el HTML
 /* solo entra lo que de verdad es una foto o un vídeo (o audio) y se puede abrir */
 const EXT_KIND = { jpg: 'image', jpeg: 'image', png: 'image', webp: 'image', gif: 'image', heic: 'image', heif: 'image', avif: 'image', mp4: 'video', mov: 'video', m4v: 'video', webm: 'video', mp3: 'audio', m4a: 'audio', wav: 'audio', aac: 'audio', ogg: 'audio' };
 const kindOf = f => (f.type || '').split('/')[0] || EXT_KIND[(String(f.name || '').split('.').pop() || '').toLowerCase()] || '';
@@ -1933,7 +1947,7 @@ function hlPrompt(t) { return esc(t).replace(/⟦([^⟧]*)⟧/g, '<mark>⟦$1⟧
 function creGrid(items, et, ed) {
   if (!items.length) return empty(et, ed, '<button class="btn" data-a="importResult">⇩ Importar resultado</button>');
   return `<div class="grid ${S.size}">${items.map((x, i) => `<div class="it ${S.picked.cre === x.id ? 'on' : ''} ${S.selected.includes(x.id) ? 'sel' : ''}" data-cre="${x.id}" style="animation-delay:${Math.min(i, 20) * 25}ms">
-    ${x.kind === 'vid' ? `<video src="${src(x.media)}" muted preload="metadata"></video><span class="play">▶</span>` : `<img loading="lazy" src="${src(x.media)}">`}
+    ${x.kind === 'vid' ? `<video src="${vsrc(x.media)}" muted playsinline preload="metadata"></video><span class="play">▶</span>` : `<img loading="lazy" src="${src(x.media)}">`}
     <button class="fav ${x.fav ? 'on' : ''}" data-favcre="${x.id}">${x.fav ? '♥' : '♡'}</button>
     ${S.selMode ? `<span class="selck">${S.selected.includes(x.id) ? '✓' : ''}</span>` : x.model ? `<span class="badge">${x.nsfw ? '🔥 ' : ''}${esc(x.model)}</span>` : x.nsfw ? '<span class="badge">🔥</span>' : ''}</div>`).join('')}</div>`;
 }
@@ -1993,7 +2007,7 @@ R.video = () => {
     ${vf === 'Imágenes' ? (imgs.length ? `<div class="grid ${S.size}">${imgs.map(x => `<div class="it" data-animate="${x.id}"><img src="${src(x.media)}"><div class="ov"><span></span><span class="btn">🎬 Animar</span></div></div>`).join('')}</div>` : empty('Sin imágenes todavía', 'Las imágenes de Crear imagen salen aquí para animarlas.'))
       : items.length ? creGrid(items) : `
       ${empty('Aquí aparecerán tus vídeos', 'Elige una imagen arriba («Imágenes») y anímala, o recrea uno de la Filmoteca.', '<button class="btn" data-a="importResult" data-kind="vid">⇩ Importar vídeo</button>')}
-      ${film.length ? `<div class="ghead"><span class="lbl">Empieza por aquí · vídeos de la Filmoteca</span></div><div class="grid S">${film.map(f => `<div class="it" data-recreate="${f.id}"><video src="${src(f.media)}" muted preload="metadata"></video><span class="play">▶</span><div class="ov"><span></span><span class="btn">＋ Recrear</span></div></div>`).join('')}</div>
+      ${film.length ? `<div class="ghead"><span class="lbl">Empieza por aquí · vídeos de la Filmoteca</span></div><div class="grid S">${film.map(f => `<div class="it" data-recreate="${f.id}"><video src="${vsrc(f.media)}" muted playsinline preload="metadata"></video><span class="play">▶</span><div class="ov"><span></span><span class="btn">＋ Recrear</span></div></div>`).join('')}</div>
       <div style="text-align:center;padding-bottom:60px"><button class="btn" data-go="videoteca">Ver toda la Filmoteca →</button></div>` : ''}`}`;
   return { side, stage };
 };
@@ -2064,7 +2078,7 @@ function refLib(key, title, kind) {
   const side = p ? `
     ${isV ? '' : '<button class="btn wide" data-go="video">← Volver a crear vídeo</button>'}
     <div class="charrow"><span class="av">${ic(isV ? 'film' : 'photos', 'width="16" height="16"')}</span><div><span class="lbl">De tu ${isV ? 'filmoteca' : 'fototeca'}</span><div><b>${esc(p.cat || 'Sin categoría')}${p.n ? ' · Nº ' + p.n : ''}</b></div></div></div>
-    <div class="detimg">${isV ? `<video src="${src(p.media)}" controls loop></video>` : `<img src="${src(p.media)}">`}</div>
+    <div class="detimg">${isV ? `<video src="${src(p.media)}" controls loop playsinline></video>` : `<img src="${src(p.media)}">`}<button class="btn sm mvbig" data-mview="${key}|${p.id}">⤢ Ver en grande</button></div>
     <div class="meta">${p.model ? `<b>${esc(p.model)}</b>` : ''}${p.escena ? `<span>${esc(p.escena)}</span>` : ''}<span>${esc(p.date)}</span></div>
     ${isV ? `<span class="lbl">Usar en una creación</span><button class="btn acc wide" data-a="useMotion">🎭 Motion control</button><button class="btn wide" data-a="useAsRef">🎬 Añadir como referencia</button>`
       : `<button class="btn acc wide" data-a="useCopy">✨ Añadir a Crear imagen</button><button class="btn wide" data-a="useStart">🎬 Añadir a Crear vídeo</button>`}
@@ -2076,7 +2090,7 @@ function refLib(key, title, kind) {
       <div class="dz" data-a="addRefLib" data-key="${key}" data-drop="lib:${key}"><span class="ic">＋</span><div><b>Añadir ${isV ? 'vídeos' : 'imágenes'}</b><p>Arrástralos aquí o haz clic.</p></div></div></div>`;
   const stage = `${galleryHead(`${title} · ${list.length}`, [['Todos', null], ['Favoritas', list.filter(x => x.fav).length], ...cats.map(c => [c, list.filter(x => x.cat === c).length])], key)}
     ${items.length ? `<div class="grid ${S.size} ${isV ? 'tall' : ''}">${items.map((x, i) => `<div class="it ${S.picked[key] === x.id ? 'on' : ''}" data-pick="${key}|${x.id}" style="animation-delay:${Math.min(i, 20) * 25}ms">
-      ${isV ? `<video src="${src(x.media)}" muted preload="metadata"></video><span class="play">▶</span>` : `<img loading="lazy" src="${src(x.media)}">`}
+      ${isV ? `<video src="${vsrc(x.media)}" muted playsinline preload="metadata"></video><span class="play">▶</span>` : `<img loading="lazy" src="${src(x.media)}">`}
       <button class="fav ${x.fav ? 'on' : ''}" data-favref="${key}|${x.id}">${x.fav ? '♥' : '♡'}</button>
       <div class="ov"><span></span><span class="btn" data-recreate2="${key}|${x.id}">＋ ${isV ? 'Añadir' : 'Recrear'}</span></div></div>`).join('')}</div>`
       : empty(`Tu ${title.toLowerCase()} está vacía`, isV ? 'Añade clips que quieras recrear.' : 'Añade fotos que quieras recrear.', `<button class="btn acc" data-a="addRefLib" data-key="${key}">＋ Añadir</button>`)}`;
@@ -2225,18 +2239,19 @@ const PROV_UI = [
   ['pollo', 'Pollo', 'Imagen y vídeo: Kling, Veo, Seedance…', [['key', 'API key']], 'Crea en Pollo una clave solo para Saga Studio.'],
   ['fal', 'fal', 'Imagen y vídeo: más de mil modelos', [['key', 'API key']], 'fal recomienda no usar claves desde el navegador: usa una clave solo para Saga Studio y con poco saldo.'],
 ];
+const API_ORDER = ['higgsfield', 'fal', 'wavespeed', 'wiro', 'pollo', 'magnific', 'elevenlabs', 'claude', 'openai'];
 const provHas = () => { const P = provGet(); return PROV_UI.some(([k]) => P[k] && P[k].key) || Object.values(P.otros || {}).some(v => v && v.key); };
 const mask = v => v ? '····' + esc(String(v).slice(-4)) : '';
 function apisModal() {
   const P = provGet(), O = P.otros || {};
   modal(`<h2>Mis APIs</h2><p class="note" style="margin-bottom:12px">Generas con tus propias cuentas y pagas directamente a cada servicio. Sin claves, el flujo manual (preparar prompt → generar fuera → importar) funciona igual.</p>
     <div class="card" style="margin-bottom:12px"><b>🔒 Tus claves</b><p class="note" style="margin-top:6px">Se guardan solo en este dispositivo y solo para esta cuenta. Nunca van a tu Google Drive, a las copias completas ni a los puntos de recuperación. Como cualquier clave guardada en un navegador, el código que se ejecute en él podría leerla: usa claves propias para Saga Studio y con poco saldo.</p></div>
-    <div class="stack" style="gap:6px">${PROV_UI.map(([id, n, d, f, tip]) => { const c = P[id] || {}; const on = !!c.key; const T = isObj(c.test) ? c.test : null;
-      return `<div class="prov"><span class="dot ${c.ok ? 'on' : ''}"></span><div><b>${n}</b><p>${d}${on ? ' · ' + f.map(([k, l]) => l + ' ' + mask(c[k])).join(' · ') : ''}</p>${on ? `<p>${c.ok ? '✓ Conexión comprobada el ' + new Date(c.ok).toLocaleDateString() + ': generación directa activada' : T ? '✗ ' + esc(T.msg) : 'Pulsa «Probar» para activar la generación directa (no gasta saldo)'}</p>` : `<p>${esc(tip)}</p>`}</div>
-        <span class="row" style="gap:6px;flex:none">${on ? `<button class="btn sm ${c.ok ? '' : 'acc'}" data-provtest="${id}">Probar</button>` : ''}<button class="btn sm ${on ? '' : 'acc'}" data-${on ? 'provdel' : 'provset'}="${id}">${on ? 'Quitar' : 'Conectar'}</button></span></div>`; }).join('')}
-    <p class="note" style="margin:4px 0 10px">«Probar» hace una llamada gratuita (no genera nada). Cada generación directa te pide confirmación antes de gastar saldo. El modo manual sigue disponible siempre.</p>
-    <div class="ayudas">Otras cuentas (solo como recordatorio)</div>
-    ${PROVIDERS.filter(([id]) => id !== 'fal').map(([id, n, d]) => { const on = O[id] && O[id].key; return `<div class="prov"><span class="dot ${on ? 'on' : ''}"></span><div><b>${n}</b><p>${d}${on ? ' · clave ' + mask(on) : ''}</p></div><button class="btn sm" data-${on ? 'provdel' : 'provset'}="otros:${id}">${on ? 'Quitar' : 'Guardar'}</button></div>`; }).join('')}
+    <div class="stack" style="gap:6px">${API_ORDER.map(id => { const D = PROV_UI.find(x => x[0] === id); if (D) { const [, n, d, f, tip] = D; const c = P[id] || {}; const on = !!c.key; const T = isObj(c.test) ? c.test : null;
+      return `<div class="prov"><span class="dot ${c.ok ? 'on' : ''}"></span><div><b>${n} <span class="ptag gen">Genera aquí</span></b><p>${d}${on ? ' · ' + f.map(([k, l]) => l + ' ' + mask(c[k])).join(' · ') : ''}</p>${on ? `<p>${c.ok ? '✓ Conexión comprobada el ' + new Date(c.ok).toLocaleDateString() + ': generación directa activada' : T ? '✗ ' + esc(T.msg) : 'Pulsa «Probar» para activar la generación directa (no gasta saldo)'}</p>` : `<p>${esc(tip)}</p>`}</div>
+        <span class="row" style="gap:6px;flex:none">${on ? `<button class="btn sm ${c.ok ? '' : 'acc'}" data-provtest="${id}">Probar</button>` : ''}<button class="btn sm ${on ? '' : 'acc'}" data-${on ? 'provdel' : 'provset'}="${id}">${on ? 'Quitar' : 'Conectar'}</button></span></div>`; }
+      const R = PROVIDERS.find(x => x[0] === id); if (!R) return ''; const [, n, d] = R; const on = O[id] && O[id].key;
+      return `<div class="prov"><span class="dot ${on ? 'on' : ''}"></span><div><b>${n} <span class="ptag">Recordatorio</span></b><p>${d}${on ? ' · clave ' + mask(on) : ' · de momento generas fuera y la clave solo queda apuntada'}</p></div><button class="btn sm" data-${on ? 'provdel' : 'provset'}="otros:${id}">${on ? 'Quitar' : 'Guardar'}</button></div>`; }).join('')}
+    <p class="note" style="margin:4px 0 10px">«Genera aquí»: la app genera directamente con tu cuenta; «Probar» hace una llamada gratuita y cada generación te pide confirmación antes de gastar. «Recordatorio»: aún no tienen conexión directa, el flujo manual va igual.</p>
     <div class="prov"><span class="dot"></span><div><b>¿Usas otra API?</b><p>Apúntala en el feedback y la añadimos</p></div><button class="btn sm" data-a="feedback">Pedirla</button></div></div>
     <div class="card" style="margin-top:14px"><b>🔌 MCP</b><p class="note" style="margin-top:6px">Más adelante podrás pedir imágenes a Saga Studio desde Claude o ChatGPT. Todavía no está disponible.</p></div>
     <p class="note" style="margin-top:14px">Las generaciones directas aparecen en «Trabajos» (arriba) mientras se hacen, y al terminar se guardan solas en Creaciones.</p>`);
@@ -2384,6 +2399,33 @@ function bitacoraModal() {
 }
 
 /* visor grande de una ficha de biblioteca (como Aria: tocar = verla en grande) */
+/* ---------- visor grande de Fototeca y Filmoteca (como el de Aria): medio a la izquierda, ficha y acciones a la derecha ---------- */
+function mediaViewer(key, id) {
+  const L = S[key] || []; if (!L.length) return; let i = Math.max(0, L.findIndex(x => x.id === id)); const isV = key === 'filmoteca';
+  const fmtD = t => !isFinite(t) ? '' : t < 60 ? t.toFixed(1) + ' s' : Math.floor(t / 60) + ' min ' + Math.round(t % 60) + ' s';
+  const draw = sc => { const p = L[i]; S.picked[key] = p.id; save();
+    const u = src(p.media);
+    sc.querySelector('#mvm').innerHTML = `<span class="mvc">${i + 1} / ${L.length}</span>${L.length > 1 ? '<button class="lbn mvp" id="mvp" aria-label="Anterior">‹</button><button class="lbn mvn" id="mvn" aria-label="Siguiente">›</button>' : ''}
+      ${!u ? '<div class="mvwait">Cargando de tu Drive…</div>' : isV ? `<video id="mvv" src="${u}" controls autoplay loop playsinline></video>` : `<img id="mvv" src="${u}">`}`;
+    const tags = [p.cat, p.escena, p.model ? 'IA: ' + p.model : ''].filter(Boolean);
+    sc.querySelector('#mvi').innerHTML = `<h2>Nº ${p.n || i + 1}</h2><p class="note">${isV ? 'Filmoteca' : 'Fototeca'} · ${esc(p.date || '')}</p>
+      ${tags.length ? `<div class="mvs"><span class="lbl">Etiquetas</span><div class="chips">${tags.map(t => `<span class="chip">${esc(t)}</span>`).join('')}</div></div>` : ''}
+      <div class="mvs"><span class="lbl">Usar</span>${isV ? '<button class="btn acc wide" data-a="useMotion" data-mvclose="1">🎭 Motion control</button><button class="btn wide" data-a="useAsRef" data-mvclose="1">🎬 Añadir como referencia</button>' : '<button class="btn acc wide" data-a="useCopy" data-mvclose="1">✨ Recrear en Imagen</button><button class="btn wide" data-a="useStart" data-mvclose="1">🎬 Animar en Vídeo</button>'}</div>
+      <div class="mvs"><span class="lbl">Prompt</span>${p.prompt ? `<div class="promptbox mvpr">${esc(p.prompt)}</div><button class="btn wide" data-copy="${esc(p.prompt)}">Copiar prompt</button>` : '<p class="note">Sin prompt guardado. Puedes pegarlo en la ficha de la izquierda.</p>'}</div>
+      <div class="mvs"><span class="lbl">Datos</span><dl class="mvd"><dt>Tamaño</dt><dd id="mvsz">—</dd>${isV ? '<dt>Duración</dt><dd id="mvdu">—</dd>' : ''}${p.model ? `<dt>Modelo</dt><dd>${esc(p.model)}</dd>` : ''}<dt>Fecha</dt><dd>${esc(p.date || '—')}</dd></dl></div>`;
+    const m = sc.querySelector('#mvv'); if (m) { const fill = () => { const w = m.videoWidth || m.naturalWidth, h = m.videoHeight || m.naturalHeight; if (w) sc.querySelector('#mvsz').textContent = w + ' × ' + h + ' px'; const du = sc.querySelector('#mvdu'); if (du && m.duration) du.textContent = fmtD(m.duration); }; m.addEventListener(isV ? 'loadedmetadata' : 'load', fill); if (m.complete || m.readyState > 0) fill(); }
+    const pv = sc.querySelector('#mvp'), nx = sc.querySelector('#mvn'); if (pv) pv.onclick = () => step(sc, -1); if (nx) nx.onclick = () => step(sc, 1);
+    if (!u) setTimeout(() => { if (document.getElementById('mvm') && L[i] === p) draw(sc); }, 900);
+  };
+  const step = (sc, d) => { i = (i + d + L.length) % L.length; draw(sc); };
+  const key0 = e => { const sc = document.getElementById('scrim'); if (!sc || !sc.querySelector('#mvm') || /INPUT|TEXTAREA/.test((e.target || {}).tagName)) return; if (e.key === 'ArrowLeft') step(sc, -1); if (e.key === 'ArrowRight') step(sc, 1); };
+  document.addEventListener('keydown', key0);
+  modal('<div class="mvw"><div class="mvl" id="mvm"></div><div class="mvr" id="mvi"></div></div>', sc => {
+    draw(sc);
+    sc.addEventListener('click', e => { if (e.target.closest('[data-mvclose]')) closeModal(); });
+    let x0 = null; const mm = sc.querySelector('#mvm'); mm.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true }); mm.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) step(sc, dx < 0 ? 1 : -1); });
+  }, 'mvmodal', () => document.removeEventListener('keydown', key0));
+}
 function libViewer(lib, id) {
   const L = S.libs[lib] || []; let i = Math.max(0, L.findIndex(x => x.id === id)); const sh = (LIBS[lib].shape || '3/4');
   const draw = sc => { const p = L[i]; S.picked[lib] = p.id;
@@ -2459,13 +2501,13 @@ async function gdAuth(interactive) {
   if (id !== ACC.id) throw userErr(`Has elegido otra cuenta de Google. Aquí solo se usa la de ${ACC.rec.name || 'esta sesión'}${ACC.rec.email ? ' (' + ACC.rec.email + ')' : ''}: no se ha tocado ningún Drive.`);
   if (!t.drive) throw userErr('Falta el permiso de Google Drive: vuelve a intentarlo y marca la casilla de Drive');
   if (ACC.stopped) return;
-  GD.token = t.token; GD.exp = t.exp; try { localStorage.setItem(GD.TK, JSON.stringify({ token: GD.token, exp: GD.exp })); } catch (e) {}
+  GD.token = t.token; GD.exp = t.exp; try { localStorage.setItem(GD.TK, JSON.stringify({ token: GD.token, exp: GD.exp })); } catch (e) {} gdTokSync();
 }
 async function gdFetch(url, opt = {}) {
   if (ACC.stopped) throw Object.assign(new Error('stopped'), { need: true });
   if (!gdOk()) throw Object.assign(new Error('need'), { need: true });
   const r = await fetch(url, Object.assign({ signal: ACC.ctrl.signal }, opt, { headers: Object.assign({ Authorization: 'Bearer ' + GD.token }, opt.headers || {}) }));
-  if (r.status === 401) { GD.token = ''; GD.exp = 0; throw Object.assign(new Error('need'), { need: true }); }
+  if (r.status === 401) { GD.token = ''; GD.exp = 0; gdTokSync(); throw Object.assign(new Error('need'), { need: true }); }
   if (!r.ok) { const t = await r.text().catch(() => ''); throw Object.assign(new Error(`Drive ${r.status}: ${t.slice(0, 160)}`), { status: r.status }); }
   return r;
 }
@@ -2583,7 +2625,7 @@ async function gdRevoke() {
   const t = GD.token; try { if (t && window.google && google.accounts && google.accounts.oauth2) google.accounts.oauth2.revoke(t, () => {}); } catch (e) {}
   gdDisconnect(); toast('Permiso de Google retirado. Tus archivos siguen en tu Drive', 3500);
 }
-function gdDisconnect() { S.drive = { on: false }; GD.token = ''; GD.exp = 0; GD.folder = GD.media = GD.stateId = ''; GD.remote = {}; GD.conflict = false; try { localStorage.removeItem(GD.TK); localStorage.removeItem(GD.META); } catch (e) {} save(); renderHeader(); bar('drive'); toast('Drive desconectado en este dispositivo (tus archivos siguen en tu Drive)'); }
+function gdDisconnect() { S.drive = { on: false }; GD.token = ''; GD.exp = 0; gdTokSync(); try { caches.delete('saga-media'); } catch (e) {} GD.folder = GD.media = GD.stateId = ''; GD.remote = {}; GD.conflict = false; try { localStorage.removeItem(GD.TK); localStorage.removeItem(GD.META); } catch (e) {} save(); renderHeader(); bar('drive'); toast('Drive desconectado en este dispositivo (tus archivos siguen en tu Drive)'); }
 function gdMenu(e) {
   const r = rectOf(e);
   if (!gdOn()) return menu(r.left, r.bottom + 8, [{ head: 'Google Drive' }, { t: 'Conectar mi Google Drive', sub: 'Tus datos, fotos y vídeos iguales en el Mac y el móvil', icon: 'folder', fn: gdConnect }]);
@@ -2591,6 +2633,15 @@ function gdMenu(e) {
     { t: 'Abrir la carpeta en Drive', icon: 'photos', fn: () => GD.folder ? window.open('https://drive.google.com/drive/folders/' + GD.folder, '_blank', 'noopener') : toast('Aún no hay carpeta') }, { t: 'Liberar espacio en este dispositivo', sub: 'Borra de aquí lo que ya está en tu Drive', icon: 'trash', fn: async () => { const r = await cacheTrim(0); toast(`Liberados ${(r.freed / 1048576).toFixed(0)} MB · todo sigue en tu Drive`); } },
     { t: S.pickerKey ? 'Selector de Drive: activado' : 'Activar «Desde Google Drive»', icon: 'photos', fn: gdPickerSetup }, '-', { t: 'Desconectar en este dispositivo', icon: 'trash', fn: gdDisconnect }, { t: 'Retirar el permiso de Google', sub: 'En todos tus dispositivos', icon: 'key', fn: gdRevoke }]);
 }
+
+/* ---------- ver al instante: los archivos de tu Drive se reproducen por trozos (como YouTube), sin bajarlos enteros ----------
+   La página deja el permiso de Drive en la caché del navegador; el service worker lo añade a cada petición y pasa los «Range» del vídeo. */
+const TOK_URL = () => new URL('_drive-token', document.baseURI).href;
+function gdTokSync() { try { if (!window.caches) return; caches.open('saga-auth').then(c => GD.token && GD.exp > Date.now() ? c.put(TOK_URL(), new Response(JSON.stringify({ token: GD.token, exp: GD.exp }), { headers: { 'Content-Type': 'application/json' } })) : c.delete(TOK_URL())).catch(() => {}); } catch (e) {} }
+const swOn = () => !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+function streamUrl(k) { const id = driveIdOf(k); return id && gdOn() && gdOk() && swOn() && /^[\w-]{10,200}$/.test(id) ? '_drive/' + id : ''; }
+const vsrc = r => { const u = src(r); return u ? u + '#t=0.1' : ''; }; // en las cuadrículas: se ve el primer fotograma sin reproducir
+setTimeout(gdTokSync, 0);
 /* ============ modo «solo nube»: Drive es el sitio de verdad; aquí solo queda una caché pequeña ============
    - lo que ya está en Drive no se baja entero al abrir la app: se trae cuando lo ves
    - la caché del dispositivo se limita (lo menos usado se borra de aquí, nunca de Drive) */
@@ -3117,7 +3168,9 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-favref]'))) { e.stopPropagation(); const [k, id] = el.dataset.favref.split('|'); const x = S[k].find(y => y.id === id); x.fav = !x.fav; save(); return render(); }
   if ((el = d('[data-recreate2]'))) { e.stopPropagation(); const [k, id] = el.dataset.recreate2.split('|'); S.picked[k] = id; return k === 'fototeca' ? A.useCopy() : A.useMotion(); }
   if ((el = d('[data-recreate]'))) { S.picked.filmoteca = el.dataset.recreate; return A.useMotion(); }
-  if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); if ((S.picked[kk] === id || isMob()) && !el.dataset.gol && LIBS[kk]) { S.picked[kk] = id; save(); return libViewer(kk, id); } S.picked[kk] = id; if (isMob() && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
+  if ((el = d('[data-mview]'))) { const [k, id] = el.dataset.mview.split('|'); return mediaViewer(k, id); }
+  if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); if ((S.picked[kk] === id || isMob()) && !el.dataset.gol && LIBS[kk]) { S.picked[kk] = id; save(); return libViewer(kk, id); }
+    if ((S.picked[kk] === id || isMob()) && (kk === 'filmoteca' || kk === 'fototeca')) { S.picked[kk] = id; save(); render(); return mediaViewer(kk, id); } S.picked[kk] = id; if (isMob() && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
   if ((el = d('[data-color]'))) { S.sel.color = S.sel.color === el.dataset.color ? '' : el.dataset.color; S.img.prompt = ''; save(); return render(); }
   if ((el = d('[data-provset]'))) { const id = el.dataset.provset; const [grp, oid] = id.split(':'); const ui = PROV_UI.find(p => p[0] === id); const fields = ui ? ui[3] : [['key', 'Clave de API']];
     const o = await textModal('Conectar ' + (ui ? ui[1] : oid), fields.map(([k, l]) => [k, l, 'pega aquí tu ' + l.toLowerCase()])); if (!o || fields.some(([k]) => !o[k])) return apisModal();
@@ -3256,7 +3309,7 @@ const provOk = p => { const c = credOf(p); return !!(c && c.ok); };
 /* la imagen de una referencia (foto guardada o imagen de la web) como archivo para mandarla */
 async function refBlob(ref) {
   if (!ref) return null;
-  if (String(ref).startsWith('m:')) { const b = await idbGet(ref); return b instanceof Blob ? b : null; }
+  if (String(ref).startsWith('m:')) { const b = db ? await idbGet(ref) : null; if (b instanceof Blob) return b; const id = gdOn() && driveIdOf(ref); if (!id) return null; try { const d = await (await gdFetch(`${GD.API}/files/${id}?alt=media`)).blob(); if (db) idbPut(ref, d).catch(() => {}); return d; } catch (e) { return null; } } // en tu Drive y no aquí: se trae
   try { const u = new URL(ref, location.href); if (u.origin !== location.origin) return null; const r = await fetch(u.href); return r.ok ? await r.blob() : null; } catch (e) { return null; }
 }
 
