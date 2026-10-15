@@ -1119,6 +1119,28 @@ body.gated>header,body.gated>main,body.gated>#mnav,body.gated>#mtabs,body.gated 
 @media (max-width:820px){.mvw{grid-template-columns:1fr;height:auto;max-height:92vh;overflow:auto}.mvl{height:62vh}.mvr{border-left:0}}
 .platrow .opts{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}.platrow .opts .plat{min-width:0;padding:8px 10px}.platrow .opts .plat em{display:block;font-size:10.5px}.platrow .note{margin:2px 0 0}.platvar{width:100%;margin-top:4px}
 .mpbar{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}.mpbar #mpq{flex:1 1 100%}.mpsel{display:flex;flex-direction:column;gap:4px;flex:1 1 180px;min-width:0}.mpsel span{font:600 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}.mpsel select{width:100%}
+
+.mcard{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px;border-radius:18px;border:1px solid var(--line2);background:linear-gradient(135deg,rgba(255,120,90,.10),rgba(150,90,255,.10));transition:transform .15s,border-color .15s}
+.mcard:hover{border-color:var(--hot,#f05a9a);transform:translateY(-1px)}
+.mcic{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--grad);color:#fff}
+.mct{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.mct small{font:600 9.5px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}.mct b{font-size:16px}.mct em{font-style:normal;font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mcf{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}.mcf i{font-style:normal;font-size:10.5px;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line)}
+.mcgo{flex:none;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.plrow{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.plrow::-webkit-scrollbar{display:none}
+.pl{flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 12px 8px 26px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);position:relative;min-width:104px;text-align:left}
+.pl b{font-size:13px}.pl small{font-size:10.5px;color:var(--mut)}.pl .pld{position:absolute;left:11px;top:13px;width:8px;height:8px;border-radius:50%;background:#666}
+.pl.live .pld{background:#3ddc84;box-shadow:0 0 8px #3ddc84}.pl.key .pld{background:#f5b041}.pl.man .pld{background:#8a8aa0}
+.pl.on{border-color:transparent;background:linear-gradient(var(--panel2),var(--panel2)) padding-box,var(--grad) border-box;border:1.5px solid transparent}
+.plnote{font-size:12px}
+.seg2{display:flex;gap:6px;flex-wrap:wrap}.seg2 button{flex:1 1 0;min-width:64px;display:flex;flex-direction:column;align-items:center;gap:1px;padding:9px 8px;border-radius:12px;border:1px solid var(--line);background:var(--panel2)}
+.seg2 button b{font-size:13px}.seg2 button small{font-size:10px;color:var(--mut)}.seg2 button.on{border-color:transparent;background:var(--grad);color:#fff}.seg2 button.on small{color:rgba(255,255,255,.85)}.seg2 button.soft{opacity:.55}
+.durrow{display:flex;align-items:center;gap:12px}.durrow input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:999px;background:linear-gradient(90deg,var(--hot,#f05a9a) var(--p),rgba(255,255,255,.12) var(--p));padding:0;border:0}
+.durrow input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:pointer}
+.durrow input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:0}
+.durv{min-width:52px;text-align:center;padding:6px 10px;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+.arrow{display:flex;gap:6px;flex-wrap:wrap}.arb{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 6px 6px;width:58px;border-radius:12px;border:1px solid var(--line);background:var(--panel2)}
+.arb i{display:block;height:22px;max-width:40px;border:1.5px solid currentColor;border-radius:3px;opacity:.8}.arb .arauto{border:0;height:22px;line-height:22px;font-style:normal}.arb small{font-size:10px}.arb.on{border-color:transparent;background:var(--grad);color:#fff}
+.mpps{display:flex;flex-wrap:wrap;gap:4px;margin:3px 0}.pp{font-size:10.5px;padding:1px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--mut)}.pp.live{border-color:#3ddc84;color:#3ddc84}.pp.key{border-color:#f5b04188;color:#f5b041}
 </style></head>
 <body>
 <header>
@@ -1312,8 +1334,53 @@ const IMG_MODELS = [
 const mAll = k => !!(S.mall && S.mall[k]);
 const mShow = (L, cur, k) => mAll(k) ? L : L.filter(m => m.top || m.id === cur);
 const mMore = (L, k) => { const n = L.filter(m => !m.top).length; return n ? `<button class="opt mmore" data-a="modelsAll" data-k="${k}">${mAll(k) ? 'Ver menos ▴' : `Ver todos los modelos (${L.length}) ▾`}<span>${mAll(k) ? '' : n + ' más: Wan, Kling, Veo, Grok, FLUX…'}</span></button>` : ''; };
-const vidMax = () => { const m = VID_MODELS.find(x => x.id === S.vid.model); return (m && m.maxDur) || 15; };
-const imgUsd = (m, q) => m.usd ? m.usd[q === '2k' ? 'high' : 'std'] : 0;
+/* lo que admite cada modelo (comprobado en Higgsfield y en las fichas de fal/Pollo): duración, resoluciones y formatos.
+   dur: [mín, máx] = cualquier valor entre medias; d: lista cerrada. res: { resolución: plataformas donde existe ('' = en todas) } */
+const VSPEC = {
+  sd20:{dur:[4,15],res:{'480p':'','720p':'','1080p':'','4k':'Higgsfield'},ar:['auto','9:16','3:4','1:1','4:3','16:9','21:9']},
+  sd25:{dur:[4,30],res:{'480p':'','720p':'','1080p':''},ar:['auto','9:16','3:4','1:1','4:3','16:9','21:9']},
+  k3o:{dur:[3,15],res:{'720p':'','1080p':'','4k':''},ar:['9:16','1:1','16:9']},
+  veo31:{d:[4,6,8],res:{'720p':'','1080p':'','4k':'fal · Pollo'},ar:['9:16','16:9']},
+  h3:{dur:[5,15],res:{'480p':'','768p':''},ar:['auto','9:16','3:4','1:1','4:3','16:9','21:9']},
+  k25:{d:[5,10],res:{'720p':'','1080p':''},ar:['9:16','1:1','16:9']},
+  wan30:{dur:[2,30],res:{'480p':'','720p':'','1080p':''},ar:['auto','9:16','3:4','1:1','4:3','16:9']},
+  wan30p:{dur:[2,30],res:{'480p':'','720p':'','1080p':''},ar:['auto','9:16','3:4','1:1','4:3','16:9']},
+  wan27:{dur:[2,15],res:{'720p':'','1080p':''},ar:['9:16','3:4','1:1','4:3','16:9']},
+  wan26:{d:[5,10,15],res:{'720p':'','1080p':''},ar:['9:16','1:1','16:9']},
+  sd15:{d:[4,8,12],res:{'480p':'','720p':'','1080p':''},ar:['auto','9:16','3:4','1:1','4:3','16:9','21:9']},
+  sd20m:{dur:[4,15],res:{'480p':'','720p':''},ar:['auto','9:16','3:4','1:1','4:3','16:9','21:9']},
+  k26:{d:[5,10],res:{'720p':'','1080p':'fal'},ar:['9:16','1:1','16:9']},
+  k30:{dur:[3,15],res:{'720p':'','1080p':'','4k':''},ar:['9:16','1:1','16:9']},
+  k30t:{dur:[3,15],res:{'720p':'','1080p':''},ar:['9:16','1:1','16:9']},
+  veo3:{d:[4,6,8],res:{'720p':'','1080p':''},ar:['9:16','16:9']},
+  veo31l:{d:[4,6,8],res:{'720p':'','1080p':''},ar:['auto','9:16','16:9']},
+  hl02:{d:[6,10],res:{'512p':'','768p':'','1080p':''},ar:['auto']},
+  hl23:{d:[6,10],res:{'768p':'','1080p':''},ar:['auto']},
+  h3s:{dur:[4,15],res:{'480p':'Pollo','768p':'Pollo','2k':''},ar:['auto','9:16','3:4','1:1','4:3','16:9','21:9']},
+  grokv:{dur:[1,15],res:{'480p':'','720p':''},ar:['9:16','1:1','16:9']},
+  grok15:{dur:[2,15],res:{'480p':'','720p':'','1080p':''},ar:['auto','9:16','3:4','1:1','4:3','16:9']},
+  grok15l:{dur:[1,15],res:{'480p':'','720p':'','1080p':''},ar:['auto','9:16','3:4','1:1','4:3','16:9']},
+  flux3v:{dur:[5,20],res:{'720p':'','1080p':''},ar:['auto','9:16','3:4','1:1','4:3','16:9','21:9']},
+  gomni:{dur:[4,10],res:{'720p':''},ar:['9:16','16:9']},
+  gomni11:{dur:[3,10],res:{'360p':'','720p':'','1080p':'','4k':''},ar:['9:16','16:9']},
+  hhorse:{dur:[3,15],res:{'720p':'','1080p':''},ar:['9:16','3:4','1:1','4:3','16:9']},
+  cs30:{dur:[4,15],res:{'480p':'','720p':'','1080p':'','4k':''},ar:['auto','9:16','3:4','1:1','4:3','16:9','21:9']},
+  cs40:{dur:[4,30],res:{'480p':'','720p':'','1080p':''},ar:['auto','9:16','3:4','1:1','4:3','16:9','21:9']},
+};
+const IRES = { seedream:['1k','1.5k','2k'], seedflash:['1k','1.5k','2k'], gptimg:['1k','2k','4k'], nbp:['1k','2k','4k'], nblite:['1k'], nb21:['1k','2k','4k'], qwen:['1k','2k'], mstudio:['1k','2k','4k'], grok:['1k','2k'], ideogram:['1k','2k'], klingimg:['1k','2k'], flux:['1k','1.5k','2k','4k'], flow:['1k','2k'],
+  soul2:['1.5k','2k'], cs25:['1k','2k','4k'], gptimg2:['1k','2k','4k'], nb:['1k'], nb2:['1k','2k','4k'], sd45:['2k','4k','6k'], seedlite:['2k','4k'], flux2:['1k','2k'], kontext:['1k'], klingo1:['1k','2k'], grok1:['1k','2k'], recraft:['1k','2k'], zimage:['1k'] };
+const IRES_T = { '1k':'Rápida', '1.5k':'Estándar', '2k':'Alta', '4k':'Máxima', '6k':'Ultra' };
+const vspec = () => VSPEC[S.vid.model] || { dur:[3,15], res:{'480p':'','720p':'','1080p':''}, ar:['auto','9:16','3:4','1:1','16:9'] };
+const ires = () => IRES[S.img.model] || ['1.5k','2k'];
+function specFix() { // al cambiar de modelo, lo que no admita se ajusta solo al valor más cercano
+  const v = S.vid, sp = vspec(), R = Object.keys(sp.res);
+  if (!R.includes(v.quality)) v.quality = R.includes('720p') ? '720p' : R[0];
+  if (sp.d) { if (!sp.d.includes(v.dur)) v.dur = sp.d.reduce((a, b) => Math.abs(b - v.dur) < Math.abs(a - v.dur) ? b : a); } else v.dur = Math.min(Math.max(v.dur, sp.dur[0]), sp.dur[1]);
+  if (!sp.ar.includes(v.ratio)) v.ratio = sp.ar.includes('auto') ? 'auto' : sp.ar[0];
+  const I = ires(); if (!I.includes(S.img.quality)) S.img.quality = I.includes('2k') ? '2k' : I[I.length - 1];
+}
+const vidMax = () => { const sp = vspec(); return sp.d ? sp.d[sp.d.length - 1] : sp.dur[1]; };
+const imgUsd = (m, q) => m.usd ? m.usd[/^(2k|4k|6k)$/.test(q) ? 'high' : 'std'] : 0;
 const VID_MODELS = [
   { top:1, id:'sd20', nsfw:true,  n:'Seedance 2.0', p:'Higgsfield · fal · WaveSpeed · Wiro', refs:9, tarifa:'desde $0.0985/s (tu consola)', info:'El más completo: referencias, voz y ambiente.' },
   { top:1, id:'sd25', nsfw:true,  n:'Seedance 2.5', p:'Higgsfield · fal · WaveSpeed · Wiro · Pollo', refs:9, tarifa:'desde $0.144/s (tu consola)', info:'Más definición y movimiento más natural.' },
@@ -1922,8 +1989,7 @@ R.crear = () => {
         ${R_.map(r => `<div class="ref" title="${esc(r.what)}"><div>${src(r.ref) ? `<img src="${src(r.ref)}">` : '—'}</div>${r.tag}</div>`).join('')}
         <button class="ref" data-a="addRef"><div>＋</div>añadir</button></div>
         <p class="note">${R_.length} de ${model.refs} referencias que admite ${esc(model.n)}.</p></div>
-      <div class="stack"><div class="between"><span class="lbl">Modelo de imagen</span><a class="lnk" data-a="modelInfo">¿Cuál elijo?</a></div><div class="opts">${mShow(IMG_MODELS, S.img.model, 'img').map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === S.img.model ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-imgmodel="${m.id}"`}><span>${m.n}<em>${off ? 'no admite 🔥' : esc(m.tag)}</em></span><span>${m.usd ? money(imgUsd(m, S.img.quality)) + ' · ' : ''}${m.p}</span></button>`; }).join('')}${mMore(IMG_MODELS, 'img')}</div></div>
-      <div class="stack"><span class="lbl">Calidad</span><div class="chips">${[['1.5k','Estándar · 1.5k'],['2k','Alta · 2k']].map(([q, t]) => `<button class="chip ${S.img.quality === q ? 'on' : ''}" data-imgq="${q}">${t}${model.usd ? ' · ' + money(imgUsd(model, q)) : ''}</button>`).join('')}</div></div>
+      <div class="stack"><span class="lbl">Resolución</span><div class="seg2">${ires().map(q => `<button class="${S.img.quality === q ? 'on' : ''}" data-imgq="${q}"><b>${q.toUpperCase()}</b><small>${IRES_T[q] || ''}${model.usd ? ' · ' + money(imgUsd(model, q)) : ''}</small></button>`).join('')}</div></div>
       <div class="stack"><span class="lbl">Formato</span><div class="ratios">${['3:4','1:1','4:3','9:16','16:9','2:3','3:2'].map(r => { const [w, h] = r.split(':').map(Number); const k = 16 / Math.max(w, h); return `<button class="ratio ${S.img.ratio === r ? 'on' : ''}" data-ratio="${r}"><i style="width:${w * k}px;height:${h * k}px"></i>${r}</button>`; }).join('')}</div></div>
       <div class="stack"><div class="between"><span class="lbl">Prompt</span><a class="lnk" data-a="rebuildPrompt">↺ rehacer</a></div>
         <div class="promptwrap"><div class="hl" aria-hidden="true">${hlPrompt(S.img.prompt)}</div><textarea class="prompt" data-imgprompt spellcheck="false">${esc(S.img.prompt)}</textarea></div>
@@ -1988,16 +2054,13 @@ R.video = () => {
         ${tile('mov').replace('class="tile', 'class="tile wide')}${tile('luz').replace('class="tile', 'class="tile wide')}
         <div class="stack"><span class="lbl">Cámara rápida</span><div class="chips">${CAMERAS.map(([k, t, d]) => `<button class="chip ${v.cam === k ? 'on' : ''}" data-vcam="${k}" title="${esc(d)}">${t}</button>`).join('')}</div></div>
         <div class="stack"><span class="lbl">Estilo</span><div class="chips">${VSTYLES.map(([k, t]) => `<button class="chip ${v.style === k ? 'on' : ''}" data-vstyle="${k}">${t}</button>`).join('')}</div>${tile('look').replace('class="tile', 'class="tile wide')}</div>`)}
+      ${platformRow('vid')}
       ${secOpen('vajustes', 'Ajustes', `${vm.n} · ${v.quality} · ${v.dur}s · ${v.ratio === 'auto' ? 'como la imagen' : v.ratio}`, `
-      <div class="stack"><div class="between"><span class="lbl">Modelo</span><span class="row" style="gap:10px"><a class="lnk" data-a="vModelInfo">¿Cuál elijo?</a></span></div><div class="opts">${mShow(VID_MODELS, v.model, 'vid').map(m => { const off = S.nsfw && !m.nsfw; return `<button class="opt ${m.id === v.model ? 'on' : ''} ${off ? 'dis' : ''}" ${off ? 'data-a="nsfwModelTip"' : `data-vidmodel="${m.id}"`}>${m.n}<span>${off ? 'no admite 🔥' : m.p}</span></button>`; }).join('')}${mMore(VID_MODELS, 'vid')}</div></div>
-      <div class="between"><div class="stack"><span class="lbl">Calidad</span><div class="chips">${['480p','720p','1080p'].map(q => `<button class="chip ${v.quality === q ? 'on' : ''}" data-vq="${q}">${q}</button>`).join('')}</div></div>
-        <div class="stack"><span class="lbl">Duración</span><div class="stepper"><button data-a="dur-">−</button><b>${v.dur}s</b><button data-a="dur+">＋</button></div><small class="note">hasta ${vidMax()} s con ${esc(vm.n)}</small></div></div>
-      <div class="stack"><span class="lbl">Formato</span><div class="chips">${['auto','9:16','3:4','1:1','16:9'].map(r => `<button class="chip ${v.ratio === r ? 'on' : ''}" data-vratio="${r}">${r === 'auto' ? 'Como la imagen' : r}</button>`).join('')}</div></div>
-      <label class="row note"><input type="checkbox" ${v.audio ? 'checked' : ''} data-vaudio style="width:auto"> Generar audio (Seedance inventa voz y ambiente)</label>
+      ${vidAjustes(v, vm)}
+      <label class="row note"><input type="checkbox" ${v.audio ? 'checked' : ''} data-vaudio style="width:auto"> Generar audio (voz y ambiente, si el modelo lo admite)</label>
       <p class="note">${esc(vm.n)}: ${esc(vm.info)}${vm.tarifa ? ' · ' + esc(vm.tarifa) : ''}</p>`)}
       ${secOpen('vprompt', 'Prompt montado', 'se actualiza solo', `<textarea class="prompt" readonly style="min-height:240px">${esc(buildVidPrompt())}</textarea><button class="btn sm" data-copy="${esc(buildVidPrompt())}">Copiar prompt</button>`)}
       ${nsfwRow(vm.nsfw ? 'Solo con Seedance 2.0 y 2.5' : 'Elige Seedance para usarlo')}
-      ${platformRow('vid')}
       <div class="sticky-gen"><button class="btn acc big" data-a="genVid">${viaModel('vid') ? 'Generar con ' + esc(PNAME[viaModel('vid').provider]) : (S.nsfw && vm.nsfw ? '🔥 ' : '') + 'Generar vídeo'}</button></div>`;
   }
   const items = S.creaciones.filter(x => x.kind === 'vid' && !x.trash);
@@ -2248,7 +2311,7 @@ const mask = v => v ? '····' + esc(String(v).slice(-4)) : '';
 function apisModal() {
   const P = provGet(), O = P.otros || {};
   modal(`<h2>Mis APIs</h2><p class="note" style="margin-bottom:12px">Generas con tus propias cuentas y pagas directamente a cada servicio. Sin claves, el flujo manual (preparar prompt → generar fuera → importar) funciona igual.</p>
-    <div class="card" style="margin-bottom:12px"><b>🔒 Tus claves</b><p class="note" style="margin-top:6px">Se guardan solo en este dispositivo y solo para esta cuenta. Nunca van a tu Google Drive, a las copias completas ni a los puntos de recuperación. Como cualquier clave guardada en un navegador, el código que se ejecute en él podría leerla: usa claves propias para Saga Studio y con poco saldo.</p></div>
+    <div class="card" style="margin-bottom:12px"><b>🔒 Tus claves</b><p class="note" style="margin-top:6px">Se guardan en este dispositivo y, con Drive conectado, en un archivo privado de tu Drive (<b>saga-claves.json</b>, solo lo ve esta app) para que las tengas en el móvil, el Mac y la web. Nunca van dentro de las copias completas ni de los puntos de recuperación. ${gdOn() ? '✓ Sincronizadas con tu Drive.' : 'Conecta Drive para tenerlas en todos tus dispositivos.'} Como cualquier clave guardada en un navegador, el código que se ejecute en él podría leerla: usa claves propias para Saga Studio y con poco saldo.</p></div>
     <div class="stack" style="gap:6px">${API_ORDER.map(id => { const D = PROV_UI.find(x => x[0] === id); if (D) { const [, n, d, f, tip] = D; const c = P[id] || {}; const on = !!c.key; const T = isObj(c.test) ? c.test : null;
       return `<div class="prov"><span class="dot ${c.ok ? 'on' : ''}"></span><div><b>${n} <span class="ptag gen">Genera aquí</span></b><p>${d}${on ? ' · ' + f.map(([k, l]) => l + ' ' + mask(c[k])).join(' · ') : ''}</p>${on ? `<p>${c.ok ? '✓ Conexión comprobada el ' + new Date(c.ok).toLocaleDateString() + ': generación directa activada' : T ? '✗ ' + esc(T.msg) : 'Pulsa «Probar» para activar la generación directa (no gasta saldo)'}</p>` : `<p>${esc(tip)}</p>`}</div>
         <span class="row" style="gap:6px;flex:none">${on ? `<button class="btn sm ${c.ok ? '' : 'acc'}" data-provtest="${id}">Probar</button>` : ''}<button class="btn sm ${on ? '' : 'acc'}" data-${on ? 'provdel' : 'provset'}="${id}">${on ? 'Quitar' : 'Conectar'}</button></span></div>`; }
@@ -2590,6 +2653,7 @@ async function gdSync(opts = {}) {
     // 3) datos, después de los archivos: así el otro dispositivo nunca ve una ficha sin su foto
     if (push) await gdPushState(rt, tot > 0); // si hubo subidas/bajadas (tarda), se vuelve a mirar el Drive justo antes de guardar
     await gdTrashOrphans();
+    await gdKeysSync().catch(e => console.warn('claves', e));
     S.drive.last = Date.now(); writeState(); GD.retryN = 0;
     gdSet('ok', 'Todo guardado en tu Drive · ' + gdTime());
     if (opts.toast) toast(tot ? `Drive al día · ${up.length} subidos, ${down.length} bajados` : 'Drive al día');
@@ -2645,6 +2709,20 @@ const swOn = () => !!(navigator.serviceWorker && navigator.serviceWorker.control
 function streamUrl(k) { const id = driveIdOf(k); return id && gdOn() && gdOk() && swOn() && /^[\w-]{10,200}$/.test(id) ? '_drive/' + id : ''; }
 const vsrc = r => { const u = src(r); return u ? u + '#t=0.1' : ''; }; // en las cuadrículas: se ve el primer fotograma sin reproducir
 setTimeout(gdTokSync, 0);
+/* ---------- tus APIs en todos tus dispositivos: un archivo privado en tu Drive (saga-claves.json), aparte de tus datos ----------
+   Solo lo ves tú y esta app (permiso drive.file). Nunca va dentro de las copias completas ni de los puntos de recuperación. */
+const KEYS_FILE = 'saga-claves.json'; let keysT = 0;
+function keysDirty() { clearTimeout(keysT); keysT = setTimeout(() => { if (gdOn() && gdOk() && GD.folder) gdKeysSync().catch(e => console.warn('claves', e)); }, 2500); }
+let keysRun = null;
+function gdKeysSync() { if (!keysRun) keysRun = keysSync1().finally(() => { keysRun = null; }); return keysRun; } // nunca dos a la vez (así no se crean dos archivos)
+async function keysSync1() {
+  if (!gdOn() || !gdOk() || !GD.folder || ACC.stopped) return;
+  const P = provGet(); const lt = +P._t || 0; const f = await gdFind(KEYS_FILE, GD.folder);
+  if (f) { const rt = Date.parse(f.modifiedTime) || 0;
+    if (lt < rt - 1000) { const R = await gdJson(`${GD.API}/files/${f.id}?alt=media`); if (isObj(R) && (+R._t || 0) > lt) { provSet(R, true); toast('Tus APIs están al día con tus otros dispositivos'); if (document.querySelector('#scrim .prov')) apisModal(); render(); } return; }
+    if (lt > rt + 1000) await gdUpload(null, new Blob([JSON.stringify(P)], { type: 'application/json' }), f.id);
+  } else if (lt && Object.keys(P).some(k => k !== '_t')) await gdUpload({ name: KEYS_FILE, parents: [GD.folder], mimeType: 'application/json' }, new Blob([JSON.stringify(P)], { type: 'application/json' }));
+}
 /* ============ modo «solo nube»: Drive es el sitio de verdad; aquí solo queda una caché pequeña ============
    - lo que ya está en Drive no se baja entero al abrir la app: se trae cuando lo ves
    - la caché del dispositivo se limita (lo menos usado se borra de aquí, nunca de Drive) */
@@ -2788,7 +2866,7 @@ const A = {
   nsfwOffTip() { toast('Con 🔥 el vestidor no se usa: quítalo para elegir prenda'); },
   nsfwModelTip() { toast('Ese modelo no admite 🔥. Quita 🔥 para usarlo'); },
   'cnt-'() { S.img.count = Math.max(1, S.img.count - 1); save(); render(); }, 'cnt+'() { S.img.count = Math.min(4, S.img.count + 1); save(); render(); },
-  'dur-'() { S.vid.dur = Math.max(3, S.vid.dur - 1); save(); render(); }, 'dur+'() { const mx = vidMax(); if (S.vid.dur >= mx) return toast(`${(VID_MODELS.find(m => m.id === S.vid.model) || {}).n || 'Este modelo'} llega hasta ${mx} s`); S.vid.dur = S.vid.dur + 1; save(); render(); },
+  'dur-'() { const sp = vspec(); S.vid.dur = Math.max(sp.d ? sp.d[0] : sp.dur[0], S.vid.dur - 1); save(); render(); }, 'dur+'() { const mx = vidMax(); if (S.vid.dur >= mx) return toast(`${(VID_MODELS.find(m => m.id === S.vid.model) || {}).n || 'Este modelo'} llega hasta ${mx} s`); S.vid.dur = S.vid.dur + 1; save(); render(); },
   async copyRef() { const [f] = await pickFiles(); if (!f) return; S.copyRef = await putMedia(f); S.img.prompt = ''; save(); render(); },
   clearCopy(e) { e.stopPropagation(); S.copyRef = ''; S.img.prompt = ''; save(); render(); },
   async addRef() { const fs = await pickFiles('image/*', true); for (const f of fs) S.refs.push(await putMedia(f)); S.img.prompt = ''; save(); render(); },
@@ -3151,11 +3229,12 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-tile]'))) return pickerModal(el.dataset.tile);
   if ((el = d('[data-choose]'))) { const [k, id] = el.dataset.choose.split('|'); S.sel[k] = id; S.receta = ''; S.img.prompt = ''; save(); closeModal(); return render(); }
   if ((el = d('[data-mv]'))) { S.mv = S.mv || {}; S.mv[S.section] = +el.dataset.mv; save(); renderMTabs(); try { window.scrollTo(0, 0); } catch (x) {} return; }
-  if ((el = d('[data-imgmodel]'))) { S.img.model = el.dataset.imgmodel; S.img.prompt = ''; platReset('img'); save(); if (el.dataset.close) closeModal(); return render(); }
+  if ((el = d('[data-imgmodel]'))) { S.img.model = el.dataset.imgmodel; S.img.prompt = ''; specFix(); platReset('img'); save(); if (el.dataset.close) closeModal(); return render(); }
   if ((el = d('[data-imgq]'))) { S.img.quality = el.dataset.imgq; save(); return render(); }
   if ((el = d('[data-ratio]'))) { S.img.ratio = el.dataset.ratio; S.img.prompt = ''; save(); return render(); }
-  if ((el = d('[data-vidmodel]'))) { S.vid.model = el.dataset.vidmodel; S.vid.dur = Math.min(S.vid.dur, vidMax()); platReset('vid'); save(); if (el.dataset.close) closeModal(); return render(); }
+  if ((el = d('[data-vidmodel]'))) { S.vid.model = el.dataset.vidmodel; specFix(); platReset('vid'); save(); if (el.dataset.close) closeModal(); return render(); }
   if ((el = d('[data-vmotor]'))) { S.vid.motor = el.dataset.vmotor; save(); return render(); }
+  if ((el = d('[data-vdur]'))) { S.vid.dur = +el.dataset.vdur; save(); return render(); }
   if ((el = d('[data-vq]'))) { S.vid.quality = el.dataset.vq; save(); return render(); }
   if ((el = d('[data-vcam]'))) { S.vid.cam = el.dataset.vcam; save(); return render(); }
   if ((el = d('[data-vstyle]'))) { S.vid.style = el.dataset.vstyle; save(); return render(); }
@@ -3178,9 +3257,9 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-color]'))) { S.sel.color = S.sel.color === el.dataset.color ? '' : el.dataset.color; S.img.prompt = ''; save(); return render(); }
   if ((el = d('[data-provset]'))) { const id = el.dataset.provset; const [grp, oid] = id.split(':'); const ui = PROV_UI.find(p => p[0] === id); const fields = ui ? ui[3] : [['key', 'Clave de API']];
     const o = await textModal('Conectar ' + (ui ? ui[1] : oid), fields.map(([k, l]) => [k, l, 'pega aquí tu ' + l.toLowerCase()])); if (!o || fields.some(([k]) => !o[k])) return apisModal();
-    const P = provGet(); if (oid) { P.otros = Object.assign({}, P.otros, { [oid]: { key: o.key } }); } else P[id] = o; provSet(P); renderHeader(); toast('Clave guardada solo en este dispositivo'); return apisModal(); }
+    const P = provGet(); if (oid) { P.otros = Object.assign({}, P.otros, { [oid]: { key: o.key } }); } else P[id] = o; provSet(P); renderHeader(); toast(gdOn() ? 'Clave guardada · llega sola a tus otros dispositivos por tu Drive' : 'Clave guardada en este dispositivo (conecta Drive para tenerla en todos)', 4000); return apisModal(); }
   if ((el = d('[data-provtest]'))) { await provTest(el.dataset.provtest); return $('#scrim') && apisModal(); }
-  if ((el = d('[data-provdel]'))) { const id = el.dataset.provdel; const [grp, oid] = id.split(':'); if (!(await ask('¿Quitar esta clave de este dispositivo?'))) return apisModal(); const P = provGet(); if (oid) { if (P.otros) delete P.otros[oid]; } else delete P[id]; provSet(P); renderHeader(); return apisModal(); }
+  if ((el = d('[data-provdel]'))) { const id = el.dataset.provdel; const [grp, oid] = id.split(':'); if (!(await ask(gdOn() ? '¿Quitar esta clave? Se quitará también en tus otros dispositivos.' : '¿Quitar esta clave de este dispositivo?'))) return apisModal(); const P = provGet(); if (oid) { if (P.otros) delete P.otros[oid]; } else delete P[id]; provSet(P); renderHeader(); return apisModal(); }
   if ((el = d('[data-amode]'))) { S.aud.modo = el.dataset.amode; save(); return render(); }
   if ((el = d('[data-amodel]'))) { S.aud.model[S.aud.modo] = el.dataset.amodel; save(); return render(); }
   if ((el = d('[data-atag]'))) { S.aud.texto = (S.aud.texto + ' ' + el.dataset.atag).trim(); save(); return render(); }
@@ -3202,6 +3281,7 @@ document.addEventListener('click', async e => {
   if ((el = d('.gstep'))) return;
 });
 document.addEventListener('input', e => {
+  if (e.target.hasAttribute && e.target.hasAttribute('data-vdurr')) { const t = e.target; const sp = vspec(); t.style.setProperty('--p', ((t.value - sp.dur[0]) / Math.max(1, sp.dur[1] - sp.dur[0]) * 100).toFixed(1) + '%'); const b = t.parentNode.querySelector('.durv'); if (b) b.textContent = t.value + ' s'; return; }
   const t = e.target;
   if (t.closest('#fbw') && t.classList.contains('iata')) { F.iaTxt = t.value; return; }
   if (t.closest('#fbw') && t.classList.contains('iaresp')) { F.iaResp = t.value; const b = $('#fbw [data-a="iaUse"]'); if (b) b.disabled = !F.iaResp.trim(); return; }
@@ -3228,6 +3308,7 @@ document.addEventListener('change', e => {
   if (t.dataset.refesc) { const k = t.dataset.refesc; const p = S[k].find(x => x.id === S.picked[k]); if (p) { p.escena = t.value; save(); } }
   if (t.dataset.libf === 'cat') render();
   if (t.hasAttribute('data-vaudio')) { S.vid.audio = t.checked; save(); }
+  if (t.hasAttribute('data-vdurr')) { S.vid.dur = +t.value; save(); render(); }
   if (t.dataset.acheck) { S.aud[t.dataset.acheck] = t.checked; save(); }
   if (t.dataset.wzsel) { char().wiz.d[t.dataset.wzsel] = t.value; char().wiz.d.promptManual = false; save(); }
 });
@@ -3279,7 +3360,7 @@ if (window.visualViewport) { const vv = visualViewport; const kb = () => { const
 /* claves de proveedores de IA: solo en este dispositivo y solo para esta cuenta. Nunca dentro de tus datos (así nunca van a Drive, a copias ni a puntos de recuperación) */
 const PROV_KEY = akey('saga-prov');
 function provGet() { if (!PROV_KEY) return {}; try { const o = JSON.parse(localStorage.getItem(PROV_KEY) || '{}'); return isObj(o) ? o : {}; } catch (e) { return {}; } }
-function provSet(o) { if (!PROV_KEY || ACC.stopped) return false; try { localStorage.setItem(PROV_KEY, JSON.stringify(o)); return true; } catch (e) { toast('No se pudo guardar la clave: el almacenamiento está lleno', 4500); return false; } }
+function provSet(o, remote) { if (!PROV_KEY || ACC.stopped) return false; if (!remote) { o._t = Date.now(); keysDirty(); } try { localStorage.setItem(PROV_KEY, JSON.stringify(o)); return true; } catch (e) { toast('No se pudo guardar la clave: el almacenamiento está lleno', 4500); return false; } }
 
 /* ============ generación directa: proveedores, catálogo de modelos y trabajos ============
    Siempre con las claves de quien usa la app (Mis APIs), solo de la cuenta activa y solo desde este dispositivo.
@@ -3539,6 +3620,25 @@ const famOf = kind => kind === 'img' ? S.img.model : kind === 'vid' ? S.vid.mode
 const genKind = () => S.section === 'video' ? (S.vid.que === 'recrear' ? 'motion' : 'vid') : 'img';
 const directReady = m => !!m && m.provider !== 'manual' && provOk(m.provider);
 
+/* ---------- ajustes de vídeo: solo lo que admite el modelo elegido ---------- */
+function vidAjustes(v, vm) {
+  const sp = vspec(); const plat = curPlat('vid'); const pn = PLAT_ID[plat] || '';
+  const resB = Object.entries(sp.res).map(([q, only]) => { const ok = !only || !pn || only.split('·').map(x => x.trim()).includes(pn);
+    return `<button class="${v.quality === q ? 'on' : ''} ${ok ? '' : 'soft'}" data-vq="${q}" title="${only ? 'Solo en ' + esc(only) : ''}"><b>${q.toUpperCase()}</b><small>${only ? 'solo ' + esc(only) : q === '4k' || q === '2k' ? 'máxima' : q === '1080p' ? 'Full HD' : q === '720p' ? 'HD' : 'borrador'}</small></button>`; }).join('');
+  const durB = sp.d ? `<div class="seg2">${sp.d.map(x => `<button class="${v.dur === x ? 'on' : ''}" data-vdur="${x}"><b>${x} s</b></button>`).join('')}</div>`
+    : `<div class="durrow"><input type="range" min="${sp.dur[0]}" max="${sp.dur[1]}" step="1" value="${v.dur}" data-vdurr style="--p:${((v.dur - sp.dur[0]) / Math.max(1, sp.dur[1] - sp.dur[0]) * 100).toFixed(1)}%"><b class="durv">${v.dur} s</b></div><small class="note">de ${sp.dur[0]} a ${sp.dur[1]} s con ${esc(vm.n)}</small>`;
+  const arB = sp.ar.map(r => `<button class="arb ${v.ratio === r ? 'on' : ''}" data-vratio="${r}" title="${r === 'auto' ? 'Como la imagen' : r}">${r === 'auto' ? '<i class="arauto">✦</i>' : `<i style="aspect-ratio:${r.replace(':', '/')}"></i>`}<small>${r === 'auto' ? 'Auto' : r}</small></button>`).join('');
+  return `<div class="stack"><span class="lbl">Resolución</span><div class="seg2">${resB}</div></div>
+      <div class="stack"><span class="lbl">Duración</span>${durB}</div>
+      <div class="stack"><span class="lbl">Formato</span><div class="arrow">${arB}</div></div>`;
+}
+/* ---------- tarjeta de modelo: se ve qué modelo, dónde se genera y se cambia en un toque ---------- */
+function modelCard(kind) {
+  const L0 = kind === 'img' ? IMG_MODELS : VID_MODELS; const id = famOf(kind); const m = L0.find(x => x.id === id) || L0[0]; const vm = viaModel(kind);
+  const sp = kind === 'vid' ? vspec() : null; const facts = kind === 'vid' ? [Object.keys(sp.res).slice(-1)[0].toUpperCase() + ' máx.', 'hasta ' + vidMax() + ' s', m.refs ? m.refs + ' refs' : ''] : [ires().slice(-1)[0].toUpperCase() + ' máx.', m.refs ? 'hasta ' + m.refs + ' refs' : 'sin referencias'];
+  return `<button class="mcard" data-a="pickModel" data-kind="${kind}"><span class="mcic">${ic(kind === 'img' ? 'image' : 'video', 'width="18" height="18"')}</span>
+    <span class="mct"><small>${kind === 'img' ? 'Modelo de imagen' : 'Modelo de vídeo'}</small><b>${esc(vm && !famEndpoints(id).includes(viaKey(kind)) ? vm.name : m.n)}</b><em>${esc(m.tag || m.info || '')}</em><span class="mcf">${facts.filter(Boolean).map(x => `<i>${esc(x)}</i>`).join('')}</span></span><span class="mcgo">Cambiar ▾</span></button>`;
+}
 /* ---------- primero el modelo, luego la plataforma: dónde lo generas (aquí con tu API o fuera copiando el prompt) ---------- */
 const PLAT_ID = { higgsfield: 'Higgsfield', fal: 'fal', wavespeed: 'WaveSpeed', wiro: 'Wiro', pollo: 'Pollo', magnific: 'Magnific', flow: 'Google Flow' };
 function platsOf(m) { const t = String(m.p || '').replace(/^Solo\s+/i, ''); if (/^Manual$/i.test(t)) return m.id === 'flow' ? ['flow'] : []; return t.split('·').map(x => x.trim().toLowerCase()).map(x => Object.keys(PLAT_ID).find(k => k === x || PLAT_ID[k].toLowerCase() === x)).filter(Boolean); }
@@ -3548,14 +3648,14 @@ function platformRow(kind) {
   const L0 = kind === 'img' ? IMG_MODELS : VID_MODELS; const id = famOf(kind); const m = L0.find(x => x.id === id) || L0[0]; const plats = platsOf(m); const cur = curPlat(kind);
   const vk = viaKey(kind); const vm = vk && !famEndpoints(id).includes(vk) ? viaModel(kind) : null; // modelo elegido a mano en «Otro modelo…»
   const chip = p => { const direct = ADAPTERS[p] && famKeys(id, p).length; const ok = direct && provOk(p); const on = !vm && p === cur;
-    return `<button class="opt plat ${on ? 'on' : ''}" data-plat="${kind}|${p}"><span>${esc(PLAT_ID[p])}<em>${direct ? (ok ? 'genera aquí' : 'conéctalo en Mis APIs') : 'copias el prompt'}</em></span></button>`; };
+    return `<button class="pl ${on ? 'on' : ''} ${direct ? (ok ? 'live' : 'key') : 'man'}" data-plat="${kind}|${p}"><span class="pld"></span><b>${esc(PLAT_ID[p])}</b><small>${direct ? (ok ? 'genera aquí' : 'falta conectar') : 'copias el prompt'}</small></button>`; };
   const vars = !vm && ADAPTERS[cur] && provOk(cur) && famKeys(id, cur).length > 1 ? `<select class="platvar" data-platvar="${kind}">${famKeys(id, cur).map(k => { const mm = findModel(k); return `<option value="${esc(k)}" ${k === vk ? 'selected' : ''}>${esc(mm ? mm.name : k.split(':').slice(1).join(':'))}</option>`; }).join('')}</select>` : '';
   const now_ = vm ? `Con «Otro modelo»: <b>${esc(PNAME[vm.provider])} · ${esc(vm.name)}</b> <a class="lnk" data-plat="${kind}|${cur}">volver a ${esc(m.n)}</a>`
     : !cur ? 'Este modelo no tiene plataforma apuntada: copias el prompt y lo generas donde quieras.'
     : ADAPTERS[cur] && famKeys(id, cur).length ? (provOk(cur) ? `Se genera aquí con tu cuenta de ${esc(PLAT_ID[cur])} y se cobra en tu saldo de ${esc(PLAT_ID[cur])}.` : `Para generar aquí con ${esc(PLAT_ID[cur])}, conéctalo y pulsa «Probar» en Mis APIs. Mientras, se copia el prompt.`)
     : `Se copia el prompt y lo generas en ${esc(PLAT_ID[cur])}; luego importas el resultado.`;
-  return `<div class="stack platrow"><div class="between"><span class="lbl">Plataforma · ${esc(m.n)}</span><a class="lnk" data-a="pickModel" data-kind="${kind}">Otro modelo…</a></div>
-    ${plats.length ? `<div class="opts">${plats.map(chip).join('')}</div>` : ''}${vars}<p class="note">${now_}</p></div>`;
+  return `<div class="stack platrow">${modelCard(kind)}<span class="lbl" style="margin-top:4px">Dónde lo generas</span>
+    ${plats.length ? `<div class="plrow">${plats.map(chip).join('')}</div>` : ''}${vars}<p class="note plnote">${now_}</p></div>`;
 }
 function platReset(kind) { const k = viaKey(kind); if (k && !famEndpoints(famOf(kind)).includes(k)) { S.gen.via = Object.assign({}, S.gen.via, { [kind]: '' }); } const sv = (S.gen.plat || {})[kind + ':' + famOf(kind)]; if (sv && ADAPTERS[sv] && provOk(sv)) { const ks = famKeys(famOf(kind), sv); const kk = ks.find(x => findModel(x)); if (kk) chooseModel(kind, kk); } }
 async function setPlat(kind, p) {
@@ -3600,7 +3700,7 @@ async function modelPicker(kind) {
     sc.querySelector('#mpst').innerHTML = `${L.length} modelo${L.length === 1 ? '' : 's'}${L.length > lim ? ` · se muestran ${lim}: afina la búsqueda` : ''}${st.length ? ' · ' + st.join(' · ') : ''}`;
     sc.querySelector('#mpl').innerHTML = L.slice(0, lim).map(m => { const off = m.provider !== 'manual' && !provOk(m.provider); const nsfwOff = S.nsfw && !m.nsfw;
       return `<div class="mprow ${m.key === cur ? 'on' : ''}"><button class="mpfav ${fav.has(m.key) ? 'on' : ''}" data-mpfav="${esc(m.key)}" aria-label="Favorito" title="Favorito">${fav.has(m.key) ? '★' : '☆'}</button>
-        <button class="mpgo" data-mpgo="${esc(m.key)}" ${nsfwOff ? 'data-dis="nsfw"' : off ? 'data-dis="prov"' : ''} role="option" aria-selected="${m.key === cur}"><b>${esc(m.name)}</b><small>${m.provider === 'manual' ? (m.b && platsOf(m.b).length ? esc(platsOf(m.b).map(p => PLAT_ID[p]).join(' · ')) + ' · copias el prompt' : 'Copias el prompt') : esc(PNAME[m.provider]) + (provOk(m.provider) ? ' · genera aquí · ' : ' · con tu API · ') + esc(m.pid)}${m.custom ? ' · añadido por ti' : ''}${m.members ? ' · solo miembros' : ''}</small><i>${esc(priceTxt(m.price))}${off ? ' · conecta y prueba ' + esc(PNAME[m.provider]) + ' en Mis APIs' : ''}${nsfwOff ? ' · no admite 🔥' : ''}</i></button></div>`; }).join('') || '<p class="note" style="padding:12px">No hay modelos con eso.</p>';
+        <button class="mpgo" data-mpgo="${esc(m.key)}" ${nsfwOff ? 'data-dis="nsfw"' : off ? 'data-dis="prov"' : ''} role="option" aria-selected="${m.key === cur}"><b>${esc(m.name)}</b><small class="mpps">${m.provider === 'manual' ? (m.b && platsOf(m.b).length ? platsOf(m.b).map(p => `<span class="pp ${ADAPTERS[p] && famKeys(m.pid, p).length ? (provOk(p) ? 'live' : 'key') : ''}">${esc(PLAT_ID[p])}</span>`).join('') : 'Copias el prompt') : esc(PNAME[m.provider]) + (provOk(m.provider) ? ' · genera aquí · ' : ' · con tu API · ') + esc(m.pid)}${m.custom ? ' · añadido por ti' : ''}${m.members ? ' · solo miembros' : ''}</small><i>${esc(priceTxt(m.price))}${off ? ' · conecta y prueba ' + esc(PNAME[m.provider]) + ' en Mis APIs' : ''}${nsfwOff ? ' · no admite 🔥' : ''}</i></button></div>`; }).join('') || '<p class="note" style="padding:12px">No hay modelos con eso.</p>';
   };
   const reload = async force => { draw(); await Promise.all(provs.map(p => catLoad(p, force).then(() => sc.isConnected && draw()))); };
   sc.querySelector('#mpq').oninput = e => { q = e.target.value; draw(); };
@@ -3622,7 +3722,7 @@ async function modelPicker(kind) {
 function chooseModel(kind, key) {
   const [p, ...rest] = key.split(':'); const pid = rest.join(':');
   S.gen.via = Object.assign({}, S.gen.via);
-  if (p === 'manual') { S.gen.via[kind] = ''; if (kind === 'img') { S.img.model = pid; S.img.prompt = ''; } else if (kind === 'vid') { S.vid.model = pid; S.vid.dur = Math.min(S.vid.dur, vidMax()); } else S.vid.motor = pid; }
+  if (p === 'manual') { S.gen.via[kind] = ''; if (kind === 'img') { S.img.model = pid; S.img.prompt = ''; specFix(); } else if (kind === 'vid') { S.vid.model = pid; specFix(); } else S.vid.motor = pid; }
   else { const m = findModel(key); if (!m) return; S.gen.via[kind] = key; S.gen.seen = Object.assign({}, S.gen.seen, { [key]: Object.assign({}, m, { tags: m.tags.slice(0, 4) }) });
     const ks = Object.keys(S.gen.seen); if (ks.length > 60) delete S.gen.seen[ks[0]]; if (kind === 'img') S.img.prompt = ''; }
   S.gen.recent = [key, ...(S.gen.recent || []).filter(x => x !== key)].slice(0, 20); save();
