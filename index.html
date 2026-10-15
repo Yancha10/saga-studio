@@ -1141,6 +1141,20 @@ body.gated>header,body.gated>main,body.gated>#mnav,body.gated>#mtabs,body.gated 
 .arrow{display:flex;gap:6px;flex-wrap:wrap}.arb{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 6px 6px;width:58px;border-radius:12px;border:1px solid var(--line);background:var(--panel2)}
 .arb i{display:block;height:22px;max-width:40px;border:1.5px solid currentColor;border-radius:3px;opacity:.8}.arb .arauto{border:0;height:22px;line-height:22px;font-style:normal}.arb small{font-size:10px}.arb.on{border-color:transparent;background:var(--grad);color:#fff}
 .mpps{display:flex;flex-wrap:wrap;gap:4px;margin:3px 0}.pp{font-size:10.5px;padding:1px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--mut)}.pp.live{border-color:#3ddc84;color:#3ddc84}.pp.key{border-color:#f5b04188;color:#f5b041}
+
+/* v-movil: filtros que se leen enteros (en varias líneas, sin cortar textos) */
+@media (max-width:720px){
+  .gfilters{display:flex!important;flex-wrap:wrap!important;overflow:visible!important;gap:6px!important;padding-right:0!important;mask-image:none!important;-webkit-mask-image:none!important}
+  .gfilters .chip{flex:0 0 auto;padding:6px 11px!important;font-size:12.5px!important;white-space:nowrap;max-width:100%}
+  .gfilters .chip i{font-size:10.5px}
+  .cre .folders{display:flex!important;flex-wrap:wrap!important;overflow:visible!important;gap:6px!important}
+  .cre .folders .fold-it{flex:0 0 auto;width:auto!important;padding:7px 12px!important;font-size:12.5px!important;white-space:nowrap}
+  .cre .folders .lbl{display:none}
+  .chips{flex-wrap:wrap}
+  .seg2 button{min-width:0;padding:8px 4px}.seg2 button small{font-size:9.5px;text-align:center}
+  .mpps{gap:3px}.pp{font-size:10px;padding:1px 6px}
+  .pl{min-width:96px;padding:7px 10px 7px 24px}
+}
 </style></head>
 <body>
 <header>
