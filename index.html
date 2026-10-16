@@ -74,7 +74,7 @@ body.coldrag{cursor:col-resize!important;user-select:none;-webkit-user-select:no
 body.coldrag *{cursor:col-resize!important}
 @media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#colgrip{display:none}}
 #nav{background:var(--rail);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:10px 7px;gap:6px;overflow-y:auto}
-.nb{width:74px;min-height:46px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;letter-spacing:.09em;max-width:100%;overflow-wrap:anywhere;text-align:center;text-transform:uppercase;font-weight:600;color:var(--mut);position:relative;transition:color .2s,background .3s var(--ease)}
+.nb{width:74px;min-height:46px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;letter-spacing:.05em;max-width:100%;overflow-wrap:normal;word-break:normal;text-align:center;text-transform:uppercase;font-weight:600;color:var(--mut);position:relative;transition:color .2s,background .3s var(--ease)}
 .nb svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.4;transition:transform .35s var(--ease)}
 .nb:hover{color:var(--ink)}.nb:hover svg{transform:translateY(-2px) scale(1.06)}
 .nb.on{background:var(--acc);color:var(--accInk)}
@@ -93,14 +93,14 @@ body.coldrag *{cursor:col-resize!important}
 #stage{overflow-y:auto;position:relative;background:var(--bg)}
 
 /* ---------- Buttons ---------- */
-.btn{position:relative;overflow:hidden;height:auto;min-height:38px;padding:8px 16px;line-height:1.25;text-align:center;white-space:normal;overflow-wrap:anywhere;max-width:100%;border-radius:12px;border:1px solid var(--line2);background:var(--panel2);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .25s var(--ease),border-color .25s,background .25s}
+.btn{position:relative;overflow:hidden;height:auto;min-height:38px;padding:8px 12px;line-height:1.25;text-align:center;white-space:normal;overflow-wrap:normal;word-break:normal;max-width:100%;border-radius:12px;border:1px solid var(--line2);background:var(--panel2);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .25s var(--ease),border-color .25s,background .25s}
 .btn:hover{border-color:var(--ink)}
 .btn:active{transform:scale(.97)}
 .btn.acc{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
 .btn.acc:after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);transition:left .7s var(--ease)}
 :root[data-theme="light"] .btn.acc:after{background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent)}
 .btn.acc:hover:after{left:130%}
-.btn.big{height:auto;min-height:48px;padding-top:10px;padding-bottom:10px;width:100%;font-size:11.5px;letter-spacing:.22em}
+.btn.big{height:auto;min-height:48px;padding-top:10px;padding-bottom:10px;width:100%;font-size:11.5px;letter-spacing:.14em}
 .btn.wide{width:100%}
 .btn.ghost{background:transparent}
 .btn.sm{height:auto;min-height:28px;padding:5px 11px;font-size:9.5px;border-radius:9px}
@@ -218,7 +218,9 @@ body.coldrag *{cursor:col-resize!important}
 .tile.set{border-style:solid;background:var(--panel)}
 .tile .ti{width:40px;height:40px;border-radius:50%;overflow:hidden;background:var(--panel2);display:grid;place-items:center;border:1px solid var(--line)}
 .tile .ti img{width:100%;height:100%;object-fit:cover}.tile .ti svg{width:18px;height:18px;stroke:var(--mut);fill:none;stroke-width:1.4}
-.tile b{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;max-width:100%;line-height:1.25;overflow-wrap:anywhere;hyphens:auto}
+.tile b{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;max-width:100%;line-height:1.25;overflow-wrap:normal;word-break:normal}
+.tiles{container-type:inline-size}
+@container (max-width:300px){.tiles .tile:not(.wide) b{font-size:7.5px;letter-spacing:.02em}}
 .tile span{font-size:10.5px;color:var(--mut);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar{height:38px;border-radius:12px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:11.5px;width:100%}
 .bar .lbl{font-size:9.5px}
@@ -611,7 +613,7 @@ header{backdrop-filter:saturate(1.2) blur(10px);background:color-mix(in srgb,var
 .tile{padding:8px 4px 7px;gap:3px;border-style:solid;border-color:var(--line);background:var(--panel);border-radius:var(--r)}
 .tile .ti{width:34px;height:34px}
 .tile .ti svg{width:16px;height:16px}
-.tile b{font-size:8.5px;letter-spacing:.14em}
+.tile b{font-size:8.5px;letter-spacing:.07em}
 .tile span{font-size:10px}
 .tile.wide{flex-direction:row;padding:8px 12px;gap:10px;justify-content:flex-start}
 .tile.wide b{margin-right:auto}
@@ -792,7 +794,7 @@ textarea{min-height:56px}
   /* botón Generar flotante encima de la barra */
   .sticky-gen{position:sticky!important;bottom:calc(84px + env(safe-area-inset-bottom))!important;z-index:20;margin:4px -14px 0!important;padding:14px 14px 10px!important;background:linear-gradient(180deg,transparent,var(--bg) 38%)!important}
   .sticky-gen .note{display:none}
-  .btn.big{height:54px;border-radius:18px;font-size:12.5px}
+  .btn.big{min-height:54px;height:auto;border-radius:18px;font-size:12.5px}
   .btn{min-height:42px;border-radius:14px}
   .btn.sm{min-height:34px}
   /* vista previa y galería */
@@ -909,7 +911,7 @@ textarea{min-height:56px}
   .mrow3 .nsfwrow .nfl{width:32px;height:32px;font-size:16px;border-radius:10px}
   .mrow3 .nsfwrow small{display:none}
   .sticky-gen{padding-top:10px!important}
-  .btn.big{height:52px}
+  .btn.big{min-height:52px;height:auto}
   /* vídeo compacto */
   [data-vbox]{min-height:64px!important;padding:8px!important;flex-direction:row!important;gap:8px!important}
   [data-vbox] span:not(.ti):not(.tx){display:none}
@@ -4432,7 +4434,7 @@ const main=document.querySelector('main'),side=document.getElementById('side');i
 const KEY='saga.sidew';const g=document.createElement('div');g.id='colgrip';g.setAttribute('role','separator');g.setAttribute('aria-orientation','vertical');g.tabIndex=0;g.title='Arrastra para cambiar el ancho (doble clic: restablecer)';g.setAttribute('aria-label','Ancho de la columna central');main.appendChild(g);
 const zoom=()=>{const w=main.offsetWidth;return w?main.getBoundingClientRect().width/w:1};
 const navw=()=>parseFloat(getComputedStyle(main).getPropertyValue('--navw'))||88;
-const limits=()=>{const mw=main.offsetWidth;return[240,Math.max(280,Math.min(900,mw-navw()-340))]};
+const limits=()=>{const mw=main.offsetWidth;return[270,Math.max(300,Math.min(900,mw-navw()-340))]};
 const set=(v,save)=>{const[lo,hi]=limits();v=Math.round(Math.max(lo,Math.min(hi,v)));main.style.setProperty('--sidew',v+'px');g.setAttribute('aria-valuenow',v);if(save){try{localStorage.setItem(KEY,String(v))}catch(e){}}return v};
 const reset=()=>{main.style.removeProperty('--sidew');try{localStorage.removeItem(KEY)}catch(e){}};
 try{const v=parseFloat(localStorage.getItem(KEY));if(v>0)set(v)}catch(e){}
