@@ -1033,6 +1033,11 @@ header .meter span,header .pill{white-space:nowrap}
 .lvimg{height:min(62vh,560px);max-width:100%;border-radius:18px;overflow:hidden;background:var(--panel2);margin:0 auto}
 .lvimg img{width:100%;height:100%;object-fit:cover}
 #lvi h2{margin-top:14px}
+.lvimg:has(>img){aspect-ratio:auto!important;height:auto;width:fit-content;max-width:100%;display:block;background:none}
+.lvimg:has(>img)>img{width:auto;height:auto;max-width:100%;max-height:min(70vh,640px);object-fit:contain;display:block;border-radius:18px}
+.detimg[data-a="libImg"]:has(>img){aspect-ratio:auto!important}
+.detimg[data-a="libImg"]>img{height:auto;object-fit:contain;display:block}
+@media (max-width:720px){.lvimg:has(>img)>img{max-height:52vh}}
 .lvimg .pha{height:100%}.lvimg .pha svg{transform:scale(.6);opacity:.6}
 @media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){ .modal.wide .lb{gap:6px}.modal.wide .lbn{width:34px;height:34px}.lvimg{height:auto;max-height:52vh;width:100%} #lvi h2{font-size:21px;margin-top:10px} #lvi .row .btn{flex:1 1 45%} }
 @media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){.tiles:not(:has(.tile:nth-child(4))) .tile{flex:1 1 0;min-width:0}}
