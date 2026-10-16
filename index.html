@@ -4469,23 +4469,34 @@ function cut(img){
   let res=null;
   try{
     const sw=Math.min(W,600),sh=Math.round(H*sw/W);const c=document.createElement('canvas');c.width=sw;c.height=sh;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0,sw,sh);
-    const d=x.getImageData(0,0,sw,sh).data;const L=(cx,y)=>{const i=(y*sw+cx)*4;return(d[i]+d[i+1]+d[i+2])/3};
-    /* la costura entre la prenda entera y los detalles: la columna donde el fondo salta en la mayoría de las filas (la persona solo ocupa parte) */
-    const lo=Math.round(sw*.34),hi=Math.round(sw*.74),xs=[],sc=[];
-    for(let cx=lo;cx<hi;cx++){const a=[];for(let y=0;y<sh;y++)a.push(Math.abs(L(cx+1,y)-L(cx-1,y)));a.sort((p,q)=>p-q);xs.push(cx);sc.push(a[Math.floor(sh*.2)])}
-    const m=Math.max(...sc);let best=Math.round(sw*.58);
-    if(m>=2.5){for(let k=0;k<xs.length;k++)if(sc[k]>=.5*m)best=xs[k]}
-    /* si la costura lleva una línea blanca, se corta antes de ella para que no quede ningún borde claro */
-    const wf=cx=>{let n=0;for(let y=0;y<sh;y++)if(L(cx,y)>205)n++;return n/sh};
-    for(let t=0;t<Math.round(sw*.1)&&(wf(best)>.3||wf(best-1)>.3||wf(best-2)>.3);t++)best--;
-    best-=2;
+    const d=x.getImageData(0,0,sw,sh).data;
+    /* Busca la costura vertical más continua entre la figura completa y el panel de detalles. */
+    const lo=Math.round(sw*.34),hi=Math.round(sw*.74),y0=Math.round(sh*.06),y1=Math.round(sh*.94),step=2,rows=Math.max(1,Math.ceil((y1-y0)/step));
+    let best=Math.round(sw*.58),bestScore=0,bestPersistence=0;
+    for(let cx=lo;cx<hi;cx++){
+      let hits=0,total=0;
+      for(let y=y0;y<y1;y+=step){
+        const a=((y*sw)+cx-1)*4,b=((y*sw)+cx+1)*4;
+        const edge=Math.max(Math.abs(d[a]-d[b]),Math.abs(d[a+1]-d[b+1]),Math.abs(d[a+2]-d[b+2]));
+        if(edge>16)hits++;
+        total+=Math.min(edge,64);
+      }
+      const persistence=hits/rows,contrast=total/(rows*64),score=persistence*.8+contrast*.2;
+      if(score>bestScore+.002){best=cx;bestScore=score;bestPersistence=persistence}
+    }
+    /* Una costura coherente atraviesa buena parte de la lámina; si no aparece, conserva el corte seguro de respaldo. */
+    if(bestPersistence<.34)best=Math.round(sw*.58);
+    /* Deja un margen suficiente antes de la línea, sea blanca, gris o de color. */
+    best=Math.max(Math.round(sw*.30),best-Math.max(6,Math.round(sw*.012)));
     {
       const cw=Math.max(40,Math.round(best/sw*W)),T=.6,f=Math.min(1,900/H),pw=cw*f,ph=H*f;
       let OW=pw,OH=ph,x0=0,y0=0;if(pw/ph<T){OW=ph*T;x0=(OW-pw)/2}else{OH=pw/T;y0=(OH-ph)/2}
       const o=document.createElement('canvas');o.width=Math.round(OW);o.height=Math.round(OH);const ox=o.getContext('2d');
-      /* lo que sobra a los lados (o arriba y abajo) se rellena estirando el borde de la propia foto: fondo seguido, sin marcos */
-      if(x0>0){ox.drawImage(img,0,0,3,H,0,0,x0+1,OH);ox.drawImage(img,cw-4,0,3,H,x0+pw-1,0,OW-x0-pw+2,OH)}
-      if(y0>0){ox.drawImage(img,0,0,cw,3,0,0,OW,y0+1);ox.drawImage(img,0,H-3,cw,3,0,y0+ph-1,OW,OH-y0-ph+2)}
+      /* Cuando el panel no llena el formato, prolonga el propio fondo desenfocado; no amplía una línea del borde. */
+      if(x0>0||y0>0){
+        const scale=Math.max(OW/cw,OH/H),bw=cw*scale,bh=H*scale;
+        ox.save();ox.filter='blur(20px)';ox.drawImage(img,0,0,cw,H,(OW-bw)/2,(OH-bh)/2,bw,bh);ox.restore();
+      }
       ox.drawImage(img,0,0,cw,H,x0,y0,pw,ph);
       res={url:o.toDataURL('image/jpeg',.88)};
     }
