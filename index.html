@@ -1765,13 +1765,14 @@ function buildAudioPrompt() {
   if (a.modo === 'cambiar') return `Cambiar la voz del audio subido por la de ${c.name}${c.voiceId ? ' (ElevenLabs ' + c.voiceId + ')' : ''}, manteniendo la entonación.${a.limpiar ? ' Quitar el ruido de fondo.' : ''}`;
   return `${a.escena || 'Describe el sonido'}${a.ambienteFondo ? ' (ambient background loop)' : ''}`;
 }
+const SIDE_HAIR = new Set(["coleta-alta-con-trenzas-pegadas", "coleta-alta-con-volumen-en-la-raiz", "coleta-alta-lisa-perfecta", "coleta-alta-rizada", "coleta-baja-con-lazo", "coleta-baja-pulida-con-raya-al-medio", "coleta-burbuja", "coleta-envuelta", "coleta-trenzada", "cornrows-rectas-hacia-atras", "fade-alto-con-tupe", "finger-waves-con-gel", "gibson-tuck-vintage", "media-cola-alta-con-volumen", "media-coleta-trenzada", "mono-alto-bailarina", "mono-alto-despeinado-con-palillos", "mono-bajo-despeinado", "mono-bajo-liso-elegante", "mono-en-ocho", "mono-frances-clasico", "mono-trenzado-alto", "mullet-moderno", "ondas-vintage-anos-40", "pixie-con-undercut-lateral", "recogido-bajo-con-trenza-envolvente", "recogido-colmena-anos-60", "recogido-con-panuelo", "recogido-con-pinza-italiana", "recogido-romantico-de-novia", "recogido-torcido-bajo", "trenza-corazon", "trenza-de-cascada", "trenza-de-espiga", "trenza-escalera", "trenza-holandesa-doble", "trenza-pull-through", "trenzas-boxeadora-en-mono", "wolf-cut"]); // peinados que se ven mejor de perfil (siempre mirando a la izquierda); el resto, de frente
 const NEUTRAL_BG = 'plain seamless studio backdrop in one flat neutral light grey, exactly #D3D3D3 (RGB 211, 211, 211), the identical tone in every image, no gradient, no vignette, no colour cast';
 /* prompt para generar la miniatura de una ficha de biblioteca (para «ya las crearemos») */
 function thumbPrompt(lib, it) {
   const c = char();
   const who = `the woman of @IMG1 (${c.name}'s character sheet), same face`;
   const P = {
-    peinados: `Studio beauty portrait of ${who}, shoulders up, three-quarter view so the hairstyle reads clearly. Hairstyle: ${it.desc || it.name}. ${NEUTRAL_BG}. Soft even key light, photoreal, one single photo.`,
+    peinados: `Studio beauty portrait of ${who}, shoulders up, ${SIDE_HAIR.has(it.id) ? 'strict side profile view, the whole head turned to face the LEFT edge of the frame (always the same direction), so the back and side of the hairstyle read clearly' : 'strict front view, head facing the camera straight on, symmetrical framing, so the hairstyle reads clearly'}. Hairstyle: ${it.desc || it.name}. ${NEUTRAL_BG}. Soft even key light, photoreal, one single photo.`,
     encuadres: `Photo of ${who}, ${String(it.desc || it.name).replace(/^Framing:\s*/, '')} Natural scene, photoreal, one single photo.`,
     luz: `Photo of ${who}, lit with: ${String(it.desc || it.name).replace(/^Lighting:\s*/, '')} Photoreal, one single photo.`,
     camara: `Video still of ${who} illustrating this camera move: ${String(it.desc || it.name).replace(/^Camera:\s*/, '')}`,
@@ -2415,7 +2416,7 @@ function renderLib(lib) {
     <div class="stack fold" style="padding-top:14px"><span class="lbl">Crea ${un} ${L.one}</span>
       <div class="dz" data-a="addLib" data-drop="libitem:${lib}"><span class="ic">＋</span><div><b>Arrastra aquí la foto</b><p>o haz clic para subirla · se crea su ficha</p></div></div>
       <button class="btn wide" data-a="newLibText">✍ Crear desde una descripción</button>
-      ${lib === 'vestidor' && !S.vestidorWeb ? '<button class="btn wide" data-a="loadVestidorPack">⇩ Añadir el vestidor de ejemplo de Saga (261 prendas)</button>' : ''}${lib === 'vestidor' ? '<button class="btn acc wide" data-a="importVestidorPack">⇩ Importar mi vestidor de Notion</button><button class="btn wide" data-a="dedupPrendas">Quitar prendas duplicadas</button><a class="lnk" data-a="importNotionFolder">o desde una carpeta exportada de Notion</a>' : ''}
+      ${lib === 'vestidor' && !S.vestidorWeb ? '<button class="btn wide" data-a="loadVestidorPack">⇩ Añadir el vestidor de ejemplo de Saga (261 prendas)</button>' : ''}${lib === 'vestidor' ? '<button class="btn acc wide" data-a="importVestidorPack">⇩ Importar mi vestidor de Notion</button><button class="btn wide" data-a="dedupPrendas">Quitar prendas duplicadas</button><button class="btn wide" data-a="vSolo">Vista limpia: ' + (window.sagaVsoloOn && window.sagaVsoloOn() ? 'sí (solo cuerpo entero)' : 'no (lámina completa)') + '</button><a class="lnk" data-a="importNotionFolder">o desde una carpeta exportada de Notion</a>' : ''}
       <button class="btn wide" data-a="importLibJson">⇩ Importar JSON</button></div>`;
   const nNot = list.filter(x => x.notion).length; const filters = [['Todos', null], ...(nNot ? [['Mi Notion', nNot]] : []), ...L.cats.map(c => [c, list.filter(x => x.cat === c || (x.tags || []).includes(c)).length]), ...(withImg > 0 && withImg < list.length ? [['Con imagen', withImg], ['Sin imagen', list.length - withImg]] : [])];
   const vx = lib === 'vestidor' ? `<button class="btn sm acc" data-a="sceneSearch">✨ Por escena</button><button class="btn sm ${vfActive() ? 'on' : ''}" data-a="vfToggle">Filtros${vfActive() ? ' · ' + vfActive() : ''} ${S.vfOpen ? '▴' : '▾'}</button>` : '';
@@ -3351,6 +3352,7 @@ async function importPack(L, quiet) {
   if (!quiet || !S.vestidorWeb) S.filter.vestidor = 'Mi Notion'; save(); if (!quiet) closeModal(); render(); if (!quiet || S.vestidorWeb) toast(`${n} prendas nuevas, ${upd} actualizadas`); // la primera carga, en silencio: no tapa la bienvenida
 }
 Object.assign(A, {
+  vSolo() { if (window.sagaVsolo) window.sagaVsolo(); render(); },
   async loadVestidorPack() { toast('Añadiendo el vestidor de ejemplo…'); await autoVestidor(true); if (!S.vestidorWeb) toast('No se pudo cargar el vestidor de ejemplo (¿sin conexión?)', 4000); else render(); },
   async gcNow() { if (!(await ask('¿Liberar espacio ahora?\n\nBorro de este dispositivo las fotos, vídeos y audios que ya no usa nada: ni tus datos, ni la papelera, ni los puntos de recuperación.'))) return;
     const r = await mediaGC({ now: true }); toast(r.n ? `Espacio liberado: ${r.n} archivos · ${(r.bytes / 1e6).toFixed(1)} MB` : 'No había nada que liberar', 3500); if (gdOn()) gdSync(); render(); },
@@ -4448,6 +4450,41 @@ g.addEventListener('dblclick',reset);
 g.addEventListener('keydown',e=>{const k=e.key;if(k==='ArrowLeft'||k==='ArrowRight'){e.preventDefault();set(side.offsetWidth+(k==='ArrowRight'?1:-1)*(e.shiftKey?48:16),true)}else if(k==='Home'||k==='Escape'){reset()}});
 addEventListener('resize',()=>{const v=parseFloat(main.style.getPropertyValue('--sidew'));if(v)set(v)});
 })();</script>
+<script>(()=>{/* Vestidor: vista limpia. Las láminas de Notion traen la prenda de cuerpo entero a la izquierda y detalles (espalda, zapatos, accesorios) a la derecha; aquí se enseña solo el cuerpo entero. */
+const KEY='saga.vsolo';const on=()=>{try{return localStorage.getItem(KEY)!=='0'}catch(e){return true}};
+const SEL='[data-pick^="lib:vestidor|"] img,[data-choose^="prenda|"] img,[data-a="vPick"] img,[data-vimg] img';
+const cache=new Map();
+const stl=document.createElement('style');stl.textContent='html.vsolo [data-pick^="lib:vestidor|"]{aspect-ratio:3/5!important}';document.head.appendChild(stl);document.documentElement.classList.toggle('vsolo',on());
+function cut(img){
+  const W=img.naturalWidth,H=img.naturalHeight;if(!W||!H||W<200)return null;
+  const k=img.currentSrc||img.src;if(cache.has(k))return cache.get(k);
+  let res=null;
+  try{
+    const sw=300,sh=Math.round(H*sw/W);const c=document.createElement('canvas');c.width=sw;c.height=sh;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0,sw,sh);
+    const d=x.getImageData(0,0,sw,sh).data;const L=(cx,y)=>{const i=(y*sw+cx)*4;return(d[i]+d[i+1]+d[i+2])/3};
+    let best=-1,bf=0;
+    for(let cx=Math.round(sw*.38);cx<=Math.round(sw*.7);cx++){let n=0;for(let y=0;y<sh;y++){if(L(cx,y)-(L(cx-5,y)+L(cx+5,y))/2>22)n++}const f=n/sh;if(f>bf){bf=f;best=cx}}
+    if(bf<.8&&Math.abs(W-H)<W*.03){best=Math.round(sw*.58);bf=1}
+    if(bf>=.8){
+      const e=best-1;
+      const cw=Math.max(40,Math.round(e/sw*W)-1),ow=Math.min(cw,640),oh=Math.round(H*ow/cw);
+      const o=document.createElement('canvas');o.width=ow;o.height=oh;const ox=o.getContext('2d');ox.drawImage(img,0,0,cw,H,0,0,ow,oh);
+      res={url:o.toDataURL('image/jpeg',.88)};
+    }
+  }catch(err){res=null}
+  cache.set(k,res);return res;
+}
+function fix(img){
+  if(img.dataset.vc||!on())return;
+  const go=()=>{if(img.dataset.vc)return;img.dataset.vc='1';const r=cut(img);if(!r)return;img.dataset.vo=img.src;img.src=r.url;img.style.objectFit='cover';img.style.objectPosition='50% 35%'};
+  if(img.complete&&img.naturalWidth)go();else img.addEventListener('load',go,{once:true});
+}
+function scan(root){if(!on())return;(root.querySelectorAll?root.querySelectorAll(SEL):[]).forEach(fix);if(root.matches&&root.matches(SEL))fix(root)}
+const mo=new MutationObserver(ms=>{for(const m of ms)m.addedNodes.forEach(n=>{if(n.nodeType===1)scan(n)})});
+mo.observe(document.body,{childList:true,subtree:true});scan(document);
+window.sagaVsolo=()=>{const v=on();try{localStorage.setItem(KEY,v?'0':'1')}catch(e){}document.documentElement.classList.toggle('vsolo',!v);return !v};window.sagaVsoloOn=on;
+})();
+</script>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") {
   navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(r => { r.update(); document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") r.update(); }); }).catch(() => {});
   /* una versión nueva se aplica sola, pero nunca a mitad de algo: con una ventana abierta, escribiendo o con una tarea en marcha, espera */
