@@ -3897,7 +3897,7 @@ const ADAPTERS = {
       if (!r.ok || !d || (d.code !== undefined && d.code !== 0 && d.code !== 200 && d.code !== 'SUCCESS' && !d.data)) throw Object.assign(gErr(classify(r.ok ? 'PROVIDER_ERROR' : httpCode(r.status), m), m || 'HTTP ' + r.status), { http: r.status });
       return isObj(d.data) ? d.data : d;
     },
-    async test(c) { let d; try { d = await this.call(c, '/v1/credit/balance'); } catch (e) { if (e.http !== 404) throw e; d = await this.call(c, '/credit/balance'); } const n = +(d.availableCredits ?? d.available ?? NaN); return isFinite(n) ? 'La clave funciona · ' + n + ' créditos disponibles.' : 'La clave funciona.'; },
+    async test(c) { let d; try { d = await this.call(c, '/v1/credit/balance'); } catch (e) { if (e.http !== 404) throw e; try { d = await this.call(c, '/credit/balance'); } catch (x) { if (x.http !== 404) throw x; return 'La clave es válida (Pollo no devuelve el saldo: si es una cuenta nueva, recarga créditos en api.pollo.ai/billing).'; } } const n = +(d.availableCredits ?? d.available ?? NaN); return isFinite(n) ? 'La clave funciona · ' + n + ' créditos disponibles.' : 'La clave funciona.'; },
     async catalog() { const M = await manifest('pollo'); return M ? M.models.map(x => Object.assign({ provider: 'pollo' }, x)) : []; },
     async detail(c, m) { return { params: m.fields || [], price: { st: 'unk', note: 'se cobra en créditos de Pollo' } }; },
     async submit(c, m, job, refs) {
