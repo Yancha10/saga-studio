@@ -1,5 +1,5 @@
 // Saga Studio · siempre la última versión si hay conexión; sin conexión (o si la red tarda demasiado), la copia guardada.
-const C = 'saga-v21';
+const C = 'saga-v23';
 const KEEP = ['saga-auth', 'saga-media']; // permiso de Drive de la cuenta activa y fotos ya vistas de tu Drive
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './catalog/families.v1.json', './catalog/pollo.v1.json', './catalog/fal.v1.json', './catalog/higgsfield.v1.json'];
 const SLOW = 3500; // ms que se espera a la red antes de abrir con la copia guardada

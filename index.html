@@ -64,10 +64,17 @@ header{height:42px;display:flex;align-items:center;justify-content:space-between
 .avatar img{width:100%;height:100%;object-fit:cover}
 
 /* ---------- Main grid ---------- */
-main{display:grid;grid-template-columns:88px 348px 1fr;height:calc(100vh - 42px)}
-main.solo{grid-template-columns:88px 348px 1fr}
+main{--navw:88px;--sidedef:348px;position:relative;display:grid;grid-template-columns:var(--navw) var(--sidew,var(--sidedef)) 1fr;height:calc(100vh - 42px)}
+main.solo{grid-template-columns:var(--navw) var(--sidew,var(--sidedef)) 1fr}
+/* columna central ajustable: se arrastra el borde (doble clic o doble toque: vuelve a su ancho) */
+#colgrip{position:absolute;top:0;bottom:0;left:calc(var(--navw) + var(--sidew,var(--sidedef)) - 5px);width:10px;cursor:col-resize;z-index:30;touch-action:none;outline:none}
+#colgrip:after{content:"";position:absolute;left:4px;top:0;bottom:0;width:2px;border-radius:2px;background:transparent;transition:background .2s}
+#colgrip:hover:after,#colgrip.drag:after,#colgrip:focus-visible:after{background:var(--acc)}
+body.coldrag{cursor:col-resize!important;user-select:none;-webkit-user-select:none}
+body.coldrag *{cursor:col-resize!important}
+@media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){#colgrip{display:none}}
 #nav{background:var(--rail);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:10px 7px;gap:6px;overflow-y:auto}
-.nb{width:74px;min-height:46px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--mut);position:relative;transition:color .2s,background .3s var(--ease)}
+.nb{width:74px;min-height:46px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;letter-spacing:.09em;max-width:100%;overflow-wrap:anywhere;text-align:center;text-transform:uppercase;font-weight:600;color:var(--mut);position:relative;transition:color .2s,background .3s var(--ease)}
 .nb svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.4;transition:transform .35s var(--ease)}
 .nb:hover{color:var(--ink)}.nb:hover svg{transform:translateY(-2px) scale(1.06)}
 .nb.on{background:var(--acc);color:var(--accInk)}
@@ -86,17 +93,17 @@ main.solo{grid-template-columns:88px 348px 1fr}
 #stage{overflow-y:auto;position:relative;background:var(--bg)}
 
 /* ---------- Buttons ---------- */
-.btn{position:relative;overflow:hidden;height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--line2);background:var(--panel2);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .25s var(--ease),border-color .25s,background .25s}
+.btn{position:relative;overflow:hidden;height:auto;min-height:38px;padding:8px 16px;line-height:1.25;text-align:center;white-space:normal;overflow-wrap:anywhere;max-width:100%;border-radius:12px;border:1px solid var(--line2);background:var(--panel2);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .25s var(--ease),border-color .25s,background .25s}
 .btn:hover{border-color:var(--ink)}
 .btn:active{transform:scale(.97)}
 .btn.acc{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
 .btn.acc:after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);transition:left .7s var(--ease)}
 :root[data-theme="light"] .btn.acc:after{background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent)}
 .btn.acc:hover:after{left:130%}
-.btn.big{height:48px;width:100%;font-size:11.5px;letter-spacing:.22em}
+.btn.big{height:auto;min-height:48px;padding-top:10px;padding-bottom:10px;width:100%;font-size:11.5px;letter-spacing:.22em}
 .btn.wide{width:100%}
 .btn.ghost{background:transparent}
-.btn.sm{height:28px;padding:0 11px;font-size:9.5px;border-radius:9px}
+.btn.sm{height:auto;min-height:28px;padding:5px 11px;font-size:9.5px;border-radius:9px}
 /* corner-bracket hover (photographic frame) */
 .frame{position:relative}
 .frame:before,.frame:after{content:"";position:absolute;width:10px;height:10px;border:1px solid var(--ink);opacity:0;transition:.35s var(--ease);pointer-events:none;z-index:2}
@@ -211,7 +218,7 @@ main.solo{grid-template-columns:88px 348px 1fr}
 .tile.set{border-style:solid;background:var(--panel)}
 .tile .ti{width:40px;height:40px;border-radius:50%;overflow:hidden;background:var(--panel2);display:grid;place-items:center;border:1px solid var(--line)}
 .tile .ti img{width:100%;height:100%;object-fit:cover}.tile .ti svg{width:18px;height:18px;stroke:var(--mut);fill:none;stroke-width:1.4}
-.tile b{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase}
+.tile b{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;max-width:100%;line-height:1.25;overflow-wrap:anywhere;hyphens:auto}
 .tile span{font-size:10.5px;color:var(--mut);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar{height:38px;border-radius:12px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:11.5px;width:100%}
 .bar .lbl{font-size:9.5px}
@@ -553,12 +560,12 @@ input:focus,textarea:focus,select:focus{border-color:var(--hotLine);box-shadow:0
 @media (prefers-reduced-motion:reduce){.nsfwdot.on{animation:none}}
 /* tablet / ventana estrecha: se mantiene el escritorio, más compacto */
 @media (min-width:721px) and (max-width:1180px) and (min-height:501px){
-  main{grid-template-columns:70px 300px 1fr}
+  main{--navw:70px;--sidedef:300px}
   .nb{width:60px;font-size:8.5px;letter-spacing:.08em}
   #side{padding:14px 12px}
   .guia{display:none}
 }
-@media (min-width:721px) and (max-width:900px) and (min-height:501px){ main{grid-template-columns:66px 270px 1fr} .meter{display:none} .tile b{font-size:8.5px;letter-spacing:.08em} }
+@media (min-width:721px) and (max-width:900px) and (min-height:501px){ main{--navw:66px;--sidedef:270px} .meter{display:none} .tile b{font-size:8.5px;letter-spacing:.08em} }
 /* tamaño de la interfaz (Tu cuenta → Tamaño) */
 :root[data-ui="peq"] body{zoom:.9}
 :root[data-ui="grande"] body{zoom:1.1}
@@ -4418,6 +4425,24 @@ async function gateSignIn(pref) {
   jobKick(1500);
   setTimeout(() => mediaGC().catch(e => console.warn('limpieza', e)), 20000);
 })();
+})();</script>
+<script>(()=>{/* columna central ajustable (solo preferencia de este dispositivo) */
+const main=document.querySelector('main'),side=document.getElementById('side');if(!main||!side)return;
+const KEY='saga.sidew';const g=document.createElement('div');g.id='colgrip';g.setAttribute('role','separator');g.setAttribute('aria-orientation','vertical');g.tabIndex=0;g.title='Arrastra para cambiar el ancho (doble clic: restablecer)';g.setAttribute('aria-label','Ancho de la columna central');main.appendChild(g);
+const zoom=()=>{const w=main.offsetWidth;return w?main.getBoundingClientRect().width/w:1};
+const navw=()=>parseFloat(getComputedStyle(main).getPropertyValue('--navw'))||88;
+const limits=()=>{const mw=main.offsetWidth;return[240,Math.max(280,Math.min(900,mw-navw()-340))]};
+const set=(v,save)=>{const[lo,hi]=limits();v=Math.round(Math.max(lo,Math.min(hi,v)));main.style.setProperty('--sidew',v+'px');g.setAttribute('aria-valuenow',v);if(save){try{localStorage.setItem(KEY,String(v))}catch(e){}}return v};
+const reset=()=>{main.style.removeProperty('--sidew');try{localStorage.removeItem(KEY)}catch(e){}};
+try{const v=parseFloat(localStorage.getItem(KEY));if(v>0)set(v)}catch(e){}
+let drag=null;
+g.addEventListener('pointerdown',e=>{if(e.button!==undefined&&e.button>0)return;e.preventDefault();drag={z:zoom()};g.classList.add('drag');document.body.classList.add('coldrag');try{g.setPointerCapture(e.pointerId)}catch(_){}});
+g.addEventListener('pointermove',e=>{if(!drag)return;set((e.clientX-main.getBoundingClientRect().left)/drag.z-navw())});
+const end=e=>{if(!drag)return;drag=null;g.classList.remove('drag');document.body.classList.remove('coldrag');try{g.releasePointerCapture(e.pointerId)}catch(_){}const v=side.offsetWidth;if(v)set(v,true)};
+g.addEventListener('pointerup',end);g.addEventListener('pointercancel',end);
+g.addEventListener('dblclick',reset);
+g.addEventListener('keydown',e=>{const k=e.key;if(k==='ArrowLeft'||k==='ArrowRight'){e.preventDefault();set(side.offsetWidth+(k==='ArrowRight'?1:-1)*(e.shiftKey?48:16),true)}else if(k==='Home'||k==='Escape'){reset()}});
+addEventListener('resize',()=>{const v=parseFloat(main.style.getPropertyValue('--sidew'));if(v)set(v)});
 })();</script>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") {
   navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(r => { r.update(); document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") r.update(); }); }).catch(() => {});

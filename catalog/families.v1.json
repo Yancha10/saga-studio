@@ -720,6 +720,11 @@
      "provider": "wiro",
      "id": "xai/grok-imagine-image-v2",
      "source": "https://wiro.ai/models/xai/grok-imagine-image-v2"
+    },
+    {
+     "provider": "higgsfield",
+     "id": "xai/grok-imagine-image-2.0",
+     "source": "https://docs.higgsfield.ai/docs/models/grok-image-2/generate-and-edit"
     }
    ]
   },
@@ -770,6 +775,11 @@
      "provider": "wiro",
      "id": "alibaba/qwen-image-3-0",
      "source": "https://wiro.ai/models/alibaba/qwen-image-3-0"
+    },
+    {
+     "provider": "higgsfield",
+     "id": "alibaba/qwen-image-3/edit",
+     "source": "https://docs.higgsfield.ai/docs/models/qwen-image-3/edit"
     }
    ]
   }
