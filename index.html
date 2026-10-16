@@ -713,6 +713,11 @@ textarea{min-height:56px}
 .it.lib .pha svg{opacity:.55;transform:scale(.7);transition:opacity .3s,transform .4s var(--ease)}
 .it.lib:hover .pha svg{opacity:.9;transform:scale(.76)}
 .it.lib .nm,.it .nm{backdrop-filter:blur(6px)}
+.it:has(>.nm){aspect-ratio:auto!important;display:flex;flex-direction:column}
+.it:has(>.nm)>img,.it:has(>.nm)>.pha{flex:none;width:100%;height:auto;aspect-ratio:var(--ar,3/4)}
+.it:has(>.nm)>.nm{position:static;padding:7px 9px 9px;background:none!important;backdrop-filter:none!important;color:var(--ink)}
+.it:has(>.nm) .nm b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal;overflow:hidden;line-height:1.25}
+.it:has(>.nm) .nm small{color:var(--mut);opacity:1}
 @media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){ .sticky-gen{position:static;margin-top:4px;padding:0;background:none} .sticky-gen .note{padding-right:56px} }
 .ff textarea{background:none;border:0;padding:0;min-height:38px;font-size:12.5px;resize:vertical;box-shadow:none!important}
 @media (max-width:720px),(max-height:500px) and (orientation:landscape) and (pointer:coarse){ #side{padding-bottom:20px} }
@@ -1963,7 +1968,7 @@ R.perfil = () => {
   } else if (S.perfilTab === 'lugares') {
     const L = S.libs.lugares.filter(x => x.char === c.id || !x.char);
     body = `<div class="between"><div><div class="lbl" style="color:var(--ink)">Lugares</div><p class="note" style="margin-top:6px;max-width:560px">Sus sitios de siempre: su casa, su cocina, su despacho… Se usan como referencia para que sus escenas sean siempre en el mismo sitio.</p></div><button class="btn acc" data-a="newLugar">＋ Lugar nuevo</button></div>
-      ${L.length ? `<div class="grid M" style="padding:0">${L.map(x => `<div class="it" style="aspect-ratio:16/9" data-pick="lib:lugares|${x.id}" data-gol="1">${x.img ? `<img src="${src(x.img)}">` : phArt(x.name, x.id, '16/9')}<div class="nm">${esc(x.name)} · ${esc(x.cat)}</div></div>`).join('')}</div>` : empty(`${esc(shortName(c))} aún no tiene lugares`, 'Describe un sitio o sube una foto: se guarda como lugar y lo eliges en Crear imagen.', '<button class="btn acc" data-a="newLugar">＋ Lugar nuevo</button>')}`;
+      ${L.length ? `<div class="grid M" style="padding:0">${L.map(x => `<div class="it" style="--ar:16/9;aspect-ratio:16/9" data-pick="lib:lugares|${x.id}" data-gol="1">${x.img ? `<img src="${src(x.img)}">` : phArt(x.name, x.id, '16/9')}<div class="nm">${esc(x.name)} · ${esc(x.cat)}</div></div>`).join('')}</div>` : empty(`${esc(shortName(c))} aún no tiene lugares`, 'Describe un sitio o sube una foto: se guarda como lugar y lo eliges en Crear imagen.', '<button class="btn acc" data-a="newLugar">＋ Lugar nuevo</button>')}`;
   } else if (S.perfilTab === 'voz') {
     body = `<div><div class="lbl" style="color:var(--ink)">Su voz</div><p class="note" style="margin-top:6px;max-width:560px">La voz con la que habla este personaje. En Crear audio ya sale elegida. Cada cambio se guarda solo.</p></div>
       <div class="card stack"><b>Texto a voz · ElevenLabs</b><span class="note">¿Una voz propia o clonada? Pon su ID de ElevenLabs.</span><input data-f="voiceId" value="${esc(c.voiceId)}" placeholder="ID de la voz (p. ej. yM93hbw8Qtvdma2wCnJG)"></div>
@@ -2352,7 +2357,7 @@ const VA = {
     const [, p] = curLib(); if (!p) return; const L = S.libs.vestidor || []; const pi = vInfo(p);
     const cands = L.filter(x => x.id !== p.id).map(x => { const I = vInfo(x); const share = I.colors.filter(c => pi.colors.includes(c)).length; const neu = I.colors.some(c => NEUTRAL.has(c)) || pi.colors.some(c => NEUTRAL.has(c)); const diffType = I.tipos.filter(t => !pi.tipos.includes(t)).length;
       return [x, (neu ? 1 : 0) + Math.min(share, 2) * 0.8 + Math.min(diffType, 2) * 0.7 - simScore(p, x) * 0.35 + (x.img ? 0.5 : 0)]; }).sort((a, b) => b[1] - a[1]).slice(0, 8);
-    const show = (arr, why) => modal(`<h2>Completar look</h2><p class="note" style="margin:6px 0 10px">${esc(why)}</p><div class="grid S" style="max-height:52vh;overflow:auto">${arr.map(x => `<div class="it lib" style="aspect-ratio:3/4" data-a="vPick" data-id="${x.id}">${x.img ? `<img loading="lazy" src="${src(x.img)}">` : phArt(x.name, x.id, '3/4')}<div class="nm"><b>${esc(x.name)}</b></div></div>`).join('')}</div><div class="row" style="margin-top:12px"><button class="btn wide" data-a="closeModal">Cerrar</button></div>`);
+    const show = (arr, why) => modal(`<h2>Completar look</h2><p class="note" style="margin:6px 0 10px">${esc(why)}</p><div class="grid S" style="max-height:52vh;overflow:auto">${arr.map(x => `<div class="it lib" style="--ar:3/4;aspect-ratio:3/4" data-a="vPick" data-id="${x.id}">${x.img ? `<img loading="lazy" src="${src(x.img)}">` : phArt(x.name, x.id, '3/4')}<div class="nm"><b>${esc(x.name)}</b></div></div>`).join('')}</div><div class="row" style="margin-top:12px"><button class="btn wide" data-a="closeModal">Cerrar</button></div>`);
     show(cands.map(c => c[0]), `Con «${p.name}» de base: piezas que combinan por color y aportan algo distinto. Pulsa una para abrir su ficha.`);
     if (!vKey()) return;
     const lines = cands.concat(L.filter(x => x.id !== p.id).slice(0, 0)).map(c => `${c[0].id}|${c[0].name}|${(c[0].desc || '').slice(0, 110)}`).join('\n');
@@ -2422,7 +2427,7 @@ function renderLib(lib) {
   const nNot = list.filter(x => x.notion).length; const filters = [['Todos', null], ...(nNot ? [['Mi Notion', nNot]] : []), ...L.cats.map(c => [c, list.filter(x => x.cat === c || (x.tags || []).includes(c)).length]), ...(withImg > 0 && withImg < list.length ? [['Con imagen', withImg], ['Sin imagen', list.length - withImg]] : [])];
   const vx = lib === 'vestidor' ? `<button class="btn sm acc" data-a="sceneSearch">✨ Por escena</button><button class="btn sm ${vfActive() ? 'on' : ''}" data-a="vfToggle">Filtros${vfActive() ? ' · ' + vfActive() : ''} ${S.vfOpen ? '▴' : '▾'}</button>` : '';
   const stage = `${galleryHead(`${L.t} · ${items.length === list.length ? list.length : items.length + ' de ' + list.length}`, filters, lib, vx)}${lib === 'vestidor' ? vPanel(list) : ''}
-    ${items.length ? `<div class="grid ${S.size} ${L.shape === '16/9' ? 'wide' : ''}">${items.slice(0, S._libLimit || 60).map((x, i) => `<div class="it lib ${S.picked[lib] === x.id ? 'on' : ''}" style="aspect-ratio:${L.shape};animation-delay:${Math.min(i, 24) * 18}ms" data-pick="lib:${lib}|${x.id}">
+    ${items.length ? `<div class="grid ${S.size} ${L.shape === '16/9' ? 'wide' : ''}">${items.slice(0, S._libLimit || 60).map((x, i) => `<div class="it lib ${S.picked[lib] === x.id ? 'on' : ''}" style="--ar:${L.shape};aspect-ratio:${L.shape};animation-delay:${Math.min(i, 24) * 18}ms" data-pick="lib:${lib}|${x.id}">
       ${x.img ? `<img loading="lazy" src="${src(x.img)}">` : phArt(x.name, x.id, L.shape)}
       ${S.sel[selKey] === x.id ? '<span class="badge">EN USO</span>' : ''}
       ${lib === 'vestidor' ? `<button class="vfav ${x.fav ? 'on' : ''}" data-a="favCard" data-id="${x.id}" title="Favorita">${x.fav ? '★' : '☆'}</button>` : ''}
@@ -2513,7 +2518,7 @@ function pickerModal(key) {
   const draw = sc => {
     const it = list.filter(x => (cat === 'Todos' || x.cat === cat || (x.tags || []).includes(cat)) && (!q || (x.name + ' ' + x.desc).toLowerCase().includes(q)));
     sc.querySelector('#pk').innerHTML = `<div class="it blank ${!S.sel[key] ? 'on' : ''}" data-choose="${key}|" style="aspect-ratio:${L.shape}"><span style="font-size:12px;font-family:var(--sans)">Por defecto</span></div>` +
-      it.slice(0, 300).map(x => `<div class="it lib ${S.sel[key] === x.id ? 'on' : ''}" style="aspect-ratio:${L.shape}" data-choose="${key}|${x.id}">${x.img ? `<img src="${src(x.img)}">` : phArt(x.name, x.id, L.shape)}<div class="nm"><b>${esc(x.name)}</b></div></div>`).join('');
+      it.slice(0, 300).map(x => `<div class="it lib ${S.sel[key] === x.id ? 'on' : ''}" style="--ar:${L.shape};aspect-ratio:${L.shape}" data-choose="${key}|${x.id}">${x.img ? `<img src="${src(x.img)}">` : phArt(x.name, x.id, L.shape)}<div class="nm"><b>${esc(x.name)}</b></div></div>`).join('');
   };
   const sc = modal(`<h2>${L.t}</h2><div class="row" style="margin:8px 0 12px"><input id="pkq" placeholder="Buscar ${L.one}…">${L.cats.length ? `<select id="pkc"><option>Todos</option>${L.cats.map(c => `<option>${c}</option>`).join('')}</select>` : ''}</div>
     <div class="grid ${L.shape === '16/9' ? 'wide' : ''} S" id="pk" style="padding:0;max-height:56vh;overflow:auto"></div><div class="row" style="margin-top:14px"><button class="btn wide" data-go="lib:${lib}">Abrir ${L.t} →</button></div>`, sc => {
@@ -4455,7 +4460,7 @@ addEventListener('resize',()=>{const v=parseFloat(main.style.getPropertyValue('-
 const KEY='saga.vsolo';const on=()=>{try{return localStorage.getItem(KEY)!=='0'}catch(e){return true}};
 const SEL='[data-pick^="lib:vestidor|"] img,[data-choose^="prenda|"] img,[data-a="vPick"] img,[data-vimg] img';
 const cache=new Map();
-const stl=document.createElement('style');stl.textContent='html.vsolo [data-pick^="lib:vestidor|"]{aspect-ratio:3/5!important}';document.head.appendChild(stl);document.documentElement.classList.toggle('vsolo',on());
+const stl=document.createElement('style');stl.textContent='html.vsolo [data-pick^="lib:vestidor|"]{--ar:3/5!important}';document.head.appendChild(stl);document.documentElement.classList.toggle('vsolo',on());
 function cut(img){
   const W=img.naturalWidth,H=img.naturalHeight;if(!W||!H||W<200)return null;
   const k=img.currentSrc||img.src;if(cache.has(k))return cache.get(k);
