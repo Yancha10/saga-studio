@@ -715,7 +715,13 @@ textarea{min-height:56px}
 .it.lib .nm,.it .nm{backdrop-filter:blur(6px)}
 @media (min-width:721px){.grid.wide.S{--cw:140px}.grid.wide.M{--cw:210px}.grid.wide.L{--cw:320px}}
 .it:has(>.nm){aspect-ratio:auto!important;display:flex;flex-direction:column}
-.it:has(>.nm)>img,.it:has(>.nm)>.pha{flex:none;width:100%;height:auto;aspect-ratio:var(--ar,3/4)}
+.it:has(>.nm)>.pha{flex:none;width:100%;height:auto;aspect-ratio:var(--ar,3/4)}
+.it:has(>.nm)>img{flex:none;width:100%;height:auto;aspect-ratio:auto var(--ar,3/4);object-fit:cover}
+html.vsolo .it[data-pick^="lib:vestidor|"]>img{aspect-ratio:var(--ar,3/5)}
+/* galerías: cada foto con su propia proporción (horizontal horizontal, vertical vertical), en columnas que se acomodan */
+.grid:has(>.it>.nm){display:block;column-width:var(--cw,160px);column-gap:10px}
+.grid:has(>.it>.nm)>.it{break-inside:avoid;margin:0 0 10px}
+@media (max-width:720px){.grid:has(>.it>.nm){column-count:2;column-width:auto;column-gap:10px}}
 .it:has(>.nm)>.nm{position:static;padding:7px 9px 9px;background:none!important;backdrop-filter:none!important;color:var(--ink)}
 .it:has(>.nm) .nm b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal;overflow:hidden;line-height:1.25}
 .it:has(>.nm) .nm small{color:var(--mut);opacity:1}
