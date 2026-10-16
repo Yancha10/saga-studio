@@ -280,12 +280,6 @@ body.coldrag *{cursor:col-resize!important}
 .it .badge{position:absolute;top:7px;left:7px;height:20px;padding:0 7px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:9.5px;display:flex;align-items:center;gap:4px;letter-spacing:.06em}
 .it .play{position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;display:grid;place-items:center;font-size:11px}
 .it .nm{position:absolute;inset:auto 0 0 0;padding:16px 9px 8px;font-size:11px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.7))}
-.pose-flow-format{position:absolute;z-index:2;top:8px;left:8px;padding:5px 7px;border:1px solid rgba(255,255,255,.32);border-radius:7px;background:rgba(17,17,20,.78);color:#fff;font:600 9px var(--sans);letter-spacing:.04em}
-.pose-flow-copy{position:absolute;z-index:3;top:7px;right:7px;min-height:30px;padding:5px 8px;border:1px solid rgba(255,255,255,.34);border-radius:8px;background:rgba(17,17,20,.86);color:#fff;font:600 9px var(--sans);cursor:pointer;backdrop-filter:blur(8px)}
-.pose-flow-copy:hover{border-color:var(--ink);color:var(--ink)}
-.pose-flow-copy.copied{background:rgba(65,112,82,.94);border-color:rgba(175,224,188,.7);color:#fff}
-.flow-prompt{min-height:240px!important;font-size:11px;line-height:1.55}
-.flow-note{font-size:10px;color:var(--dim);line-height:1.5}
 .it.blank{display:grid;place-items:center;color:var(--dim);font-family:var(--serif);font-size:30px}
 .emptystate{padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
 .emptystate .glyph{width:64px;height:64px;border:1px solid var(--line2);transform:rotate(45deg);display:grid;place-items:center;margin-bottom:12px}
@@ -1549,7 +1543,7 @@ const defaultState = () => {
     chars: [saga], active: saga.id,
     libs: Object.fromEntries(Object.keys(LIBS).map(k => [k, []])),
     fototeca: [], filmoteca: [], creaciones: [], folders: [], audios: [], trash: [], feedback: [],
-    picked: {}, filter: {}, q: '', flowPoseCopied: [], flowOnlyPending: false, sel: { prenda: '', peinado: '', expresion: '', efecto: '', look: '', cartoon: '', lugar: '', color: '' },
+    picked: {}, filter: {}, q: '', sel: { prenda: '', peinado: '', expresion: '', efecto: '', look: '', cartoon: '', lugar: '', color: '' },
     receta: '', copyRef: '', copyMode: 'misma', refs: [], compsOff: {},
     img: { model: 'seedream', quality: '1.5k', ratio: '3:4', count: 1, prompt: '', idea: '' },
     vid: { que: 'crear', model: 'sd20', motor: 'mc-sd20', metodo: 'normal', quality: '480p', dur: 5, ratio: 'auto', audio: true, cam: 'mano', style: 'natural', accion: '', extra: '', useSheet: true, motionRef: '', startRef: '', endRef: '', imgRef: '', prompt: '' },
@@ -1576,8 +1570,6 @@ function upgradeState(raw) { // devuelve un estado completo; nunca toca el origi
   for (const k of ['open','mv']) if (s[k] !== undefined && !isObj(s[k])) delete s[k];
   if (s.drive !== undefined && !isObj(s.drive)) s.drive = { on: false };
   if (typeof s.section !== 'string') s.section = 'perfil';
-  s.flowPoseCopied = Array.isArray(s.flowPoseCopied) ? [...new Set(s.flowPoseCopied.filter(x => typeof x === 'string'))] : [];
-  s.flowOnlyPending = !!s.flowOnlyPending;
   // migraciones suaves desde la v1
   for (const k of Object.keys(LIBS)) s.libs[k] = Array.isArray(s.libs[k]) ? s.libs[k].filter(isObj) : [];
   if (s.libs.efectos.some(x => x.cat === 'Luz')) s.libs.efectos = s.libs.efectos.filter(x => x.img);
@@ -1701,32 +1693,6 @@ function closeMenuOut(e) { if (!e.target.closest('#menu')) { closeMenu(); } }
 function closeMenu() { const had = $('#menu'); if (had) window.__menuClosedAt = Date.now(); else window.__lastMenu = ''; had?.remove(); document.removeEventListener('pointerdown', closeMenuOut);
   if (had && had.contains(document.activeElement) === false && menuBack && menuBack.isConnected && document.activeElement === document.body) try { menuBack.focus({ preventScroll: true }); } catch (e) {} menuBack = null; }
 async function copy(t) { try { await navigator.clipboard.writeText(t); toast('Copiado'); } catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); toast('Copiado'); } catch (x) { toast('No se pudo copiar'); } ta.remove(); } }
-const FLOW_POSE_WIDE = new Set(['pose-lateral-apoyada-en-un-brazo','pose-en-el-sofa-relajada','pose-pies-en-alto','pose-sentada-en-el-coche','pose-borde-de-la-piscina','pose-banco-del-parque','pose-boca-arriba-con-brazos-arriba','pose-boca-abajo-con-pies-arriba','pose-de-lado-apoyada-en-el-codo','pose-en-la-hierba-mirando-al-cielo','pose-toalla-en-la-playa','pose-cama-desordenada','pose-cabeza-colgando','pose-acurrucada','pose-en-el-sofa-con-el-movil','pose-brazos-detras-de-la-cabeza','pose-sobre-los-antebrazos','pose-en-el-suelo-cenital','pose-corriendo','pose-bailando','pose-cruzando-la-calle','pose-bajando-del-coche','pose-bicicleta','pose-patines','pose-bajo-la-lluvia','pose-pov-desayuno','pose-selfie-en-el-coche','pose-selfie-con-amiga','pose-unboxing']);
-const flowPoseWide = p => FLOW_POSE_WIDE.has(p.id);
-const flowPoseCopied = id => Array.isArray(S.flowPoseCopied) && S.flowPoseCopied.includes(id);
-function flowPosePrompt(p) {
-  const wide = flowPoseWide(p), ratio = wide ? '16:9 landscape' : '9:16 portrait';
-  const pose = String(p.desc || p.name || '').replace(/^Pose:\s*/i, '').trim();
-  const framing = p.cat === 'Retrato y manos' ? 'Use a close portrait crop that clearly shows her face, expression, and the exact hand gesture; keep every hand fully inside the frame.' : /selfie|móvil|movil|mirando el móvil|mirando el movil/i.test(p.name) ? 'Use a believable phone-camera composition that clearly shows the described gesture; keep the model’s face and hands unobstructed unless the pose itself calls for the phone to cover part of her face.' : 'Frame the whole body whenever the described pose uses the body or legs; keep her head, hands, feet, and any pose-critical prop fully inside the image.';
-  return `Use the attached reference image as the required identity reference for the adult woman. In Google Flow, attach that image as an image ingredient/reference before generating. Preserve the same woman’s exact facial identity, age, skin tone, hair, and body proportions. Use the reference for the model’s identity only; do not copy its pose or background. Keep her recognizably the same person with natural anatomy and realistic hands.
-
-Create one polished, photorealistic studio editorial photograph. Pose and action: ${pose} Interpret this pose clearly and naturally, with believable balance, relaxed fingers, anatomically correct joints, and a readable silhouette. The reference-image woman remains the main subject. Include another person only if the pose description explicitly requires one.
-
-Background: a seamless, perfectly uniform matte light gray studio backdrop, exact HEX #D3D3D3, exact sRGB RGB (211, 211, 211). Keep the wall and visible floor the same neutral gray, with no gradient, texture, horizon line, colored cast, scenery, room details, or backdrop objects. If the pose requires furniture or a prop, use only the minimum simple neutral studio prop in the foreground; keep the background itself plain #D3D3D3.
-
-Composition: ${ratio} image. In Google Flow, set the aspect ratio to ${wide ? 'landscape 16:9' : 'portrait 9:16'} to match the pose. ${framing} Compose intentionally for this orientation without stretching or awkward cropping.
-
-Lighting and finish: soft, even, neutral studio light, true-to-life skin texture, clean color, subtle natural contact shadows, crisp focus on the model, premium fashion-photography finish. Keep the background visually uniform and close to the exact specified gray.
-
-One image only; no collage, no split panels, no extra limbs or fingers, no distorted hands, no duplicate subject, no text, no typography, no logo, no watermark.`;
-}
-async function copyFlowPose(id) {
-  const p = libItem('poses', id); if (!p) return toast('No se encontró esta pose');
-  const text = flowPosePrompt(p); let ok = false;
-  try { await navigator.clipboard.writeText(text); ok = true; } catch (e) { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { ok = document.execCommand('copy'); } catch (x) {} ta.remove(); }
-  if (!ok) return toast('No se pudo copiar el prompt');
-  S.flowPoseCopied = [...new Set([...(Array.isArray(S.flowPoseCopied) ? S.flowPoseCopied : []), id])]; save(); render(); toast('Prompt copiado y marcado');
-}
 function download(name, data, type = 'application/json') { const a = document.createElement('a'); const u = URL.createObjectURL(data instanceof Blob ? data : new Blob([data], { type })); a.href = u; a.download = name; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 120000); }
 /* ============ prompts ============ */
 function compsActive(c, scene = '') {
@@ -2429,8 +2395,7 @@ async function claudeAsk(system, user, max = 700, ms = 60000) {
 }
 function renderLib(lib) {
   const L = LIBS[lib]; const list = S.libs[lib]; const f = S.filter[lib] || 'Todos';
-  const matching = lib === 'vestidor' ? vApply(list) : list.filter(x => (f === 'Todos' || (f === 'Mi Notion' ? x.notion : f === 'Con imagen' ? x.img : f === 'Sin imagen' ? !x.img : (x.cat === f || (x.tags || []).includes(f)))) && smartMatch(x, S.q));
-  const items = lib === 'poses' && S.flowOnlyPending ? matching.filter(x => !flowPoseCopied(x.id)) : matching;
+  const items = lib === 'vestidor' ? vApply(list) : list.filter(x => (f === 'Todos' || (f === 'Mi Notion' ? x.notion : f === 'Con imagen' ? x.img : f === 'Sin imagen' ? !x.img : (x.cat === f || (x.tags || []).includes(f)))) && smartMatch(x, S.q));
   const p = libItem(lib, S.picked[lib]);
   const selKey = Object.keys(TILE_LIB).find(k => TILE_LIB[k] === lib);
   const withImg = list.filter(x => x.img).length;
@@ -2445,13 +2410,13 @@ function renderLib(lib) {
         ${(p.uso || []).length ? `<div class="note">Uso: ${esc(p.uso.join(' · '))}</div>` : ''}
         ${(p.ideal || []).length ? `<div class="note"><b>Ideal para:</b> ${esc(p.ideal.join(' · '))}</div>` : ''}
         ${(p.evitar || []).length ? `<div class="note"><b>Evitar en:</b> ${esc(p.evitar.join(' · '))}</div>` : ''}</div>` : ''}
-      ${lib === 'poses' ? `<div class="stack"><div class="between"><span class="lbl">Prompt para Google Flow · Nano Banana</span><span class="tag">${flowPoseWide(p) ? 'Horizontal · 16:9' : 'Vertical · 9:16'}</span></div><textarea class="flow-prompt" readonly aria-label="Prompt completo para Google Flow">${esc(flowPosePrompt(p))}</textarea><button class="btn acc wide" data-flowcopy="${esc(p.id)}">${flowPoseCopied(p.id) ? '✓ Copiado · copiar de nuevo' : 'Copiar prompt'}</button><p class="flow-note">Añade la imagen de referencia de la modelo como ingrediente en Flow antes de generar. El botón de cada tarjeta marca las poses que ya has copiado.</p><details><summary class="lbl">Descripción base de esta pose</summary><textarea data-libf="desc" placeholder="En inglés, como la lee el modelo" style="min-height:72px">${esc(p.desc || '')}</textarea></details></div>` : `<div class="stack"><div class="between"><span class="lbl">Descripción para el prompt</span><a class="lnk" data-copy="${esc(p.desc || '')}">Copiar</a></div><textarea data-libf="desc" placeholder="En inglés, como la lee el modelo" style="min-height:96px">${esc(p.desc || '')}</textarea></div>`}
+      <div class="stack"><div class="between"><span class="lbl">Descripción para el prompt</span><a class="lnk" data-copy="${esc(p.desc || '')}">Copiar</a></div><textarea data-libf="desc" placeholder="En inglés, como la lee el modelo" style="min-height:96px">${esc(p.desc || '')}</textarea></div>
       <button class="btn acc wide" data-a="libToImg">✨ Añadir a Crear imagen</button>
       ${lib === 'vestidor' ? `<div class="row" style="gap:6px"><button class="btn wide" data-a="favLib">${p.fav ? '★ Quitar de favoritas' : '☆ Favorita'}</button><button class="btn wide" data-a="similarLib">🔍 Parecidas</button></div><button class="btn wide" data-a="completeLook">🧩 Completar look</button>` : ''}
       ${['vestidor','peinados','lugares','looks'].includes(lib) ? '<button class="btn wide" data-a="libToVid">🎬 Añadir a Crear vídeo</button>' : ''}
       ${lib === 'vestidor' ? `<div class="stack"><span class="lbl">Nuevo color</span><div class="swatches">${COLORS.map(([n, h]) => `<button class="sw ${S.sel.color === n ? 'on' : ''}" title="${n}" style="background:${h}" data-color="${n}"></button>`).join('')}</div>
         <p class="note">${S.sel.color ? `Se pedirá en <b>${S.sel.color}</b> al usarla.` : 'Elige un color: se añade al prompt de la prenda.'}</p></div>` : ''}
-      ${lib === 'poses' ? '' : `<details class="fold"><summary class="lbl">Prompt para crear su imagen</summary><div><div class="promptbox">${esc(thumbPrompt(lib, p))}</div><button class="btn wide" style="margin-top:8px" data-copy="${esc(thumbPrompt(lib, p))}">Copiar prompt</button></div></details>`}
+      <details class="fold"><summary class="lbl">Prompt para crear su imagen</summary><div><div class="promptbox">${esc(thumbPrompt(lib, p))}</div><button class="btn wide" style="margin-top:8px" data-copy="${esc(thumbPrompt(lib, p))}">Copiar prompt</button></div></details>
       <button class="btn ghost wide" data-a="delLib">Borrar ${L.one}</button>`
     : `<div class="stack"><span class="lbl">${L.base}</span><p class="note">Elige ${un} ${L.one} para ver su ficha y usarl${L.g === 'f' ? 'a' : 'o'} en Crear imagen o Vídeo. Las fichas sin imagen llevan una lámina provisional: súbele su imagen cuando la generes.</p>
       <div class="progress"><i style="width:${list.length ? withImg / list.length * 100 : 0}%"></i></div><span class="note">${withImg} de ${list.length} con imagen</span>
@@ -2462,17 +2427,15 @@ function renderLib(lib) {
       ${lib === 'vestidor' && !S.vestidorWeb ? '<button class="btn wide" data-a="loadVestidorPack">⇩ Añadir el vestidor de ejemplo de Saga (261 prendas)</button>' : ''}${lib === 'vestidor' ? '<button class="btn acc wide" data-a="importVestidorPack">⇩ Importar mi vestidor de Notion</button><button class="btn wide" data-a="dedupPrendas">Quitar prendas duplicadas</button><button class="btn wide" data-a="vSolo">Vista limpia: ' + (window.sagaVsoloOn && window.sagaVsoloOn() ? 'sí (solo cuerpo entero)' : 'no (lámina completa)') + '</button><a class="lnk" data-a="importNotionFolder">o desde una carpeta exportada de Notion</a>' : ''}
       <button class="btn wide" data-a="importLibJson">⇩ Importar JSON</button></div>`;
   const nNot = list.filter(x => x.notion).length; const filters = [['Todos', null], ...(nNot ? [['Mi Notion', nNot]] : []), ...L.cats.map(c => [c, list.filter(x => x.cat === c || (x.tags || []).includes(c)).length]), ...(withImg > 0 && withImg < list.length ? [['Con imagen', withImg], ['Sin imagen', list.length - withImg]] : [])];
-  const pendingCount = list.filter(x => !flowPoseCopied(x.id)).length;
-  const vx = lib === 'poses' ? `<button class="btn sm ${S.flowOnlyPending ? 'on' : ''}" data-flowpending>${S.flowOnlyPending ? 'Ver todas' : 'Sin copiar'} · ${pendingCount}</button>` : lib === 'vestidor' ? `<button class="btn sm acc" data-a="sceneSearch">✨ Por escena</button><button class="btn sm ${vfActive() ? 'on' : ''}" data-a="vfToggle">Filtros${vfActive() ? ' · ' + vfActive() : ''} ${S.vfOpen ? '▴' : '▾'}</button>` : '';
+  const vx = lib === 'vestidor' ? `<button class="btn sm acc" data-a="sceneSearch">✨ Por escena</button><button class="btn sm ${vfActive() ? 'on' : ''}" data-a="vfToggle">Filtros${vfActive() ? ' · ' + vfActive() : ''} ${S.vfOpen ? '▴' : '▾'}</button>` : '';
   const stage = `${galleryHead(`${L.t} · ${items.length === list.length ? list.length : items.length + ' de ' + list.length}`, filters, lib, vx)}${lib === 'vestidor' ? vPanel(list) : ''}
     ${items.length ? `<div class="grid ${S.size} ${L.shape === '16/9' ? 'wide' : ''}">${items.slice(0, S._libLimit || 60).map((x, i) => `<div class="it lib ${S.picked[lib] === x.id ? 'on' : ''}" style="--ar:${L.shape};aspect-ratio:${L.shape};animation-delay:${Math.min(i, 24) * 18}ms" data-pick="lib:${lib}|${x.id}">
       ${x.img ? `<img loading="lazy" src="${src(x.img)}">` : phArt(x.name, x.id, L.shape)}
       ${S.sel[selKey] === x.id ? '<span class="badge">EN USO</span>' : ''}
       ${lib === 'vestidor' ? `<button class="vfav ${x.fav ? 'on' : ''}" data-a="favCard" data-id="${x.id}" title="Favorita">${x.fav ? '★' : '☆'}</button>` : ''}
-      ${lib === 'poses' ? `<span class="pose-flow-format">${flowPoseWide(x) ? '↔ 16:9' : '↕ 9:16'}</span><button class="pose-flow-copy ${flowPoseCopied(x.id) ? 'copied' : ''}" data-flowcopy="${esc(x.id)}" title="${flowPoseCopied(x.id) ? 'Ya copiado · copiar otra vez' : 'Copiar prompt para Flow'}">${flowPoseCopied(x.id) ? '✓ Copiado' : 'Copiar'}</button>` : ''}
       <div class="nm"><b>${esc(x.name)}</b></div></div>`).join('')}</div>
       ${items.length > (S._libLimit || 60) ? `<div style="text-align:center;padding:0 0 80px"><button class="btn" data-a="libMore">Ver más (${items.length - (S._libLimit || 60)})</button></div>` : ''}`
-      : empty(lib === 'poses' && S.flowOnlyPending ? '¡Ya has copiado las 100 poses!' : `Nada por aquí`, lib === 'poses' && S.flowOnlyPending ? 'Desactiva el filtro para volver a ver todas las poses.' : `Prueba con otro filtro o crea ${un} ${L.one} nuev${L.g === 'f' ? 'a' : 'o'}.`, lib === 'poses' && S.flowOnlyPending ? '' : `<button class="btn acc" data-a="addLib">＋ Añadir</button>`)}`;
+      : empty(`Nada por aquí`, `Prueba con otro filtro o crea ${un} ${L.one} nuev${L.g === 'f' ? 'a' : 'o'}.`, `<button class="btn acc" data-a="addLib">＋ Añadir</button>`)}`;
   return { side, stage };
 }
 
@@ -3597,8 +3560,6 @@ document.addEventListener('click', async e => {
   if ((el = d('[data-recreate]'))) { S.picked.filmoteca = el.dataset.recreate; return A.useMotion(); }
   if ((el = d('[data-plat]'))) { const [k, p] = el.dataset.plat.split('|'); return setPlat(k, p); }
   if ((el = d('[data-mview]'))) { const [k, id] = el.dataset.mview.split('|'); return mediaViewer(k, id); }
-  if ((el = d('[data-flowcopy]'))) { e.preventDefault(); e.stopPropagation(); return copyFlowPose(el.dataset.flowcopy); }
-  if ((el = d('[data-flowpending]'))) { e.preventDefault(); e.stopPropagation(); S.flowOnlyPending = !S.flowOnlyPending; save(); return render(); }
   if ((el = d('[data-pick]'))) { const [k, id] = el.dataset.pick.split('|'); const kk = k.replace('lib:', ''); if ((S.picked[kk] === id || isMob()) && !el.dataset.gol && LIBS[kk]) { S.picked[kk] = id; save(); return libViewer(kk, id); }
     if ((S.picked[kk] === id || isMob()) && (kk === 'filmoteca' || kk === 'fototeca')) { S.picked[kk] = id; save(); render(); return mediaViewer(kk, id); } S.picked[kk] = id; if (isMob() && !el.dataset.gol) { S.mv = S.mv || {}; S.mv[S.section] = 0; try { scrollTo(0, 0); } catch (x) {} } save(); if (el.dataset.gol) return go('lib:' + kk); return render(); }
   if ((el = d('[data-color]'))) { S.sel.color = S.sel.color === el.dataset.color ? '' : el.dataset.color; S.img.prompt = ''; save(); return render(); }
