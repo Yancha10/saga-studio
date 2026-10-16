@@ -4468,13 +4468,19 @@ function cut(img){
   const k=img.currentSrc||img.src;if(cache.has(k))return cache.get(k);
   let res=null;
   try{
-    const sw=300,sh=Math.round(H*sw/W);const c=document.createElement('canvas');c.width=sw;c.height=sh;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0,sw,sh);
+    const sw=Math.min(W,600),sh=Math.round(H*sw/W);const c=document.createElement('canvas');c.width=sw;c.height=sh;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0,sw,sh);
     const d=x.getImageData(0,0,sw,sh).data;const L=(cx,y)=>{const i=(y*sw+cx)*4;return(d[i]+d[i+1]+d[i+2])/3};
-    let best=-1,bf=0;
-    for(let cx=Math.round(sw*.38);cx<=Math.round(sw*.7);cx++){let n=0;for(let y=0;y<sh;y++){if(L(cx,y)-(L(cx-5,y)+L(cx+5,y))/2>22)n++}const f=n/sh;if(f>bf){bf=f;best=cx}}
-    if(bf<.8&&Math.abs(W-H)<W*.03){best=Math.round(sw*.58);bf=1}
-    if(bf>=.8){
-      const e=best-1,cw=Math.max(40,Math.round(e/sw*W)-1),T=.6,f=Math.min(1,900/H),pw=cw*f,ph=H*f;
+    /* la costura entre la prenda entera y los detalles: la columna donde el fondo salta en la mayoría de las filas (la persona solo ocupa parte) */
+    const lo=Math.round(sw*.34),hi=Math.round(sw*.74),xs=[],sc=[];
+    for(let cx=lo;cx<hi;cx++){const a=[];for(let y=0;y<sh;y++)a.push(Math.abs(L(cx+1,y)-L(cx-1,y)));a.sort((p,q)=>p-q);xs.push(cx);sc.push(a[Math.floor(sh*.2)])}
+    const m=Math.max(...sc);let best=Math.round(sw*.58);
+    if(m>=2.5){for(let k=0;k<xs.length;k++)if(sc[k]>=.5*m)best=xs[k]}
+    /* si la costura lleva una línea blanca, se corta antes de ella para que no quede ningún borde claro */
+    const wf=cx=>{let n=0;for(let y=0;y<sh;y++)if(L(cx,y)>205)n++;return n/sh};
+    for(let t=0;t<Math.round(sw*.1)&&(wf(best)>.3||wf(best-1)>.3||wf(best-2)>.3);t++)best--;
+    best-=2;
+    {
+      const cw=Math.max(40,Math.round(best/sw*W)),T=.6,f=Math.min(1,900/H),pw=cw*f,ph=H*f;
       let OW=pw,OH=ph,x0=0,y0=0;if(pw/ph<T){OW=ph*T;x0=(OW-pw)/2}else{OH=pw/T;y0=(OH-ph)/2}
       const o=document.createElement('canvas');o.width=Math.round(OW);o.height=Math.round(OH);const ox=o.getContext('2d');
       /* lo que sobra a los lados (o arriba y abajo) se rellena estirando el borde de la propia foto: fondo seguido, sin marcos */
