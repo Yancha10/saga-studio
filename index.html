@@ -3139,10 +3139,37 @@ const A = {
   async newLibText() { const lib = S.section.slice(4); const L = LIBS[lib]; const o = await textModal(`Nuev${L.g === 'f' ? 'a' : 'o'} ${L.one}`, [['name','Nombre',''], ...(L.cats.length ? [['cat','Categoría', L.cats.join(' · ')]] : []), ['desc','Descripción para el prompt (en inglés)','', true]]); if (!o || !o.name) return; const it = { id: uid(), name: o.name, cat: L.cats.find(c => c.toLowerCase() === (o.cat || '').toLowerCase()) || L.cats[0] || '', tags: [], desc: o.desc, img: '' }; S.libs[lib].unshift(it); S.picked[lib] = it.id; save(); render(); },
   async importLibJson() {
     const lib = S.section.slice(4); const [f] = await pickFiles('application/json'); if (!f) return;
-    try { const arr = JSON.parse(await f.text()); const L = LIBS[lib];
-      const items = (Array.isArray(arr) ? arr : arr.items || []).map(o => ({ id: uid(), name: o.name || o.Nombre || o.title || 'Sin nombre', cat: L.cats.includes(o.cat || o['Categoría']) ? (o.cat || o['Categoría']) : (L.cats[0] || ''), tags: [], img: o.img || o.image || o.Imagen || '', desc: o.desc || o.prompt || o['Descripción'] || '' }));
+    try {
+      const raw = JSON.parse(await f.text()); const L = LIBS[lib];
+      if (!Array.isArray(raw) && raw && Object.prototype.hasOwnProperty.call(raw, 'updates')) {
+        if (!Array.isArray(raw.updates)) throw new Error('El lote debe incluir una lista "updates"');
+        const list = S.libs[lib], norm = v => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        const entries = raw.updates.map(o => {
+          const name = o.name || o.title || '';
+          const hits = o.id ? list.filter(x => x.id === o.id) : list.filter(x => norm(x.name) === norm(name));
+          const image = o.img || o.image || '';
+          if (hits.length !== 1) throw new Error('No encuentro una ficha única para: ' + (name || o.id || 'sin nombre'));
+          if (!/^data:image\/(?:jpeg|png|webp);base64,/i.test(image)) throw new Error('La imagen de ' + hits[0].name + ' debe ir en base64 dentro del JSON');
+          return { item: hits[0], image, replace: o.replace === true };
+        });
+        if (new Set(entries.map(x => x.item.id)).size !== entries.length) throw new Error('El lote repite una ficha; no se ha aplicado');
+        let linked = 0, skipped = 0;
+        for (const e of entries) {
+          if (e.item.img && !e.replace) { skipped++; continue; }
+          const blob = await (await fetch(e.image)).blob();
+          if (!blob.type.startsWith('image/')) throw new Error('No se pudo leer la imagen de ' + e.item.name);
+          const ext = blob.type.includes('png') ? 'png' : blob.type.includes('webp') ? 'webp' : 'jpg';
+          e.item.img = await putMedia(new File([blob], e.item.name + '.' + ext, { type: blob.type }));
+          linked++;
+        }
+        save(); render();
+        toast(linked + ' imágenes vinculadas' + (skipped ? ' · ' + skipped + ' ya tenían imagen' : ''));
+        return;
+      }
+      const arr = Array.isArray(raw) ? raw : raw.items || [];
+      const items = arr.map(o => ({ id: uid(), name: o.name || o.Nombre || o.title || 'Sin nombre', cat: L.cats.includes(o.cat || o['Categoría']) ? (o.cat || o['Categoría']) : (L.cats[0] || ''), tags: [], img: o.img || o.image || o.Imagen || '', desc: o.desc || o.prompt || o['Descripción'] || '' }));
       S.libs[lib].unshift(...items); save(); render(); toast(items.length + ' fichas importadas');
-    } catch (x) { toast('JSON no válido'); }
+    } catch (x) { toast(x && x.message ? x.message : 'JSON no válido'); }
   },
   libToImg() { const [lib, up] = curLib(); if (up) up.uses = (up.uses || 0) + 1; const k = Object.keys(TILE_LIB).find(x => TILE_LIB[x] === lib); S.sel[k] = S.picked[lib]; S.img.prompt = ''; save(); go('crear'); },
   libToVid() { const [lib, up] = curLib(); if (up) up.uses = (up.uses || 0) + 1; const k = Object.keys(TILE_LIB).find(x => TILE_LIB[x] === lib); S.sel[k] = S.picked[lib]; S.vid.que = 'crear'; save(); go('video'); },
