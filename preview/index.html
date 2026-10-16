@@ -4488,18 +4488,21 @@ function cut(img){
     }
     /* Una costura coherente atraviesa buena parte de la lámina; si no aparece, conserva el corte seguro de respaldo. */
     if(bestPersistence<.34)best=Math.round(sw*.58);
-    /* Deja un margen suficiente antes de la línea, sea blanca, gris o de color. */
+    /* Deja margen antes de la línea divisoria, aunque sea blanca, gris o de color. */
     best=Math.max(Math.round(sw*.30),best-Math.max(6,Math.round(sw*.012)));
     {
-      const cw=Math.max(40,Math.round(best/sw*W)),T=.6,f=Math.min(1,900/H),pw=cw*f,ph=H*f;
+      const cw=Math.max(40,Math.round(best/sw*W));
+      /* Recorte interior fuerte: sacrifica un borde fino para eliminar marcos y costuras residuales. */
+      const trimX=Math.round(cw*.045),trimY=Math.round(H*.01),cropW=Math.max(40,cw-trimX*2),cropH=Math.max(40,H-trimY*2);
+      const T=.6,f=Math.min(1,900/cropH),pw=cropW*f,ph=cropH*f;
       let OW=pw,OH=ph,x0=0,y0=0;if(pw/ph<T){OW=ph*T;x0=(OW-pw)/2}else{OH=pw/T;y0=(OH-ph)/2}
       const o=document.createElement('canvas');o.width=Math.round(OW);o.height=Math.round(OH);const ox=o.getContext('2d');
       /* Cuando el panel no llena el formato, prolonga el propio fondo desenfocado; no amplía una línea del borde. */
       if(x0>0||y0>0){
-        const scale=Math.max(OW/cw,OH/H),bw=cw*scale,bh=H*scale;
-        ox.save();ox.filter='blur(20px)';ox.drawImage(img,0,0,cw,H,(OW-bw)/2,(OH-bh)/2,bw,bh);ox.restore();
+        const scale=Math.max(OW/cropW,OH/cropH),bw=cropW*scale,bh=cropH*scale;
+        ox.save();ox.filter='blur(20px)';ox.drawImage(img,trimX,trimY,cropW,cropH,(OW-bw)/2,(OH-bh)/2,bw,bh);ox.restore();
       }
-      ox.drawImage(img,0,0,cw,H,x0,y0,pw,ph);
+      ox.drawImage(img,trimX,trimY,cropW,cropH,x0,y0,pw,ph);
       res={url:o.toDataURL('image/jpeg',.88)};
     }
   }catch(err){res=null}
