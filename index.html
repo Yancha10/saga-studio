@@ -1765,14 +1765,13 @@ function buildAudioPrompt() {
   if (a.modo === 'cambiar') return `Cambiar la voz del audio subido por la de ${c.name}${c.voiceId ? ' (ElevenLabs ' + c.voiceId + ')' : ''}, manteniendo la entonación.${a.limpiar ? ' Quitar el ruido de fondo.' : ''}`;
   return `${a.escena || 'Describe el sonido'}${a.ambienteFondo ? ' (ambient background loop)' : ''}`;
 }
-const SIDE_HAIR = new Set(["coleta-alta-con-trenzas-pegadas", "coleta-alta-con-volumen-en-la-raiz", "coleta-alta-lisa-perfecta", "coleta-alta-rizada", "coleta-baja-con-lazo", "coleta-baja-pulida-con-raya-al-medio", "coleta-burbuja", "coleta-envuelta", "coleta-trenzada", "cornrows-rectas-hacia-atras", "fade-alto-con-tupe", "finger-waves-con-gel", "gibson-tuck-vintage", "media-cola-alta-con-volumen", "media-coleta-trenzada", "mono-alto-bailarina", "mono-alto-despeinado-con-palillos", "mono-bajo-despeinado", "mono-bajo-liso-elegante", "mono-en-ocho", "mono-frances-clasico", "mono-trenzado-alto", "mullet-moderno", "ondas-vintage-anos-40", "pixie-con-undercut-lateral", "recogido-bajo-con-trenza-envolvente", "recogido-colmena-anos-60", "recogido-con-panuelo", "recogido-con-pinza-italiana", "recogido-romantico-de-novia", "recogido-torcido-bajo", "trenza-corazon", "trenza-de-cascada", "trenza-de-espiga", "trenza-escalera", "trenza-holandesa-doble", "trenza-pull-through", "trenzas-boxeadora-en-mono", "wolf-cut"]); // peinados que se ven mejor de perfil (siempre mirando a la izquierda); el resto, de frente
 const NEUTRAL_BG = 'plain seamless studio backdrop in one flat neutral light grey, exactly #D3D3D3 (RGB 211, 211, 211), the identical tone in every image, no gradient, no vignette, no colour cast';
 /* prompt para generar la miniatura de una ficha de biblioteca (para «ya las crearemos») */
 function thumbPrompt(lib, it) {
   const c = char();
   const who = `the woman of @IMG1 (${c.name}'s character sheet), same face`;
   const P = {
-    peinados: `Studio beauty portrait of ${who}, shoulders up, ${SIDE_HAIR.has(it.id) ? 'strict side profile view, the whole head turned to face the LEFT edge of the frame (always the same direction), so the back and side of the hairstyle read clearly' : 'strict front view, head facing the camera straight on, symmetrical framing, so the hairstyle reads clearly'}. Hairstyle: ${it.desc || it.name}. ${NEUTRAL_BG}. Soft even key light, photoreal, one single photo.`,
+    peinados: `Studio beauty portrait of ${who}, shoulders up, strict front view, head facing the camera straight on, symmetrical framing, so the hairstyle reads clearly. Hairstyle: ${it.desc || it.name}. ${NEUTRAL_BG}. Soft even key light, photoreal, one single photo.`,
     encuadres: `Photo of ${who}, ${String(it.desc || it.name).replace(/^Framing:\s*/, '')} Natural scene, photoreal, one single photo.`,
     luz: `Photo of ${who}, lit with: ${String(it.desc || it.name).replace(/^Lighting:\s*/, '')} Photoreal, one single photo.`,
     camara: `Video still of ${who} illustrating this camera move: ${String(it.desc || it.name).replace(/^Camera:\s*/, '')}`,
@@ -4466,9 +4465,13 @@ function cut(img){
     for(let cx=Math.round(sw*.38);cx<=Math.round(sw*.7);cx++){let n=0;for(let y=0;y<sh;y++){if(L(cx,y)-(L(cx-5,y)+L(cx+5,y))/2>22)n++}const f=n/sh;if(f>bf){bf=f;best=cx}}
     if(bf<.8&&Math.abs(W-H)<W*.03){best=Math.round(sw*.58);bf=1}
     if(bf>=.8){
-      const e=best-1;
-      const cw=Math.max(40,Math.round(e/sw*W)-1),ow=Math.min(cw,640),oh=Math.round(H*ow/cw);
-      const o=document.createElement('canvas');o.width=ow;o.height=oh;const ox=o.getContext('2d');ox.drawImage(img,0,0,cw,H,0,0,ow,oh);
+      const e=best-1,cw=Math.max(40,Math.round(e/sw*W)-1),T=.6,f=Math.min(1,900/H),pw=cw*f,ph=H*f;
+      let OW=pw,OH=ph,x0=0,y0=0;if(pw/ph<T){OW=ph*T;x0=(OW-pw)/2}else{OH=pw/T;y0=(OH-ph)/2}
+      const o=document.createElement('canvas');o.width=Math.round(OW);o.height=Math.round(OH);const ox=o.getContext('2d');
+      /* lo que sobra a los lados (o arriba y abajo) se rellena estirando el borde de la propia foto: fondo seguido, sin marcos */
+      if(x0>0){ox.drawImage(img,0,0,3,H,0,0,x0+1,OH);ox.drawImage(img,cw-4,0,3,H,x0+pw-1,0,OW-x0-pw+2,OH)}
+      if(y0>0){ox.drawImage(img,0,0,cw,3,0,0,OW,y0+1);ox.drawImage(img,0,H-3,cw,3,0,y0+ph-1,OW,OH-y0-ph+2)}
+      ox.drawImage(img,0,0,cw,H,x0,y0,pw,ph);
       res={url:o.toDataURL('image/jpeg',.88)};
     }
   }catch(err){res=null}
