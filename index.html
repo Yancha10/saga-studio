@@ -1499,7 +1499,6 @@ const AUDIO_MODELS = {
 const CAMERAS = [['fija','Fija','Trípode, sin movimiento.'],['mano','Cámara en mano','Micro-movimientos naturales, sin estabilizar.'],['dolly','Dolly in','Se acerca despacio hacia ella.'],['dollyout','Dolly out','Se aleja despacio y revela el sitio.'],['paneo','Paneo','Gira en horizontal siguiendo la acción.'],['travelling','Travelling','Acompaña a la par mientras camina.'],['orbita','Órbita','Gira alrededor de ella.'],['grua','Grúa','Sube o baja en vertical.'],['selfie','Selfie','Ella sujeta el móvil, brazo extendido.']];
 const VSTYLES = [['cine','Cinematográfico','Realismo cinematográfico, encuadres cerrados, poca profundidad de campo. Velocidad real, nada de cámara lenta.'],['natural','Natural de redes','Vídeo natural de redes sociales, sin gradación de cine, sin luz profesional: auténtico.'],['ugc','UGC selfie','Vídeo UGC estilo selfie, cámara en mano con micro-movimientos naturales, sin estabilización, sin gradación de cine: auténtico de redes sociales.']];
 const PROVIDERS = [
-  ['higgsfield','Higgsfield','Imagen y vídeo · Seedance 2.0 / 2.5'],
   ['wavespeed','WaveSpeed','Imagen, vídeo y audio'],
   ['fal','fal','Imagen: Nano Banana, GPT Image, Seedream, Ideogram, FLUX y Kling'],
   ['magnific','Magnific','Imagen: Nano Banana Pro y Seedream 5'],
@@ -2514,6 +2513,7 @@ function pickerModal(key) {
 /* proveedores con generación directa (en preparación) y sus credenciales */
 const PROV_UI = [
   ['wiro', 'Wiro', 'Imagen y vídeo de muchos fabricantes', [['key', 'API key'], ['secret', 'API secret']], 'Crea en Wiro un proyecto solo para Saga Studio, con autenticación por firma («Signature-Based»).'],
+  ['higgsfield', 'Higgsfield', 'Imagen y vídeo: Seedance 2.0 / 2.5, Soul', [['key', 'Dirección de tu puente (Worker)'], ['secret', 'Contraseña del puente']], 'Higgsfield no deja usar su API desde una web: la app habla con TU puente (un Worker de Cloudflare con tu clave de Higgsfield guardada allí).'],
   ['pollo', 'Pollo', 'Imagen y vídeo: Kling, Veo, Seedance…', [['key', 'API key']], 'Crea en Pollo una clave solo para Saga Studio.'],
   ['fal', 'fal', 'Imagen y vídeo: más de mil modelos', [['key', 'API key']], 'fal recomienda no usar claves desde el navegador: usa una clave solo para Saga Studio y con poco saldo.'],
 ];
@@ -3829,6 +3829,55 @@ const ADAPTERS = {
     },
     async cancel(c, job) { await pfetch(this.base(job.pid) + '/requests/' + encodeURIComponent(job.task) + '/cancel', { method: 'PUT', headers: { Authorization: 'Key ' + c.key } }); },
   },
+  /* ---------- Higgsfield (docs.higgsfield.ai). Su API no admite llamadas desde una web: se pasa por TU puente (Worker de Cloudflare con tu clave).
+     c.key = dirección del puente · c.secret = contraseña del puente. La clave de Higgsfield nunca llega a esta app. ---------- */
+  higgsfield: {
+    n: 'Higgsfield', creds: ['key', 'secret'],
+    base(c) { const u = okUrl(String(c.key || '').trim()); if (!u) throw gErr('AUTH_REQUIRED', 'La dirección del puente debe empezar por https://'); return u.replace(/\/+$/, ''); },
+    async call(c, path, o = {}, ms) {
+      const h = Object.assign({ 'X-Saga-Token': String(c.secret || '') }, o.headers || {});
+      const r = await pfetch(this.base(c) + path, Object.assign({}, o, { headers: h }), ms);
+      const d = await jread(r); const m = msgOf(d) || (d && d.error) || '';
+      return { r, d, m: String(m) };
+    },
+    fail(x) { const { r, d, m } = x; if (r.status === 401 && d && d.error === 'token') return gErr('INVALID_CREDENTIALS', 'la contraseña del puente no coincide'); return gErr(classify(httpCode(r.status), m), m || 'HTTP ' + r.status); },
+    async test(c) { // gratis: el puente pregunta a Higgsfield por una petición que no existe
+      const x = await this.call(c, '/__ping');
+      if (!x.r.ok) throw this.fail(x);
+      if (!x.d || !x.d.ok) throw gErr('INVALID_CREDENTIALS', 'Higgsfield no acepta la clave guardada en el puente (HTTP ' + (x.d && x.d.hf) + ')');
+      return 'El puente y tu clave de Higgsfield funcionan.';
+    },
+    async catalog() { const M = await manifest('higgsfield'); return M ? M.models.map(x => Object.assign({ provider: 'higgsfield' }, x)) : []; },
+    async detail(c, m) { return { params: m.fields || [], price: { st: 'unk', note: 'se cobra en créditos de tu cuenta de Higgsfield' } }; },
+    async upload(c, blob) {
+      const x = await this.call(c, '/__upload', { method: 'POST', headers: { 'Content-Type': blob.type || 'image/jpeg' }, body: blob }, 180000);
+      if (!x.r.ok || !x.d || !okUrl(x.d.public_url)) throw this.fail(x);
+      return okUrl(x.d.public_url);
+    },
+    async submit(c, m, job, refs) {
+      const input = Object.assign({}, job.params);
+      if (refs.length) { const f = m.imgField || ''; if (!f) throw gErr('UNSUPPORTED_INPUT', 'Este modelo no recibe imágenes desde aquí.');
+        const urls = []; for (const r of refs) urls.push(await this.upload(c, r.blob)); input[f] = /s$/.test(f) ? urls : urls[0]; }
+      const x = await this.call(c, '/' + m.pid, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Idempotency-Key': String(job.id) }, body: JSON.stringify(input) });
+      if (!x.r.ok || !x.d || !x.d.request_id) throw this.fail(x);
+      return { task: String(x.d.request_id) };
+    },
+    async status(c, job) {
+      const x = await this.call(c, '/requests/' + encodeURIComponent(job.task) + '/status');
+      if (x.r.status === 404) return { st: 'lost' };
+      if (!x.r.ok || !x.d) throw this.fail(x);
+      const s = String(x.d.status || '').toLowerCase(); const d = x.d;
+      if (s === 'queued') return { st: 'queued' };
+      if (s === 'canceled' || s === 'cancelled') return { st: 'cancelled' };
+      if (s === 'nsfw') return { st: 'failed', err: 'SAFETY_REJECTION' };
+      if (s === 'failed') { const m = typeof d.error === 'string' ? d.error : msgOf(d.error) || 'sin detalle'; return { st: 'failed', err: classify('TASK_FAILED', m), detail: m }; }
+      if (s !== 'completed') return { st: 'running' };
+      const urls = []; const add = o => { if (isObj(o) && okUrl(o.url)) urls.push(okUrl(o.url)); };
+      (Array.isArray(d.images) ? d.images : []).forEach(add); add(d.video);
+      return urls.length ? { st: 'done', urls } : { st: 'failed', err: 'TASK_FAILED', detail: 'sin imágenes ni vídeo en la respuesta' };
+    },
+    async cancel(c, job) { await this.call(c, '/requests/' + encodeURIComponent(job.task) + '/cancel', { method: 'POST' }); }, // solo vale mientras está en cola
+  },
   /* ---------- Pollo (API pública documentada en docs.pollo.ai; nunca la CLI ni sus rutas internas) ---------- */
   pollo: {
     n: 'Pollo', creds: ['key'], api: 'https://pollo.ai/api/platform',
@@ -3857,7 +3906,7 @@ const ADAPTERS = {
     cancel: null, // la API pública de Pollo no documenta cancelar
   },
 };
-const PNAME = { manual: 'Manual', wiro: 'Wiro', fal: 'fal', pollo: 'Pollo' };
+const PNAME = { manual: 'Manual', wiro: 'Wiro', fal: 'fal', pollo: 'Pollo', higgsfield: 'Higgsfield' };
 
 /* ---------- catálogos: manifiestos versionados (en la web) + listas en vivo, guardadas en este dispositivo ---------- */
 const MANI = {};
@@ -4177,7 +4226,7 @@ async function directGen(kind, prompt, refs) {
   const files = schema.filter(x => /fileinput$/.test(x.type));
   const promptId = (schema.find(x => x.id === 'prompt') || schema.find(x => /textarea/.test(x.type)) || {}).id || (m.provider !== 'wiro' ? 'prompt' : '');
   const show = schema.filter(x => x.id !== promptId && !/fileinput$/.test(x.type) && x.id !== 'image' && x.id !== 'imageTail');
-  const canRefs = m.provider === 'wiro' ? files.length > 0 : m.provider === 'fal' ? !!m.imgField : false;
+  const canRefs = m.provider === 'wiro' ? files.length > 0 : (m.provider === 'fal' || m.provider === 'higgsfield') ? !!m.imgField : false;
   const R = refs.filter(r => r && r.ref);
   const fld = x => { const v = x.def === undefined || x.def === null ? '' : String(x.def); const id = 'gp-' + esc(x.id);
     const inp = x.opts && x.opts.length ? `<select id="${id}" data-gp="${esc(x.id)}">${x.req ? '' : '<option value="">(por defecto)</option>'}${x.opts.map(o => `<option value="${esc(o.v)}" ${o.v === v ? 'selected' : ''}>${esc(o.l || o.v)}</option>`).join('')}</select>`
@@ -4226,7 +4275,7 @@ const OTHER_TEST = {
   openai: async k => { const r = await pfetch('https://api.openai.com/v1/models', { headers: { Authorization: 'Bearer ' + k } }); const d = await jread(r); if (!r.ok) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status); return 'La clave funciona.'; },
   claude: async k => { const r = await pfetch('https://api.anthropic.com/v1/models', { headers: { 'x-api-key': k, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' } }); const d = await jread(r); if (!r.ok) throw gErr(classify(httpCode(r.status), msgOf(d)), msgOf(d) || 'HTTP ' + r.status); return 'La clave funciona.'; },
 };
-const NO_TEST = { higgsfield: 'Higgsfield no deja comprobar claves desde una web: se usa en modo manual.', magnific: 'Magnific no deja comprobar claves desde una web: se usa en modo manual.' };
+const NO_TEST = { magnific: 'Magnific no deja comprobar claves desde una web: se usa en modo manual.' };
 async function provTestOther(id) {
   const P0 = provGet(); const k = P0.otros && P0.otros[id] && P0.otros[id].key; if (!k || !OTHER_TEST[id]) return; toast('Probando ' + (PROVIDERS.find(x => x[0] === id) || [, id])[1] + '…');
   let ok = false, msg; try { msg = await OTHER_TEST[id](k); ok = true; } catch (e) { if (errCode(e) === 'INSUFFICIENT_BALANCE') { ok = true; msg = 'La clave es correcta, pero la cuenta no tiene saldo.'; } else msg = ERRS[errCode(e)] + (e.detail ? ' (' + e.detail + ')' : ''); }

@@ -120,6 +120,11 @@
      "provider": "wiro",
      "id": "bytedance/seedance-2-0-reference",
      "source": "https://wiro.ai/models/bytedance/seedance-2-0-reference"
+    },
+    {
+     "provider": "higgsfield",
+     "id": "bytedance/seedance-2.0/reference-to-video",
+     "source": "https://docs.higgsfield.ai/docs/models"
     }
    ]
   },
@@ -160,6 +165,11 @@
      "provider": "wiro",
      "id": "bytedance/seedance-2-5-reference",
      "source": "https://wiro.ai/models/bytedance/seedance-2-5-reference"
+    },
+    {
+     "provider": "higgsfield",
+     "id": "bytedance/seedance-2.5/reference-to-video",
+     "source": "https://docs.higgsfield.ai/docs/models"
     }
    ]
   },

@@ -1,0 +1,50 @@
+{
+ "v": 1,
+ "provider": "higgsfield",
+ "reviewed": "2026-10-16",
+ "source": "https://docs.higgsfield.ai/docs/models (ficha de cada modelo). Higgsfield no publica una lista por API: este archivo se mantiene a mano. Ver catalog/README.md.",
+ "notes": "Solo campos vistos en la documentación oficial. Las imágenes de referencia se suben a Higgsfield (files/generate-upload-url) a través de tu puente y se mandan por URL en image_urls.",
+ "models": [
+  {
+   "pid": "bytedance/seedance-2.0/reference-to-video",
+   "kind": "vid",
+   "name": "Seedance 2.0 · referencias",
+   "family": "sd20",
+   "ver": "2.0",
+   "imgField": "image_urls",
+   "src": "https://docs.higgsfield.ai/docs/models/seedance-2/reference-to-video",
+   "fields": [
+    { "id": "duration", "type": "int", "label": "Duración (s)", "def": 5, "note": "de 4 a 15" },
+    { "id": "resolution", "type": "text", "label": "Resolución", "def": "720p", "opts": [{"v":"480p","l":"480p"},{"v":"720p","l":"720p"},{"v":"1080p","l":"1080p"},{"v":"4k","l":"4K"}] },
+    { "id": "aspect_ratio", "type": "text", "label": "Formato", "def": "9:16", "opts": [{"v":"16:9","l":"16:9"},{"v":"4:3","l":"4:3"},{"v":"1:1","l":"1:1"},{"v":"3:4","l":"3:4"},{"v":"9:16","l":"9:16"},{"v":"21:9","l":"21:9"}] },
+    { "id": "generate_audio", "type": "bool", "label": "Generar audio", "adv": true }
+   ]
+  },
+  {
+   "pid": "bytedance/seedance-2.5/reference-to-video",
+   "kind": "vid",
+   "name": "Seedance 2.5 · referencias",
+   "family": "sd25",
+   "ver": "2.5",
+   "imgField": "image_urls",
+   "src": "https://docs.higgsfield.ai/docs/models/seedance-2-5/reference-to-video",
+   "fields": [
+    { "id": "duration", "type": "int", "label": "Duración (s)", "def": 5, "note": "de 4 a 30" },
+    { "id": "resolution", "type": "text", "label": "Resolución", "def": "720p", "opts": [{"v":"480p","l":"480p"},{"v":"720p","l":"720p"},{"v":"1080p","l":"1080p"}] },
+    { "id": "aspect_ratio", "type": "text", "label": "Formato", "def": "9:16", "opts": [{"v":"16:9","l":"16:9"},{"v":"4:3","l":"4:3"},{"v":"1:1","l":"1:1"},{"v":"3:4","l":"3:4"},{"v":"9:16","l":"9:16"},{"v":"21:9","l":"21:9"}] },
+    { "id": "bitrate_mode", "type": "text", "label": "Calidad de bitrate", "adv": true, "opts": [{"v":"standard","l":"estándar"},{"v":"high","l":"alta"}] },
+    { "id": "generate_audio", "type": "bool", "label": "Generar audio", "adv": true }
+   ]
+  },
+  {
+   "pid": "higgsfield-ai/soul/v2/standard",
+   "kind": "img",
+   "name": "Soul 2 · estándar",
+   "family": "",
+   "ver": "2",
+   "imgField": "",
+   "src": "https://docs.higgsfield.ai/docs/quickstart",
+   "fields": []
+  }
+ ]
+}
