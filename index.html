@@ -4484,8 +4484,11 @@ function cut(img){
       const persistence=hits/rows,contrast=total/(rows*64),score=persistence*.8+contrast*.2;
       if(score>bestScore+.002){best=cx;bestScore=score;bestPersistence=persistence}
     }
-    /* Una costura coherente atraviesa buena parte de la lámina; si no aparece, conserva el corte seguro de respaldo. */
-    if(bestPersistence<.34)best=Math.round(sw*.58);
+    /* Estas dos láminas tienen una costura ambigua; fija el ancho del panel de cuerpo entero. */
+    const itemId=img.closest('[data-pick^="lib:vestidor|"]')?.getAttribute('data-pick')?.split('|').pop();
+    const manualPanel={n345:.65,n173:.65}[itemId];
+    if(manualPanel)best=Math.round(sw*manualPanel);
+    else if(bestPersistence<.34)best=Math.round(sw*.58);
     /* Deja margen antes de la línea divisoria, aunque sea blanca, gris o de color. */
     best=Math.max(Math.round(sw*.30),best-Math.max(6,Math.round(sw*.012)));
     {
