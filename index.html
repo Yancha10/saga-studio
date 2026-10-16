@@ -1765,18 +1765,19 @@ function buildAudioPrompt() {
   if (a.modo === 'cambiar') return `Cambiar la voz del audio subido por la de ${c.name}${c.voiceId ? ' (ElevenLabs ' + c.voiceId + ')' : ''}, manteniendo la entonación.${a.limpiar ? ' Quitar el ruido de fondo.' : ''}`;
   return `${a.escena || 'Describe el sonido'}${a.ambienteFondo ? ' (ambient background loop)' : ''}`;
 }
+const NEUTRAL_BG = 'plain seamless studio backdrop in one flat neutral light grey, exactly #D3D3D3 (RGB 211, 211, 211), the identical tone in every image, no gradient, no vignette, no colour cast';
 /* prompt para generar la miniatura de una ficha de biblioteca (para «ya las crearemos») */
 function thumbPrompt(lib, it) {
   const c = char();
   const who = `the woman of @IMG1 (${c.name}'s character sheet), same face`;
   const P = {
-    peinados: `Studio beauty portrait of ${who}, shoulders up, three-quarter view so the hairstyle reads clearly. Hairstyle: ${it.desc || it.name}. Neutral light grey seamless backdrop, soft even key light, photoreal, one single photo.`,
+    peinados: `Studio beauty portrait of ${who}, shoulders up, three-quarter view so the hairstyle reads clearly. Hairstyle: ${it.desc || it.name}. ${NEUTRAL_BG}. Soft even key light, photoreal, one single photo.`,
     encuadres: `Photo of ${who}, ${String(it.desc || it.name).replace(/^Framing:\s*/, '')} Natural scene, photoreal, one single photo.`,
     luz: `Photo of ${who}, lit with: ${String(it.desc || it.name).replace(/^Lighting:\s*/, '')} Photoreal, one single photo.`,
     camara: `Video still of ${who} illustrating this camera move: ${String(it.desc || it.name).replace(/^Camera:\s*/, '')}`,
-    poses: `Full-body photo of ${who} in this pose: ${String(it.desc || it.name).replace(/^Pose:\s*/, '')} Simple neutral studio, soft light, photoreal, one single photo.`,
-    expresiones: `Close-up portrait of ${who}. Expression: ${it.desc || it.name}. Neutral backdrop, soft natural light, photoreal, one single photo.`,
-    vestidor: `Full-body catalogue photo of ${who}, standing straight, front view, neutral grey studio backdrop. She wears: ${it.desc || it.name}. Photoreal, one single photo.`,
+    poses: `Full-body photo of ${who} in this pose: ${String(it.desc || it.name).replace(/^Pose:\s*/, '')} ${NEUTRAL_BG}. Soft light, photoreal, one single photo.`,
+    expresiones: `Close-up portrait of ${who}. Expression: ${it.desc || it.name}. ${NEUTRAL_BG}. Soft even light, photoreal, one single photo.`,
+    vestidor: `Full-body catalogue photo of ${who}, standing straight, front view, ${NEUTRAL_BG}. She wears: ${it.desc || it.name}. Photoreal, one single photo.`,
     efectos: `A photograph of ${who} in a simple everyday scene. Photographic style: ${it.desc || it.name}.`,
     looks: `A cinematic still of ${who} in a scene that fits this look: ${it.desc || it.name}.`,
     cartoon: String(it.desc || it.name).replace(/@img1/gi, '@IMG1'),
