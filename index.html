@@ -2519,7 +2519,7 @@ function pickerModal(key) {
 }
 /* proveedores con generación directa (en preparación) y sus credenciales */
 const PROV_UI = [
-  ['wiro', 'Wiro', 'Imagen y vídeo de muchos fabricantes', [['key', 'API key'], ['secret', 'API secret']], 'Crea en Wiro un proyecto solo para Saga Studio, con autenticación por firma («Signature-Based»).'],
+  ['wiro', 'Wiro', 'Imagen y vídeo de muchos fabricantes', [['key', 'Dirección de tu puente (Worker)'], ['secret', 'Contraseña del puente']], 'Wiro no contesta a las webs: la app habla con TU puente (un Worker de Cloudflare con tu clave de Wiro guardada dentro). Pega aquí su dirección https://… y la contraseña que inventaste. Se monta con worker/wiro-worker.js. (Si pegas directamente la API key y el secret de Wiro, solo funciona si Wiro te deja llamarle desde la web.)'],
   ['higgsfield', 'Higgsfield', 'Imagen y vídeo: Seedance 2.0 / 2.5, Soul', [['key', 'Dirección de tu puente (Worker)'], ['secret', 'Contraseña del puente']], 'Higgsfield no deja usar su API desde una web: la app habla con TU puente (un Worker de Cloudflare con tu clave de Higgsfield guardada allí).'],
   ['pollo', 'Pollo', 'Imagen y vídeo: Kling, Veo, Seedance…', [['key', 'API key']], 'Crea en Pollo una clave solo para Saga Studio.'],
   ['fal', 'fal', 'Imagen y vídeo: más de mil modelos', [['key', 'API key']], 'fal recomienda no usar claves desde el navegador: usa una clave solo para Saga Studio y con poco saldo.'],
@@ -3707,8 +3707,9 @@ async function wiroHead(c) {
   return { 'x-api-key': c.key, 'x-nonce': nonce, 'x-signature': hex(await crypto.subtle.sign('HMAC', k, te.encode(String(c.secret || '') + nonce))) };
 }
 async function wiroCall(c, path, body, form) {
-  const h = await wiroHead(c); if (!form) h['Content-Type'] = 'application/json';
-  const r = await pfetch(WIRO_API + path, { method: 'POST', headers: h, body: form || JSON.stringify(body || {}) }, form ? 180000 : 30000);
+  const br = okUrl(String(c.key || '').trim()); // si la «key» es una dirección https://, es tu puente (Worker de Cloudflare) y él firma
+  const h = br ? { 'X-Saga-Token': String(c.secret || '') } : await wiroHead(c); if (!form) h['Content-Type'] = 'application/json';
+  const r = await pfetch((br ? br.replace(/\/+$/, '') : WIRO_API) + path, { method: 'POST', headers: h, body: form || JSON.stringify(body || {}) }, form ? 180000 : 30000);
   const d = await jread(r);
   if (!d) throw gErr(httpCode(r.status), 'HTTP ' + r.status);
   if (d.result === false || !r.ok || (Array.isArray(d.errors) && d.errors.length)) {
