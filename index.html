@@ -3148,14 +3148,16 @@ const A = {
           const name = o.name || o.title || '';
           const hits = o.id ? list.filter(x => x.id === o.id) : list.filter(x => norm(x.name) === norm(name));
           const image = o.img || o.image || '';
+          const imageUrl = o.url || o.imageUrl || '';
           if (hits.length !== 1) throw new Error('No encuentro una ficha única para: ' + (name || o.id || 'sin nombre'));
-          if (!/^data:image\/(?:jpeg|png|webp);base64,/i.test(image)) throw new Error('La imagen de ' + hits[0].name + ' debe ir en base64 dentro del JSON');
-          return { item: hits[0], image, replace: o.replace === true };
+          if (!/^data:image\/(?:jpeg|png|webp);base64,/i.test(image) && !/^\.\/pose-images\/[\w.-]+\.(?:jpe?g|png|webp)$/i.test(imageUrl)) throw new Error('La imagen de ' + hits[0].name + ' debe ser base64 o una ruta de pose-images');
+          return { item: hits[0], image, imageUrl, replace: o.replace === true };
         });
         if (new Set(entries.map(x => x.item.id)).size !== entries.length) throw new Error('El lote repite una ficha; no se ha aplicado');
         let linked = 0, skipped = 0;
         for (const e of entries) {
           if (e.item.img && !e.replace) { skipped++; continue; }
+          if (e.imageUrl) { e.item.img = e.imageUrl; linked++; continue; }
           const blob = await (await fetch(e.image)).blob();
           if (!blob.type.startsWith('image/')) throw new Error('No se pudo leer la imagen de ' + e.item.name);
           const ext = blob.type.includes('png') ? 'png' : blob.type.includes('webp') ? 'webp' : 'jpg';
